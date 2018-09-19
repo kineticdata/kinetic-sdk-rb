@@ -674,7 +674,7 @@ if options.importTask
             }
           })
         # Update the Request CE Notification Template V2 handler
-        if File.basename(handler_file).start_with?("kinetic_request_ce_notification_template_send_v2")
+        elsif File.basename(handler_file).start_with?("kinetic_request_ce_notification_template_send_v2")
           task_sdk.update_handler(File.basename(handler_file, ".zip"), {
             "properties" => {
               'smtp_server' => env["notification_template_handler"]["smtp_server"],
