@@ -129,7 +129,7 @@ datastore_forms_to_export = env['ce']['export_datastore_form_data'] || []
 
 # Build an Array of All attributes to remove from JSON export
 # authStrategy is for webhooks / key is for bridges
-attrs_to_delete = env['ce']['remove_data_attributes']
+attrs_to_delete = env['ce']['remove_data_attributes'] || []
 
 if options.exportCE
   #--------------------------------------------------------------------------
@@ -138,6 +138,9 @@ if options.exportCE
 
   # CE
   ce_server = env["ce"]["server"]
+  ce_space_server = (env["proxy_subdomains"] || false) ?
+    ce_server.gsub("://", "://#{space_slug}.") :
+    "#{ce_server}/#{space_slug}"
   # Get the Request CE configurator user credentials from the config file
   ce_credentials = {
     "username" => env["ce"]["system_credentials"]["username"],
@@ -178,7 +181,7 @@ if options.exportCE
 
     # Log into the Space with the export user
     requestce_sdk = KineticSdk::RequestCe.new({
-      app_server_url: ce_server,
+      space_server_url: ce_space_server,
       space_slug: space_slug,
       username: ce_credentials_space_admin["username"],
       password: ce_credentials_space_admin["password"],
@@ -295,14 +298,12 @@ if options.exportCE
         # Ensure the file is empty
         file.truncate(0)
         response = nil
-        count = 0
         begin
           # Get submissions
           response = requestce_sdk.find_form_submissions(kappSlug, formSlug, params).content
           if response.has_key?("submissions")
-            count += response["submissions"].size
             # Write each submission on its own line
-            response["submissions"].each do |submission|
+            (response["submissions"] || []).each do |submission|
               # Append each submission (removing the submission unwanted attributes)
               file.puts(JSON.generate(submission.delete_if { |key, value| attrs_to_delete.member?(key)}))
             end
@@ -327,14 +328,12 @@ if options.exportCE
       # Ensure the file is empty
       file.truncate(0)
       response = nil
-      count = 0
       begin
         # Get submissions
         response = requestce_sdk.find_all_form_datastore_submissions(formSlug, params).content
         if response.has_key?("submissions")
-          count += response["submissions"].size
           # Write each submission on its own line
-          response["submissions"].each do |submission|
+          (response["submissions"] || []).each do |submission|
             # Append each submission (removing the submission unwanted attributes)
             file.puts(JSON.generate(submission.delete_if { |key, value| attrs_to_delete.member?(key)}))
           end

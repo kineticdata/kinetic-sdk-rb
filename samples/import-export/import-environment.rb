@@ -172,6 +172,9 @@ log_level = ENV['SDK_LOG_LEVEL'] || env['sdk_log_level'] || "info"
 
 # Request CE
 ce_server = env["ce"]["server"]
+ce_space_server = (env["proxy_subdomains"] || false) ?
+  ce_server.gsub("://", "://#{space_slug}.") :
+  "#{ce_server}/#{space_slug}"
 ce_task_source_name = env["ce"]["task_source_name"]
 ce_integration_username = env["ce"]["space_integration_credentials"]["username"]
 ce_integration_displayname = env["ce"]["space_integration_credentials"]["display_name"]
@@ -303,7 +306,7 @@ if options.importCE
 
     # Log into the Space with the Space Admin user
     requestce_sdk_space = KineticSdk::RequestCe.new({
-      app_server_url: ce_server,
+      space_server_url: ce_space_server,
       space_slug: space_slug,
       username: ce_credentials_space_admin["username"],
       password: ce_credentials_space_admin["password"],
@@ -653,7 +656,7 @@ if options.importTask
 
       # if import was successful, set the handler properties
       if tries > 0
-        # Update the Request CE Notification Template handler
+        # Update the Request CE Notification Template V1 handler
         if File.basename(handler_file).start_with?("kinetic_request_ce_notification_template_send_v1")
           task_sdk.update_handler(File.basename(handler_file, ".zip"), {
             "properties" => {
@@ -663,6 +666,24 @@ if options.importTask
               'smtp_username' => env["notification_template_handler"]["smtp_username"],
               'smtp_password' => env["notification_template_handler"]["smtp_password"],
               'smtp_from_address' => env["notification_template_handler"]["smtp_from_address"],
+              'api_server' => ce_server,
+              'api_username' => ce_integration_username,
+              'api_password' => ce_integration_password,
+              'space_slug' => space_slug,
+              'enable_debug_logging' => 'Yes'
+            }
+          })
+        # Update the Request CE Notification Template V2 handler
+        if File.basename(handler_file).start_with?("kinetic_request_ce_notification_template_send_v2")
+          task_sdk.update_handler(File.basename(handler_file, ".zip"), {
+            "properties" => {
+              'smtp_server' => env["notification_template_handler"]["smtp_server"],
+              'smtp_port' => env["notification_template_handler"]["smtp_port"],
+              'smtp_tls' => env["notification_template_handler"]["smtp_tls"],
+              'smtp_username' => env["notification_template_handler"]["smtp_username"],
+              'smtp_password' => env["notification_template_handler"]["smtp_password"],
+              'smtp_from_address' => env["notification_template_handler"]["smtp_from_address"],
+              'smtp_auth_type' => 'plain',
               'api_server' => ce_server,
               'api_username' => ce_integration_username,
               'api_password' => ce_integration_password,
@@ -894,7 +915,7 @@ if options.configureBH
 
     # Log into the Space with the kdadmin user
     requestce_sdk_space = KineticSdk::RequestCe.new({
-      app_server_url: ce_server,
+      space_server_url: ce_space_server,
       space_slug: space_slug,
       username: ce_credentials_space_admin["username"],
       password: ce_credentials_space_admin["password"],
@@ -964,7 +985,7 @@ if options.configureFH
 
     # Log into the Space with the kdadmin user
     requestce_sdk_space = KineticSdk::RequestCe.new({
-      app_server_url: ce_server,
+      space_server_url: ce_space_server,
       space_slug: space_slug,
       username: ce_credentials_space_admin["username"],
       password: ce_credentials_space_admin["password"],
