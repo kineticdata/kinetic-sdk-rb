@@ -366,6 +366,32 @@ if options.importCE
     # Delete OOTB Catalog Kapp
     requestce_sdk_space.delete_kapp("catalog");
 
+    # Import Datastore Forms
+    Dir["#{request_ce_dir}/datastore/forms/*"].each do |form|
+      requestce_sdk_space.add_datastore_form(JSON.parse(File.read("#{form}")))
+    end
+
+    # Import Datastore Submissions
+    submissions_count = 0
+    Dir["#{request_ce_dir}/datastore/data/*"].each do |form|
+      # Parse form slug from directory path
+      form_slug = File.basename(form, '.json')
+      puts "Importing datastore submissions for: #{form_slug}"
+      # Each submission is a single line on the export file
+      File.readlines(form).each do |line|
+        submission = JSON.parse(line)
+        requestce_sdk_space.add_datastore_submission(form_slug, {
+          "origin" => submission['origin'],
+          "parent" => submission['parent'],
+          "values" => submission['values']
+        })
+        if (submissions_count += 1) % 25 == 0
+          puts "Resetting the Request CE license submission count"
+          requestce_sdk_system.reset_license_count
+        end
+      end
+    end
+
     # Import Kapps
     Dir["#{request_ce_dir}/kapp-*"].each do |dirname|
 
