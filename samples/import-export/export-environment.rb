@@ -352,7 +352,7 @@ if options.exportCE
 
     # Build an Array of All JSON files that were exported
     configFiles = Dir.glob("#{ceDir}/**/*.json")
-    replacements = [ [space_name, "<Space Name>"], [space_slug, "<space-slug>"] ]
+    replacements = [ [space_slug, "<space-slug>"] ]
 
     puts "Stripping out Created/Updated Dates and Users"
 
