@@ -48,7 +48,7 @@ class ExportOptions
 
     opts.separator ""
 
-    opts.on("-s KAPP_SLUG",
+    opts.on("-k KAPP_SLUG",
       "The slug of the Kapp to export") do |slug|
       options.kapp_slug = slug
     end
