@@ -95,7 +95,6 @@ options = ExportOptions.parse(ARGV)
 
 # Get space slug from Arguments
 space_slug = options.space_slug
-space_name = nil
 
 # Get kapp slug from Arguments
 kapp_slug = options.kapp_slug
@@ -181,22 +180,21 @@ if requestce_sdk.space_exists?(space_slug)
     options: { log_level: log_level }
   })
 
-  # Export Space - Returns the entire Space definition including all kapps
+  # Export the Kapp
   space = requestce_sdk.export_space.content['space']
-  space_name = space['name']
+
+  puts "Building Kapp Directory Structure"
 
   ## SPACE ##
   ceDir = "#{space_dir}/ce"
   Dir.mkdir(ceDir, 0700) unless Dir.exist?(ceDir)
   Dir.chdir(ceDir)
 
-  ## KAPPS ##
-  puts "Building Kapp Directory Structure"
-  # Loop over Each Kapp
-  space["kapps"].each do |kapp|
-    if kapp_slug == kapp['slug']
-      # Create a Kapp Directory
-      kappDir = "#{ceDir}/kapp-#{kapp['slug']}"
+
+  space['kapps'].each do |kapp|
+    if kapp['slug'] == kapp_slug
+      ## KAPP ##
+      kappDir = "#{ceDir}/kapp-#{kapp_slug}"
       Dir.mkdir(kappDir, 0700) unless Dir.exist?(kappDir)
       Dir.chdir(kappDir)
 
@@ -206,8 +204,8 @@ if requestce_sdk.space_exists?(space_slug)
       File.open("#{kappDir}/kapp.json", 'w') { |file| file.write(kappJson) }
 
       # Loop over the rest of the kapp objects and create files for them
-      propsToExlucde = ['categorizations', 'fields']
-      kappObjects = kapp.reject {|k,v| !v.is_a?(Array) || includeWithKapp.include?(k) || propsToExlucde.include?(k)}
+      propsToExlude = ['categorizations', 'fields']
+      kappObjects = kapp.reject {|k,v| !v.is_a?(Array) || includeWithKapp.include?(k) || propsToExlude.include?(k)}
       kappObjects.each do | k, v |
         if k == "forms"
           Dir.mkdir("#{kappDir}/forms", 0700) unless Dir.exist?("#{kappDir}/forms")
