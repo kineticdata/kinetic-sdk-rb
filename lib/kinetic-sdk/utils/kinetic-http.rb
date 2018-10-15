@@ -44,8 +44,13 @@ module KineticSdk
           # handle the response
           case response
           when Net::HTTPRedirection then
-            raise Net::HTTPFatalError.new("Too many redirects", response) if redirect_limit == 0
-            delete_raw(response['location'], headers, redirect_limit - 1)
+            if redirect_limit == -1
+              KineticHttpResponse.new(response)
+            elsif redirect_limit == 0
+              raise Net::HTTPFatalError.new("Too many redirects", response)
+            else
+              delete_raw(response['location'], headers, redirect_limit - 1)
+            end
           else
             KineticHttpResponse.new(response)
           end
@@ -80,8 +85,13 @@ module KineticSdk
           # handle the response
           case response
           when Net::HTTPRedirection then
-            raise Net::HTTPFatalError.new("Too many redirects", response) if redirect_limit == 0
-            get_raw(response['location'], params, headers, redirect_limit - 1)
+            if redirect_limit == -1
+              KineticHttpResponse.new(response)
+            elsif redirect_limit == 0
+              raise Net::HTTPFatalError.new("Too many redirects", response)
+            else
+              get_raw(response['location'], params, headers, redirect_limit - 1)
+            end
           else
             KineticHttpResponse.new(response)
           end
@@ -117,8 +127,13 @@ module KineticSdk
           # handle the response
           case response
           when Net::HTTPRedirection then
-            raise Net::HTTPFatalError.new("Too many redirects", response) if redirect_limit == 0
-            patch_raw(response['location'], data, headers, redirect_limit - 1)
+            if redirect_limit == -1
+              KineticHttpResponse.new(response)
+            elsif redirect_limit == 0
+              raise Net::HTTPFatalError.new("Too many redirects", response)
+            else
+              patch_raw(response['location'], data, headers, redirect_limit - 1)
+            end
           else
             KineticHttpResponse.new(response)
           end
@@ -154,8 +169,13 @@ module KineticSdk
           # handle the response
           case response
           when Net::HTTPRedirection then
-            raise Net::HTTPFatalError.new("Too many redirects", response) if redirect_limit == 0
-            post_raw(response['location'], data, headers, redirect_limit - 1)
+            if redirect_limit == -1
+              KineticHttpResponse.new(response)
+            elsif redirect_limit == 0
+              raise Net::HTTPFatalError.new("Too many redirects", response)
+            else
+              post_raw(response['location'], data, headers, redirect_limit - 1)
+            end
           else
             KineticHttpResponse.new(response)
           end
@@ -196,8 +216,13 @@ module KineticSdk
           # handle the response
           case response
           when Net::HTTPRedirection then
-            raise Net::HTTPFatalError.new("Too many redirects", response) if redirect_limit == 0
-            post_multipart_raw(response['location'], data, headers, redirect_limit - 1)
+            if redirect_limit == -1
+              KineticHttpResponse.new(response)
+            elsif redirect_limit == 0
+              raise Net::HTTPFatalError.new("Too many redirects", response)
+            else
+              post_multipart_raw(response['location'], data, headers, redirect_limit - 1)
+            end
           else
             KineticHttpResponse.new(response)
           end
@@ -233,8 +258,13 @@ module KineticSdk
           # handle the response
           case response
           when Net::HTTPRedirection then
-            raise Net::HTTPFatalError.new("Too many redirects", response) if redirect_limit == 0
-            put_raw(response['location'], data, headers, redirect_limit - 1)
+            if redirect_limit == -1
+              KineticHttpResponse.new(response)
+            elsif redirect_limit == 0
+              raise Net::HTTPFatalError.new("Too many redirects", response)
+            else
+              put_raw(response['location'], data, headers, redirect_limit - 1)
+            end
           else
             KineticHttpResponse.new(response)
           end
@@ -253,6 +283,10 @@ module KineticSdk
       alias_method :put_raw, :put
 
 
+      #-------------------------------------------------------------------------
+      # Instance methods that are duplicated as module/class methods
+      #-------------------------------------------------------------------------
+
       # Provides a accepts header set to application/json
       #
       # @return [Hash] Accepts header set to application/json
@@ -267,6 +301,14 @@ module KineticSdk
       # @return [Hash] Authorization: Basic base64 hash of username and password
       def header_basic_auth(username=@username, password=@password)
         { "Authorization" => "Basic #{Base64.encode64(username.to_s + ":" + password.to_s).gsub("\n", "")}" }
+      end
+
+      # Provides a Bearer authentication header
+      # 
+      # @param token [String] JSON Web Token (jwt)
+      # @return [Hash] Authorization: Bearer jwt
+      def header_bearer_auth(token)
+        { "Authorization" => "Bearer #{token}" }
       end
 
       # Provides a content-type header set to application/json
@@ -335,6 +377,68 @@ module KineticSdk
         )
         limit.nil? ? 5 : limit.to_i
       end
+
+      #------------------------------------------
+      # Static methods
+      #------------------------------------------
+
+      # Provides a accepts header set to application/json
+      #
+      # @return [Hash] Accepts header set to application/json
+      def self.header_accepts_json
+        { "Accepts" => "application/json" }
+      end
+
+      # Provides a basic authentication header
+      # 
+      # @param username [String] username to authenticate
+      # @param password [String] password associated to the username
+      # @return [Hash] Authorization: Basic base64 hash of username and password
+      def self.header_basic_auth(username=@username, password=@password)
+        { "Authorization" => "Basic #{Base64.encode64(username.to_s + ":" + password.to_s).gsub("\n", "")}" }
+      end
+
+      # Provides a Bearer authentication header
+      # 
+      # @param token [String] JSON Web Token (jwt)
+      # @return [Hash] Authorization: Bearer jwt
+      def self.header_bearer_auth(token)
+        { "Authorization" => "Bearer #{token}" }
+      end
+
+      # Provides a content-type header set to application/json
+      #
+      # @return [Hash] Content-Type header set to application/json
+      def self.header_content_json
+        { "Content-Type" => "application/json" }
+      end
+
+      # Provides a user-agent header set to Kinetic Ruby SDK
+      #
+      # @return [Hash] User-Agent header set to Kinetic Reuby SDK
+      def self.header_user_agent
+        { "User-Agent" => "Kinetic Ruby SDK #{KineticSdk.version}" }
+      end
+
+      # Provides a hash of default headers
+      #
+      # @param username [String] username to authenticate
+      # @param password [String] password associated to the username
+      # @return [Hash] Hash of headers
+      #   - Accepts: application/json
+      #   - Authorization: Basic base64 hash of username and password if username is provided
+      #   - Content-Type: application/json
+      #   - User-Agent: Kinetic Ruby SDK {KineticSdk.version}
+      def self.default_headers(username=@username, password=@password)
+        headers = self.header_accepts_json.merge(self.header_content_json).merge(self.header_user_agent)
+        headers.merge!(self.header_basic_auth(username, password)) unless username.nil?
+        headers
+      end
+
+
+      #------------------------------------------
+      # Private Instance methods
+      #------------------------------------------
 
       private
 
