@@ -65,5 +65,17 @@ module KineticSdk
       put("#{@api_url}/license/reset", {}, headers)
     end
 
+    # Find a user in a space (System API)
+    #
+    # @param space_slug [String] slug of the space
+    # @param username [String] the username to find
+    # @param params [Hash] Query parameters that are added to the URL, such as +include+
+    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    def find_user_in_system(space_slug, username, params={}, headers=default_headers)
+      info("Finding User #{username} in Space #{space_slug}")
+      get("#{@api_url}/spaces/#{space_slug}/users/#{encode(username)}", params, headers)
+    end
+
   end
 end

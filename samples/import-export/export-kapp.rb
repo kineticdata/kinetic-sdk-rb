@@ -160,16 +160,30 @@ space_exists = false
 if requestce_sdk.space_exists?(space_slug)
   puts "Exporting Kapp: #{space_slug} :: #{kapp_slug}"
 
-  # Create an export user
-  puts "Creating an export user in the \"#{space_slug}\" Request CE space."
-  requestce_sdk.add_user({
-    "space_slug" => space_slug,
-    "username" => ce_credentials_space_admin["username"],
-    "displayName" => ce_credentials_space_admin["username"],
-    "password" => ce_credentials_space_admin["password"],
-    "enabled" => true,
-    "spaceAdmin" => true
-  })
+  user_response = requestce_sdk.find_user_in_system(
+    space_slug,
+    ce_credentials_space_admin["username"]
+  )
+
+  if user_response.status == 404
+    puts "Creating an export user in the \"#{space_slug}\" Request CE space."
+    requestce_sdk.add_user({
+      "space_slug" => space_slug,
+      "username" => ce_credentials_space_admin["username"],
+      "displayName" => ce_credentials_space_admin["username"],
+      "password" => ce_credentials_space_admin["password"],
+      "enabled" => true,
+      "spaceAdmin" => true
+    })
+  else
+    puts "Updating the export user in the \"#{space_slug}\" Request CE space."
+    requestce_sdk.update_user(ce_credentials_space_admin["username"], {
+      "space_slug" => space_slug,
+      "password" => ce_credentials_space_admin["password"],
+      "enabled" => true,
+      "spaceAdmin" => true
+    })
+  end
 
   # Log into the Space with the export user
   requestce_sdk = KineticSdk::RequestCe.new({
