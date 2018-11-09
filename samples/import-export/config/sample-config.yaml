@@ -21,6 +21,7 @@ ce:
   filestore:
     type: "Local"
     directory: "/home/filesDirectory"
+  kapps:
   export_form_data:
   export_datastore_form_data:
     - "notification-template-dates"

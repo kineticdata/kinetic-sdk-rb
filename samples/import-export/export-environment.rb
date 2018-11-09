@@ -131,6 +131,9 @@ datastore_forms_to_export = env['ce']['export_datastore_form_data'] || []
 # authStrategy is for webhooks / key is for bridges
 attrs_to_delete = env['ce']['remove_data_attributes'] || []
 
+# Array or kapps to export, leave empty for all kapps
+kapps_to_export = env['ce']['kapps'] || []
+
 if options.exportCE
   #--------------------------------------------------------------------------
   # Request CE
@@ -247,27 +250,29 @@ if options.exportCE
     puts "Building Kapp Directory Structure"
     # Loop over Each Kapp
     space["kapps"].each do |kapp|
-      # Create a Kapp Directory
-      kappDir = "#{ceDir}/kapp-#{kapp['slug']}"
-      Dir.mkdir(kappDir, 0700) unless Dir.exist?(kappDir)
-      Dir.chdir(kappDir)
+      if kapps_to_export.empty? || kapps_to_export.include?(kapp['slug'])
+        # Create a Kapp Directory
+        kappDir = "#{ceDir}/kapp-#{kapp['slug']}"
+        Dir.mkdir(kappDir, 0700) unless Dir.exist?(kappDir)
+        Dir.chdir(kappDir)
 
-      # Create kapp.json (All Arrays except attributes and security policies should be excluded)
-      includeWithKapp = ['attributes', 'securityPolicies'];
-      kappJson = JSON.pretty_generate(kapp.reject {|k,v| v.is_a?(Array) && !includeWithKapp.include?(k)})
-      File.open("#{kappDir}/kapp.json", 'w') { |file| file.write(kappJson) }
+        # Create kapp.json (All Arrays except attributes and security policies should be excluded)
+        includeWithKapp = ['attributes', 'securityPolicies'];
+        kappJson = JSON.pretty_generate(kapp.reject {|k,v| v.is_a?(Array) && !includeWithKapp.include?(k)})
+        File.open("#{kappDir}/kapp.json", 'w') { |file| file.write(kappJson) }
 
-      # Loop over the rest of the kapp objects and create files for them
-      propsToExlucde = ['categorizations', 'fields']
-      kappObjects = kapp.reject {|k,v| !v.is_a?(Array) || includeWithKapp.include?(k) || propsToExlucde.include?(k)}
-      kappObjects.each do | k, v |
-        if k == "forms"
-          Dir.mkdir("#{kappDir}/forms", 0700) unless Dir.exist?("#{kappDir}/forms")
-          v.each do |form|
-            File.open("#{kappDir}/forms/#{form['slug']}.json", 'w') { |file| file.write(JSON.pretty_generate(form)) }
+        # Loop over the rest of the kapp objects and create files for them
+        propsToExlucde = ['categorizations', 'fields']
+        kappObjects = kapp.reject {|k,v| !v.is_a?(Array) || includeWithKapp.include?(k) || propsToExlucde.include?(k)}
+        kappObjects.each do | k, v |
+          if k == "forms"
+            Dir.mkdir("#{kappDir}/forms", 0700) unless Dir.exist?("#{kappDir}/forms")
+            v.each do |form|
+              File.open("#{kappDir}/forms/#{form['slug']}.json", 'w') { |file| file.write(JSON.pretty_generate(form)) }
+            end
+          else
+            File.open("#{kappDir}/#{k}.json", 'w') { |file| file.write(JSON.pretty_generate(v)) }
           end
-        else
-          File.open("#{kappDir}/#{k}.json", 'w') { |file| file.write(JSON.pretty_generate(v)) }
         end
       end
     end
@@ -286,33 +291,35 @@ if options.exportCE
 
     # Loop over each Kapp in the forms to export map
     forms_to_export.keys.each do |kappSlug|
-      # Loop over each form slug in the forms_to_export map for the given kapp
-      forms_to_export[kappSlug].each do |formSlug|
-        # Build a data directory for the kapp
-        dataDir = "#{ceDir}/kapp-#{kappSlug}/data"
-        FileUtils.mkdir_p(dataDir, :mode => 0700)
-        # Build params to pass to the retrieve_form_submissions method
-        params = {"include" => "values", "limit" => 1000, "direction" => "ASC"}
-        # Open the submissions file in write mode
-        file = File.open("#{dataDir}/#{formSlug}.json", 'w');
-        # Ensure the file is empty
-        file.truncate(0)
-        response = nil
-        begin
-          # Get submissions
-          response = requestce_sdk.find_form_submissions(kappSlug, formSlug, params).content
-          if response.has_key?("submissions")
-            # Write each submission on its own line
-            (response["submissions"] || []).each do |submission|
-              # Append each submission (removing the submission unwanted attributes)
-              file.puts(JSON.generate(submission.delete_if { |key, value| attrs_to_delete.member?(key)}))
+      if kapps_to_export.empty? || kapps_to_export.include?(kappSlug)
+        # Loop over each form slug in the forms_to_export map for the given kapp
+        forms_to_export[kappSlug].each do |formSlug|
+          # Build a data directory for the kapp
+          dataDir = "#{ceDir}/kapp-#{kappSlug}/data"
+          FileUtils.mkdir_p(dataDir, :mode => 0700)
+          # Build params to pass to the retrieve_form_submissions method
+          params = {"include" => "values", "limit" => 1000, "direction" => "ASC"}
+          # Open the submissions file in write mode
+          file = File.open("#{dataDir}/#{formSlug}.json", 'w');
+          # Ensure the file is empty
+          file.truncate(0)
+          response = nil
+          begin
+            # Get submissions
+            response = requestce_sdk.find_form_submissions(kappSlug, formSlug, params).content
+            if response.has_key?("submissions")
+              # Write each submission on its own line
+              (response["submissions"] || []).each do |submission|
+                # Append each submission (removing the submission unwanted attributes)
+                file.puts(JSON.generate(submission.delete_if { |key, value| attrs_to_delete.member?(key)}))
+              end
             end
-          end
-          params['pageToken'] = response['nextPageToken']
-          # Get next page of submissions if there are more
-        end while !response.nil? && !response['nextPageToken'].nil?
-        # Close the submissions file
-        file.close()
+            params['pageToken'] = response['nextPageToken']
+            # Get next page of submissions if there are more
+          end while !response.nil? && !response['nextPageToken'].nil?
+          # Close the submissions file
+          file.close()
+        end
       end
     end
 
