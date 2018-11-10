@@ -61,7 +61,7 @@ module KineticSdk
 
       # process the configuration file if it was provided
       unless opts[:config_file].nil?
-        options.merge!(YAML::load opts[:config_file])
+        options.merge!(YAML::load_file opts[:config_file])
       end
 
       # process the configuration hash if it was provided

@@ -4,6 +4,7 @@ require 'mime/types'
 require 'net/http'
 require 'net/http/post/multipart'
 require 'openssl'
+require File.join(File.dirname(File.expand_path(__FILE__)), "kinetic-http-headers.rb")
 
 # The KineticSdk module contains functionality to interact with Kinetic Data applications
 # using their built-in REST APIs.
@@ -91,6 +92,47 @@ module KineticSdk
               raise Net::HTTPFatalError.new("Too many redirects", response)
             else
               get_raw(response['location'], params, headers, redirect_limit - 1)
+            end
+          else
+            KineticHttpResponse.new(response)
+          end
+        rescue StandardError => e
+          KineticHttpResponse.new(e)
+        end
+      end
+
+      # Send an HTTP HEAD request
+      # 
+      # @param url [String] url to send the request to
+      # @param params [Hash] Query parameters that are added to the URL, such as +include+
+      # @param headers [Hash] hash of headers to send
+      # @param redirect_limit [Fixnum] max number of times to redirect
+      # @return [KineticSdk::Utils::KineticHttpResponse] response
+      def head(url, params={}, headers={}, redirect_limit=max_redirects)
+        # parse the URL
+        uri = URI.parse(url)
+        # add URL parameters
+        uri.query = URI.encode_www_form(params)
+
+        debug("HEAD #{uri}  #{headers.inspect}")
+
+        # build the http object
+        http = build_http(uri)
+        # build the request
+        request = Net::HTTP::Head.new(uri.request_uri, headers)
+
+        # send the request
+        begin
+          response = http.request(request)
+          # handle the response
+          case response
+          when Net::HTTPRedirection then
+            if redirect_limit == -1
+              KineticHttpResponse.new(response)
+            elsif redirect_limit == 0
+              raise Net::HTTPFatalError.new("Too many redirects", response)
+            else
+              head_raw(response['location'], params, headers, redirect_limit - 1)
             end
           else
             KineticHttpResponse.new(response)
@@ -277,68 +319,12 @@ module KineticSdk
       # response object.
       alias_method :delete_raw, :delete
       alias_method :get_raw, :get
+      alias_method :head_raw, :head
       alias_method :patch_raw, :patch
       alias_method :post_raw, :post
       alias_method :post_multipart_raw, :post_multipart
       alias_method :put_raw, :put
 
-
-      #-------------------------------------------------------------------------
-      # Instance methods that are duplicated as module/class methods
-      #-------------------------------------------------------------------------
-
-      # Provides a accepts header set to application/json
-      #
-      # @return [Hash] Accepts header set to application/json
-      def header_accepts_json
-        { "Accepts" => "application/json" }
-      end
-
-      # Provides a basic authentication header
-      # 
-      # @param username [String] username to authenticate
-      # @param password [String] password associated to the username
-      # @return [Hash] Authorization: Basic base64 hash of username and password
-      def header_basic_auth(username=@username, password=@password)
-        { "Authorization" => "Basic #{Base64.encode64(username.to_s + ":" + password.to_s).gsub("\n", "")}" }
-      end
-
-      # Provides a Bearer authentication header
-      # 
-      # @param token [String] JSON Web Token (jwt)
-      # @return [Hash] Authorization: Bearer jwt
-      def header_bearer_auth(token)
-        { "Authorization" => "Bearer #{token}" }
-      end
-
-      # Provides a content-type header set to application/json
-      #
-      # @return [Hash] Content-Type header set to application/json
-      def header_content_json
-        { "Content-Type" => "application/json" }
-      end
-
-      # Provides a user-agent header set to Kinetic Ruby SDK
-      #
-      # @return [Hash] User-Agent header set to Kinetic Reuby SDK
-      def header_user_agent
-        { "User-Agent" => "Kinetic Ruby SDK #{KineticSdk.version}" }
-      end
-
-      # Provides a hash of default headers
-      #
-      # @param username [String] username to authenticate
-      # @param password [String] password associated to the username
-      # @return [Hash] Hash of headers
-      #   - Accepts: application/json
-      #   - Authorization: Basic base64 hash of username and password if username is provided
-      #   - Content-Type: application/json
-      #   - User-Agent: Kinetic Ruby SDK {KineticSdk.version}
-      def default_headers(username=@username, password=@password)
-        headers = header_accepts_json.merge(header_content_json).merge(header_user_agent)
-        headers.merge!(header_basic_auth(username, password)) unless username.nil?
-        headers
-      end
 
       # Encode URI components
       #
@@ -376,63 +362,6 @@ module KineticSdk
           @options['max_redirects']
         )
         limit.nil? ? 5 : limit.to_i
-      end
-
-      #------------------------------------------
-      # Static methods
-      #------------------------------------------
-
-      # Provides a accepts header set to application/json
-      #
-      # @return [Hash] Accepts header set to application/json
-      def self.header_accepts_json
-        { "Accepts" => "application/json" }
-      end
-
-      # Provides a basic authentication header
-      # 
-      # @param username [String] username to authenticate
-      # @param password [String] password associated to the username
-      # @return [Hash] Authorization: Basic base64 hash of username and password
-      def self.header_basic_auth(username=@username, password=@password)
-        { "Authorization" => "Basic #{Base64.encode64(username.to_s + ":" + password.to_s).gsub("\n", "")}" }
-      end
-
-      # Provides a Bearer authentication header
-      # 
-      # @param token [String] JSON Web Token (jwt)
-      # @return [Hash] Authorization: Bearer jwt
-      def self.header_bearer_auth(token)
-        { "Authorization" => "Bearer #{token}" }
-      end
-
-      # Provides a content-type header set to application/json
-      #
-      # @return [Hash] Content-Type header set to application/json
-      def self.header_content_json
-        { "Content-Type" => "application/json" }
-      end
-
-      # Provides a user-agent header set to Kinetic Ruby SDK
-      #
-      # @return [Hash] User-Agent header set to Kinetic Reuby SDK
-      def self.header_user_agent
-        { "User-Agent" => "Kinetic Ruby SDK #{KineticSdk.version}" }
-      end
-
-      # Provides a hash of default headers
-      #
-      # @param username [String] username to authenticate
-      # @param password [String] password associated to the username
-      # @return [Hash] Hash of headers
-      #   - Accepts: application/json
-      #   - Authorization: Basic base64 hash of username and password if username is provided
-      #   - Content-Type: application/json
-      #   - User-Agent: Kinetic Ruby SDK {KineticSdk.version}
-      def self.default_headers(username=@username, password=@password)
-        headers = self.header_accepts_json.merge(self.header_content_json).merge(self.header_user_agent)
-        headers.merge!(self.header_basic_auth(username, password)) unless username.nil?
-        headers
       end
 
 

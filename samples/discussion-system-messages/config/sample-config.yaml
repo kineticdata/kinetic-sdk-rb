@@ -1,0 +1,16 @@
+# Properties for the Kinetic SDK
+:space_server_url: "http://localhost:8080/kinetic"
+:space_slug: "discussions"
+:username: "user@kineticdata.com"
+:password: "testing-password"
+:options:
+  # SDK log level (off | info | debug | trace)
+  :log_level: "info"
+
+# Discussions oauth client configuration
+:oauth_client_id: "discussions-app"
+:oauth_client_secret: "generated-secret"
+
+# Discussion System Messages - driver variables
+:invitation_email: "my-user@example.com"
+:admin_username: "super@example.com"

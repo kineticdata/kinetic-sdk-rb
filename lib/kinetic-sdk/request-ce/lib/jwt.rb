@@ -19,7 +19,7 @@ module KineticSdk
       if response.status == 401
         raise StandardError.new "#{response.message}, the oauth client id and secret are invalid."
       elsif response.status == 200
-        response.content['access_token']
+        response
       else
         raise StandardError.new "Unable to retrieve token: #{response}"
       end
