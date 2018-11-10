@@ -5,9 +5,9 @@ module KineticSdk
     #
     # @param discussion_id [String] id of the discussion
     # @param username [String] username of the user
-    # @param headers [Hash] hash of headers to send, default is bearer authentication
+    # @param headers [Hash] hash of headers to send, default is bearer authentication and JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
-    def add_participant(discussion_id, username, headers=header_bearer_auth)
+    def add_participant(discussion_id, username, headers=default_jwt_headers)
       payload = { "username" => username }
       info("Participant #{username} joining the #{discussion_id} discussion")
       post("#{@api_url}/discussions/#{discussion_id}/participants", payload, headers)

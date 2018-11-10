@@ -94,8 +94,16 @@ module KineticSdk
       @version = 1
     end
 
+    def generate_jwt(options={})
+      oauth_client_id = options[:oauth_client_id]
+      oauth_client_secret = options[:oauth_client_secret]
+
+      jwt_response = kinetic_core_sdk(options).jwt_token(oauth_client_id, oauth_client_secret)
+      jwt_response.content['access_token']
+    end
+
     def kinetic_core_sdk(options)
-      request_ce_sdk = KineticSdk::RequestCe.new({
+      KineticSdk::RequestCe.new({
         space_server_url: options[:space_server_url],
         space_slug: options[:space_slug],
         username: options[:username],
@@ -105,13 +113,6 @@ module KineticSdk
         }
       })
     end
-    def generate_jwt(options={})
-      oauth_client_id = options[:oauth_client_id]
-      oauth_client_secret = options[:oauth_client_secret]
-
-      jwt_response = request_ce_sdk.jwt_token(oauth_client_id, oauth_client_secret)
-      jwt_response.content['access_token']
-    end
-
+    
   end
 end

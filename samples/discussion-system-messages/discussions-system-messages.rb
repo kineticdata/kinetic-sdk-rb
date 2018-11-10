@@ -63,7 +63,7 @@ sdk.delete_participant(discussion_id, config[:username])
 
 # Create a message
 message_response = sdk.add_message(discussion_id, "Hello World!")
-message_id = message_response.content['id']
+message_id = JSON.parse(message_response.content_string)['message']['id']
 
 # Update the message - (MessageUpdatedMessage)
 sdk.update_message(discussion_id, message_id, "Goodbye cruel world!")

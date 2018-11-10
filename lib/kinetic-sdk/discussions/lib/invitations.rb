@@ -6,9 +6,9 @@ module KineticSdk
     # @param discussion_id [String] id of the discussion
     # @param email [String] email to invite
     # @param message [String] message sent with the invitation
-    # @param headers [Hash] hash of headers to send, default is bearer authentication
+    # @param headers [Hash] hash of headers to send, default is bearer authentication and JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
-    def add_invitation_by_email(discussion_id, email, message=nil, headers=header_bearer_auth)
+    def add_invitation_by_email(discussion_id, email, message=nil, headers=default_jwt_headers)
       payload = { "email" => email }
       payload["message"] = message unless message.nil?
       info("Inviting #{email} to the #{discussion_id} discussion")
@@ -20,9 +20,9 @@ module KineticSdk
     # @param discussion_id [String] id of the discussion
     # @param username [String] username to invite
     # @param message [String] message sent with the invitation
-    # @param headers [Hash] hash of headers to send, default is bearer authentication
+    # @param headers [Hash] hash of headers to send, default is bearer authentication and JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
-    def add_invitation_by_username(discussion_id, username, message=nil, headers=header_bearer_auth)
+    def add_invitation_by_username(discussion_id, username, message=nil, headers=default_jwt_headers)
       payload = { "username" => username }
       payload["message"] = message unless message.nil?
       info("Inviting #{username} to the #{discussion_id} discussion")
@@ -56,9 +56,9 @@ module KineticSdk
     # @param discussion_id [String] id of the discussion
     # @param email [String] email the invitation was sent to
     # @param message [String] updated message to send with the invitation
-    # @param headers [Hash] hash of headers to send, default is bearer authentication
+    # @param headers [Hash] hash of headers to send, default is bearer authentication and JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
-    def resend_invitation_by_email(discussion_id, email, message, headers=header_bearer_auth)
+    def resend_invitation_by_email(discussion_id, email, message, headers=default_jwt_headers)
       payload = {}
       payload["message"] = message unless message.nil?
       info("Reinviting #{email} to the #{discussion_id} discussion")
@@ -70,9 +70,9 @@ module KineticSdk
     # @param discussion_id [String] id of the discussion
     # @param username [String] username the invitation was sent to
     # @param message [String] updated message to send with the invitation
-    # @param headers [Hash] hash of headers to send, default is bearer authentication
+    # @param headers [Hash] hash of headers to send, default is bearer authentication and JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
-    def resend_invitation_by_username(discussion_id, username, message, headers=header_bearer_auth)
+    def resend_invitation_by_username(discussion_id, username, message, headers=default_jwt_headers)
       payload = {}
       payload["message"] = message unless message.nil?
       info("Reinviting #{username} to the #{discussion_id} discussion")
