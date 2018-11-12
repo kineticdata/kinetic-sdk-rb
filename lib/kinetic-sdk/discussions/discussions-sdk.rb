@@ -10,7 +10,8 @@ module KineticSdk
     # Include the KineticHttpUtils module
     include KineticSdk::Utils::KineticHttpUtils
 
-    attr_reader :api_url, :username, :jwt, :options, :space_slug, :server, :version
+    attr_reader :api_url, :username, :jwt, :options, :space_slug,
+                :server, :topics_ws_server, :version
 
     # Initalize the Discussions SDK with the web server URL and configuration user
     # credentials, along with any custom option values.
@@ -85,15 +86,19 @@ module KineticSdk
       if options[:app_server_url]
         @server = options[:app_server_url].chomp('/')
         @api_url = "#{@server}/#{@space_slug}/app/api/v1"
+        @topics_ws_server = "#{@server.gsub('http', 'ws')}/#{@space_slug}/app/topics/socket"
       else
         raise StandardError.new "The :space_slug option is required when using the :space_server_url option" if @space_slug.nil?
         @server = options[:space_server_url].chomp('/')
         @api_url = "#{@server}/app/#{@space_slug}/api/v1"
+        @topics_ws_server = "#{@server.gsub('http', 'ws')}/app/topics/socket"
       end
       @jwt = generate_jwt(options)
       @version = 1
     end
 
+    # Generate a JWT for bearer authentication based on the user credentials,
+    # and oauth client configuration.
     def generate_jwt(options={})
       oauth_client_id = options[:oauth_client_id]
       oauth_client_secret = options[:oauth_client_secret]
@@ -102,6 +107,7 @@ module KineticSdk
       jwt_response.content['access_token']
     end
 
+    # Creates a reference to the Kinetic Request CE SDK
     def kinetic_core_sdk(options)
       KineticSdk::RequestCe.new({
         space_server_url: options[:space_server_url],
