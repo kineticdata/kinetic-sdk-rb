@@ -4,7 +4,7 @@ module KineticSdk
     # Add a user
     #
     # @param user [Hash] user properties
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     #
     # Example
@@ -55,7 +55,7 @@ module KineticSdk
     #
     # @param login_id [String] Login Id for the user
     # @param user [Hash] updated properties of the user
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     #
     # Example

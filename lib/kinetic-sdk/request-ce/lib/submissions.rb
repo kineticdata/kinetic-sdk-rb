@@ -9,7 +9,7 @@ module KineticSdk
     #   - +origin+ - Origin ID of the submission to be added
     #   - +parent+ - Parent ID of the submission to be added
     #   - +values+ - hash of field values for the submission
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_submission(kapp_slug, form_slug, payload={}, headers=default_headers)
       # initialize "values" if nil
@@ -32,7 +32,7 @@ module KineticSdk
     #   - +origin+ - Origin ID of the submission to be added
     #   - +parent+ - Parent ID of the submission to be added
     #   - +values+ - hash of field values for the submission
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_submission_page(kapp_slug, form_slug, page_name, payload={}, headers=default_headers)
       # initialize "values" if nil
@@ -54,7 +54,7 @@ module KineticSdk
     #   - +origin+ - Origin ID of the submission to be patched
     #   - +parent+ - Parent ID of the submission to be patched
     #   - +values+ - hash of field values for the submission
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def patch_new_submission(kapp_slug, form_slug, payload={}, headers=default_headers)
       # set the currentPage hash if currentPage was passed as a string
@@ -77,7 +77,7 @@ module KineticSdk
     #   - +origin+ - Origin ID of the submission to be patched
     #   - +parent+ - Parent ID of the submission to be patched
     #   - +values+ - hash of field values for the submission
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def patch_existing_submission(submission_id, payload={}, headers=default_headers)
       # set the currentPage hash if currentPage was passed as a string
@@ -104,7 +104,7 @@ module KineticSdk
     # @param kapp_slug [String] slug of the Kapp
     # @param form_slug [String] slug of the Form
     # @param params [Hash] Query parameters that are added to the URL, such as +include+
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_all_form_submissions(kapp_slug, form_slug, params={}, headers=default_headers)
       info("Finding submissions for the \"#{form_slug}\" Form.")
@@ -141,7 +141,7 @@ module KineticSdk
     # @param form_slug [String] slug of the Form
     # @param params [Hash] Query parameters that are added to the URL, such as +include+
     #   - +pageToken+ - used for paginated results
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_form_submissions(kapp_slug, form_slug, params={}, headers=default_headers)
       # Get next page token
@@ -168,7 +168,7 @@ module KineticSdk
     # @param kapp_slug [String] slug of the Kapp
     # @param params [Hash] Query parameters that are added to the URL, such as +include+
     #   - +pageToken+ - used for paginated results
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_kapp_submissions(kapp_slug, params={}, headers=default_headers)
       # Get next page token
@@ -189,7 +189,7 @@ module KineticSdk
     #
     # @param submission_id [String] String value of the Submission Id (UUID)
     # @param body [Hash] submission properties to update
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_submission(submission_id, body={}, headers=default_headers)
       info("Updating Submission \"#{submission_id}\"")

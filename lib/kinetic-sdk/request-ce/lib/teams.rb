@@ -8,7 +8,7 @@ module KineticSdk
     # @param team_name [String] the team name
     # @param attribute_name [String] the attribute name
     # @param attribute_value [String] the attribute value
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_team_attribute(team_name, attribute_name, attribute_value, headers=default_headers)
       # first find the team
@@ -47,7 +47,7 @@ module KineticSdk
     # @param team_properties [Hash] the property values for the team
     #   - +name+ - Name of the team to be added
     #   - +description+ - Description of the Team to be added
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_team(team_properties, headers=default_headers)
       raise StandardError.new "Team properties is not valid, must be a Hash." unless team_properties.is_a? Hash
@@ -59,7 +59,7 @@ module KineticSdk
     #
     # @param team_name [String] the team name
     # @param username [String] the username to add to the team
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_team_membership(team_name, username, headers=default_headers)
       body = {
@@ -77,7 +77,7 @@ module KineticSdk
     # Find teams
     #
     # @param params [Hash] Query parameters that are added to the URL, such as +include+
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_teams(params={}, headers=default_headers)
       info("Finding Teams")
@@ -87,7 +87,7 @@ module KineticSdk
     # Export a team
     #
     # @param team_name [String] the team name
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def export_team(team_name, headers=default_headers)
       team_slug = Digest::MD5.hexdigest(team_name)
@@ -101,7 +101,7 @@ module KineticSdk
     #
     # @param team_name [String] the team name
     # @param params [Hash] Query parameters that are added to the URL, such as +include+
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_team(team_name, params={}, headers=default_headers)
       team_slug = Digest::MD5.hexdigest(team_name)

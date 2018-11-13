@@ -3,7 +3,7 @@ module KineticSdk
 
     # Start the task engine
     #
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def start_engine(headers=default_headers)
       body = { "action" => "start" }
@@ -12,7 +12,7 @@ module KineticSdk
 
     # Stop the task engine
     #
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def stop_engine(headers=default_headers)
       body = { "action" => "stop" }

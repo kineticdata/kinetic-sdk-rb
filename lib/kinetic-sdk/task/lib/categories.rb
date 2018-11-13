@@ -8,7 +8,7 @@ module KineticSdk
     #   - +handlers+ - array of handler definitionIds associated to the category
     #   - +policyRules+ - array of policy rule names associated to the category
     #   - +trees+ - array of tree (routine) definitionIds associated to the category
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_category(category, headers=default_headers)
       info("Add category \"#{category['name']}\"")
@@ -102,7 +102,7 @@ module KineticSdk
     #
     # @param original_name [String] name of the category before updating
     # @param body [Hash] the updated property values
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     # 
     # Example
@@ -119,7 +119,7 @@ module KineticSdk
     #
     # @param handler_id [String] the handler id to add
     # @param category_name [String] name of the category to associate the handler
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_handler_to_category(handler_id, category_name, headers=default_headers)
       body = { "definitionId" => handler_id }
@@ -131,7 +131,7 @@ module KineticSdk
     #
     # @param handler_id [String] the handler id to remove
     # @param category_name [String] name of the category to remove the handler from
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def remove_handler_from_category(handler_id, category_name, headers=default_headers)
       info("Removing handler \"#{handler_id}\" from category \"#{category_name}\"")
@@ -142,7 +142,7 @@ module KineticSdk
     #
     # @param routine_id [String] the global routine id to add
     # @param category_name [String] name of the category to associate the global routine
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_routine_to_category(routine_id, category_name, headers=default_headers)
       body = { "definitionId" => routine_id }
@@ -154,7 +154,7 @@ module KineticSdk
     #
     # @param routine_id [String] the global routine id to remove
     # @param category_name [String] name of the category to remove the global routine from
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def remove_routine_from_category(routine_id, category_name, headers=default_headers)
       info("Removing routine \"#{routine_id}\" from category \"#{category_name}\"")
@@ -166,7 +166,7 @@ module KineticSdk
     # @param policy_rule_type [String] the type of policy rule
     # @param policy_rule_name [String] the name of policy rule
     # @param category_name [String] name of the category to associate the policy rule
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_policy_rule_to_category(policy_rule_type, policy_rule_name, category_name, headers=default_headers)
       body = { "type" => policy_rule_type, "name" => policy_rule_name }
@@ -179,7 +179,7 @@ module KineticSdk
     # @param policy_rule_type [String] the type of policy rule
     # @param policy_rule_name [String] the name of policy rule
     # @param category_name [String] name of the category to remove the policy rule from
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def remove_policy_rule_from_category(policy_rule_type, policy_rule_name, category_name, headers=default_headers)
       info("Removing policy rule \"#{policy_rule_type} - #{policy_rule_name}\" from category \"#{category_name}\"")

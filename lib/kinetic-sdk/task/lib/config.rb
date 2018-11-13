@@ -26,7 +26,7 @@ module KineticSdk
     # Update the authentication settings
     #
     # @param settings [Hash] Settings for the authenticator
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     #
     # Example
@@ -52,7 +52,7 @@ module KineticSdk
     # This assumes the database has already been created on the dbms.
     #
     # @param settings [Hash] Setting sfor the selected type of dbms
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     #
     # Example
@@ -74,7 +74,7 @@ module KineticSdk
     # Update the engine settings
     #
     # @param settings [Hash] Settings for the selected type of dbms
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     #
     # Example
@@ -100,7 +100,7 @@ module KineticSdk
     # Update the identity store settings
     #
     # @param settings [Hash] Settings for the identity store
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     #
     # Example
@@ -124,7 +124,7 @@ module KineticSdk
     # Update the web server and default configuration user settings
     #
     # @param settings [Hash] Settings for the web server and configurator user
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     #
     # Example
@@ -158,7 +158,7 @@ module KineticSdk
     # Update the session configuration settings
     #
     # @param settings [Hash] Settings for the session configuration
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     #
     # Example
@@ -185,7 +185,7 @@ module KineticSdk
     # Update the system policy rule
     #
     # @param policy_rule_name [String] name of the policy rule to use
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     #
     # Example

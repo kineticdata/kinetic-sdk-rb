@@ -23,7 +23,7 @@ module KineticSdk
     #   - +Retry Task+ - resolve the error and retry the task that caused the error (node error)
     #   - +Skip Task+ - resolve the error and continue after the task that caused the error (node error)
     # @param resolution [String] resolution notes
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def resolve_errors(ids, action, resolution, headers=default_headers)
       info("Resolving errors #{ids}")

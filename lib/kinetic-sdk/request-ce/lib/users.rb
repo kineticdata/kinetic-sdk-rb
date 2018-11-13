@@ -10,7 +10,7 @@ module KineticSdk
     # is ignored.
     #
     # @param user [Hash] hash of user properties
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     #
     # Example
@@ -50,7 +50,7 @@ module KineticSdk
     # @param user [Hash] properties of the user
     #   - +space_slug+ - only used when initialized as a System user
     #   - +username+ - username of the user
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     #
     # Example
@@ -84,7 +84,7 @@ module KineticSdk
     # @param username [String] username of the user
     # @param attribute_name [String] name of the attribute
     # @param attribute_value [String] value of the attribute
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_user_attribute(username, attribute_name, attribute_value, headers=default_headers)
       # first find the user
@@ -122,7 +122,7 @@ module KineticSdk
     # @param username [String] username of the user
     # @param attribute_name [String] name of the attribute
     # @param attribute_value [String] value of the attribute
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_user_attribute_value(username, attribute_name, attribute_value, headers=default_headers)
       # first find the user
@@ -164,7 +164,7 @@ module KineticSdk
     #
     # @param username [String] username of the user
     # @param params [Hash] Query parameters that are added to the URL, such as +include+
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_user(username, params={}, headers=default_headers)
       info("Finding User \"#{username}\"")
@@ -181,7 +181,7 @@ module KineticSdk
     #
     # @param username [String] username of the user to update
     # @param user [Hash] user properties to update
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     #
     # Example
@@ -214,7 +214,7 @@ module KineticSdk
     #
     # @param username [String] username of the user
     # @param body [Hash] properties
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def generate_password_token(username, body={}, headers=default_headers)
       info("Generating PW Token for \"#{username}\"")
@@ -224,7 +224,7 @@ module KineticSdk
     # Find the current user
     #
     # @param params [Hash] Query parameters that are added to the URL, such as +include+
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def me(params={}, headers=default_headers)
       info("Finding Me")

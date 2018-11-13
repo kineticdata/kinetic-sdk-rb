@@ -5,8 +5,11 @@ module KineticSdk
     # complexity.
     module Random
 
+      # Symbols that are allowed by default
       DEFAULT_SYMBOLS = %w( ! @ % * ( ) { } [ ] )
+      # Symbols that are represented as 7-bit ASCII
       SEVEN_BIT_ASCII_SYMBOLS = %w(! " # $ % & ' ( ) * + - . / : ; < = > ? @ [ \ ] & _ ` { | } ~)
+      # Alpha-numeric characters that are respresented as 7-bit ASCII
       SEVEN_BIT_ASCII_ALPHANUM = 
         ('A'..'Z').to_a.concat(
           ('a'..'z').to_a).concat(

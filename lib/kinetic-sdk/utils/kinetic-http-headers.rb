@@ -6,11 +6,11 @@ module KineticSdk
       # Instance methods that are duplicated as module/class methods
       #-------------------------------------------------------------------------
 
-      # Provides a accepts header set to application/json
+      # Provides an Accept header set to application/json
       #
-      # @return [Hash] Accepts header set to application/json
-      def header_accepts_json
-        { "Accepts" => "application/json" }
+      # @return [Hash] Accept header set to application/json
+      def header_accept_json
+        { "Accept" => "application/json" }
       end
 
       # Provides a basic authentication header
@@ -54,7 +54,7 @@ module KineticSdk
       #   - Content-Type: application/json
       #   - User-Agent: Kinetic Ruby SDK {KineticSdk.version}
       def default_headers(username=@username, password=@password)
-        headers = header_accepts_json.merge(header_content_json).merge(header_user_agent)
+        headers = header_accept_json.merge(header_content_json).merge(header_user_agent)
         headers.merge!(header_basic_auth(username, password)) unless username.nil?
         headers
       end
@@ -68,7 +68,7 @@ module KineticSdk
       #   - Content-Type: application/json
       #   - User-Agent: Kinetic Ruby SDK {KineticSdk.version}
       def default_jwt_headers(token=@jwt)
-        headers = header_accepts_json.merge(header_content_json).merge(header_user_agent)
+        headers = header_accept_json.merge(header_content_json).merge(header_user_agent)
         headers.merge!(header_bearer_auth(token)) unless token.nil?
         headers
       end
@@ -81,7 +81,7 @@ module KineticSdk
       # Provides a accepts header set to application/json
       #
       # @return [Hash] Accepts header set to application/json
-      def self.header_accepts_json
+      def self.header_accept_json
         { "Accepts" => "application/json" }
       end
 
@@ -121,12 +121,12 @@ module KineticSdk
       # @param username [String] username to authenticate
       # @param password [String] password associated to the username
       # @return [Hash] Hash of headers
-      #   - Accepts: application/json
+      #   - Accept: application/json
       #   - Authorization: Basic base64 hash of username and password if username is provided
       #   - Content-Type: application/json
       #   - User-Agent: Kinetic Ruby SDK {KineticSdk.version}
       def self.default_headers(username=@username, password=@password)
-        headers = self.header_accepts_json.merge(self.header_content_json).merge(self.header_user_agent)
+        headers = self.header_accept_json.merge(self.header_content_json).merge(self.header_user_agent)
         headers.merge!(self.header_basic_auth(username, password)) unless username.nil?
         headers
       end
@@ -140,7 +140,7 @@ module KineticSdk
       #   - Content-Type: application/json
       #   - User-Agent: Kinetic Ruby SDK {KineticSdk.version}
       def self.default_jwt_headers(token=@jwt)
-        headers = self.header_accepts_json.merge(self.header_content_json).merge(self.header_user_agent)
+        headers = self.header_accept_json.merge(self.header_content_json).merge(self.header_user_agent)
         headers.merge!(self.header_bearer_auth(token)) unless token.nil?
         headers
       end

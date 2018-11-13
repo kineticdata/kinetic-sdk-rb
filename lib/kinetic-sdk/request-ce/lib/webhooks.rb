@@ -9,7 +9,7 @@ module KineticSdk
     #   - +name+ - A descriptive name for the webhook
     #   - +filter+ - A javascript expression to determine when the webhook should fire
     #   - +url+ - URL to post the bindings when the event is triggered
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_form_webhook(kapp_slug, webhook_properties, headers=default_headers)
       raise StandardError.new "Webhook properties is not valid, must be a Hash." unless webhook_properties.is_a? Hash
@@ -24,7 +24,7 @@ module KineticSdk
     #   - +name+ - A descriptive name for the webhook
     #   - +filter+ - A javascript expression to determine when the webhook should fire
     #   - +url+ - URL to post the bindings when the event is triggered
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_space_webhook(webhook_properties, headers=default_headers)
       raise StandardError.new "Webhook properties is not valid, must be a Hash." unless webhook_properties.is_a? Hash
@@ -40,7 +40,7 @@ module KineticSdk
     #   - +name+ - A descriptive name for the webhook
     #   - +filter+ - A javascript expression to determine when the webhook should fire
     #   - +url+ - URL to post the bindings when the event is triggered
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_submission_webhook(kapp_slug, webhook_properties, headers=default_headers)
       raise StandardError.new "Webhook properties is not valid, must be a Hash." unless webhook_properties.is_a? Hash
@@ -55,7 +55,7 @@ module KineticSdk
     #   - +name+ - A descriptive name for the webhook
     #   - +filter+ - A javascript expression to determine when the webhook should fire
     #   - +url+ - URL to post the bindings when the event is triggered
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_user_webhook(webhook_properties, headers=default_headers)
       raise StandardError.new "Webhook properties is not valid, must be a Hash." unless webhook_properties.is_a? Hash
@@ -75,7 +75,7 @@ module KineticSdk
     #   - +filter+ - A javascript expression to determine when the webhook should fire
     #   - +url+ - URL to post the bindings when the event is triggered
     #   - +type+ - The type of model the webhook is bound to: Form | Submission
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_webhook_on_kapp(kapp_slug, webhook_properties, headers=default_headers)
       raise StandardError.new "Webhook properties is not valid, must be a Hash." unless webhook_properties.is_a? Hash
@@ -94,7 +94,7 @@ module KineticSdk
     #   - +filter+ - A javascript expression to determine when the webhook should fire
     #   - +url+ - URL to post the bindings when the event is triggered
     #   - +type+ - The type of model the webhook is bound to: Space | User
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_webhook_on_space(webhook_properties, headers=default_headers)
       raise StandardError.new "Webhook properties is not valid, must be a Hash." unless webhook_properties.is_a? Hash
@@ -106,7 +106,7 @@ module KineticSdk
     #
     # @param kapp_slug [String] the Kapp slug
     # @param params [Hash] Query parameters that are added to the URL, such as +include+
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_webhooks_on_kapp(kapp_slug, params={}, headers=default_headers)
       info("Finding all webhooks on the \"#{kapp_slug}\" Kapp")
@@ -116,7 +116,7 @@ module KineticSdk
     # Find all webhooks for a Space
     #
     # @param params [Hash] Query parameters that are added to the URL, such as +include+
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_webhooks_on_space(params={}, headers=default_headers)
       info("Finding all webhooks on the Space")
@@ -128,7 +128,7 @@ module KineticSdk
     # @param kapp_slug [String] the Kapp slug
     # @param name [String] the webhook name
     # @param params [Hash] Query parameters that are added to the URL, such as +include+
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_webhook_on_kapp(kapp_slug, name, params={}, headers=default_headers)
       info("Finding the \"#{name}\" webhook on the \"#{kapp_slug}\" Kapp")
@@ -139,7 +139,7 @@ module KineticSdk
     #
     # @param name [String] the webhook name
     # @param params [Hash] Query parameters that are added to the URL, such as +include+
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def finding_webhook_on_space(name, params={}, headers=default_headers)
       info("Finding the \"#{name}\" webhook on the Space")
@@ -160,7 +160,7 @@ module KineticSdk
     #   - +filter+ - A javascript expression to determine when the webhook should fire
     #   - +url+ - URL to post the bindings when the event is triggered
     #   - +type+ - The type of model the webhook is bound to: Form | Submission
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_webhook_on_kapp(kapp_slug, name, webhook_properties, headers=default_headers)
       info("Updating the \"#{name}\" webhook on the \"#{kapp_slug}\" Kapp")
@@ -181,7 +181,7 @@ module KineticSdk
     #   - +filter+ - A javascript expression to determine when the webhook should fire
     #   - +url+ - URL to post the bindings when the event is triggered
     #   - +type+ - The type of model the webhook is bound to: Space | User
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_webhook_on_space(name, webhook_properties, headers=default_headers)
       info("Updating the \"#{name}\" webhook on the Space")

@@ -42,7 +42,7 @@ module KineticSdk
     #       config_file: "/opt/config1.yaml"
     #     })
     #
-    # Example: using a properties hash
+    # Example: space user properties hash
     #
     #     KineticSdk::Discussions.new({
     #       app_server_url: "http://localhost:8080",
@@ -55,6 +55,21 @@ module KineticSdk
     #         ssl_ca_file: "/usr/local/self_signing_ca.pem"
     #       }
     #     })
+    #
+    #
+    # Example: system user properties hash
+    #
+    #     KineticSdk::Discussions.new({
+    #       app_server_url: "http://localhost:8080",
+    #       username: "admin",
+    #       password: "password",
+    #       options: {
+    #           log_level: "debug",
+    #           ssl_verify_mode: "peer",
+    #           ssl_ca_file: "/usr/local/self_signing_ca.pem"
+    #       }
+    #     })
+    #
     #
     # If the +config_file+ option is present, it will be loaded first, and any additional
     # options will overwrite any values in the config file
@@ -85,15 +100,20 @@ module KineticSdk
       @space_slug = options[:space_slug]
       if options[:app_server_url]
         @server = options[:app_server_url].chomp('/')
-        @api_url = "#{@server}/#{@space_slug}/app/api/v1"
-        @topics_ws_server = "#{@server.gsub('http', 'ws')}/#{@space_slug}/app/topics/socket"
+        if @space_slug.nil?
+          @api_url = "#{@server}/app/api/v1"
+          @topics_ws_server = "#{@server.gsub('http', 'ws')}/app/topics/socket"
+        else
+          @api_url = "#{@server}/#{@space_slug}/app/api/v1"
+          @topics_ws_server = "#{@server.gsub('http', 'ws')}/#{@space_slug}/app/topics/socket"
+        end
       else
         raise StandardError.new "The :space_slug option is required when using the :space_server_url option" if @space_slug.nil?
         @server = options[:space_server_url].chomp('/')
         @api_url = "#{@server}/app/#{@space_slug}/api/v1"
         @topics_ws_server = "#{@server.gsub('http', 'ws')}/app/topics/socket"
       end
-      @jwt = generate_jwt(options)
+      @jwt = @space_slug.nil? ? nil : generate_jwt(options)
       @version = 1
     end
 

@@ -63,7 +63,7 @@ module KineticSdk
     #
     # @param definition_id [String] the definition id of the handler
     # @param body [Hash] the properties to update
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_handler(definition_id, body, headers=default_headers)
       info("Updating handler #{definition_id}")

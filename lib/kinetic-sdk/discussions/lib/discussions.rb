@@ -6,7 +6,7 @@ module KineticSdk
     # @param properties [Hash] discussion properties
     #   - +title+
     #   - +description+
-    # @param headers [Hash] hash of headers to send, default is bearer authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is bearer authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_discussion(properties={}, headers=default_jwt_headers)
       info("Adding the #{properties['title']} discussion")
@@ -26,7 +26,7 @@ module KineticSdk
     # Find Discussions
     #
     # @param params [Hash] Query parameters that are added to the URL, such as +include+
-    # @param headers [Hash] hash of headers to send, default is bearer authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is bearer authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_discussions(params={}, headers=default_jwt_headers)
       info("Finding Discussions.")
@@ -37,7 +37,7 @@ module KineticSdk
     #
     # @param discussion_id [String] id of the Discussion
     # @param params [Hash] Query parameters that are added to the URL, such as +include+
-    # @param headers [Hash] hash of headers to send, default is bearer authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is bearer authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_discussion(discussion_id, params={}, headers=default_jwt_headers)
       info("Finding the \"#{discussion_id}\" Discussion.")
@@ -50,7 +50,7 @@ module KineticSdk
     # @param properties [Hash] form properties to update
     #   - +title+
     #   - +description+
-    # @param headers [Hash] hash of headers to send, default is bearer authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is bearer authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_discussion(discussion_id, properties={}, headers=default_jwt_headers)
       info("Updating the \"#{discussion_id}\" Discussion.")

@@ -5,7 +5,7 @@ module KineticSdk
     #
     # @param client_id [String] the oauth client id
     # @param client_secret [String] the oauth client secret
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def jwt_token(client_id, client_secret, headers=default_headers)
       # retrieve the jwt code
@@ -13,7 +13,7 @@ module KineticSdk
       # retrieve the jwt token
       info("Retrieving JWT authorization token")
       url = "#{@server}/app/oauth/token?grant_type=authorization_code&response_type=token&client_id=#{client_id}&code=#{jwt_code}"
-      token_headers = header_accepts_json.merge(header_basic_auth(client_id, client_secret))
+      token_headers = header_accept_json.merge(header_basic_auth(client_id, client_secret))
       response = post(url, {}, token_headers, 0)
 
       if response.status == 401
@@ -30,7 +30,7 @@ module KineticSdk
     # This method should really never need to be called externally.
     #
     # @param client_id [String] 
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def jwt_code(client_id, headers=default_headers)
       info("Retrieving JWT authorization code")

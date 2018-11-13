@@ -251,7 +251,7 @@ module KineticSdk
     # @param title [String] title of the tree: Source Name, Group Name, Tree Name
     # @param body [Hash] properties to pass to the tree, what can be used/accepted
     #   depends on the source.
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def run_tree(title, body={}, headers=default_headers)
       info("Running tree #{title}")
@@ -265,7 +265,7 @@ module KineticSdk
     #
     # @param title [String] title of the tree: Source Name, Group Name, Tree Name
     # @param body [Hash] properties to pass to the tree
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_tree(title, body={}, headers=default_headers)
       info("Updating the \"#{title}\" Tree")

@@ -23,7 +23,7 @@ module KineticSdk
     # Update the license
     #
     # @param license_content [String] the content of the license file
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_license(license_content, headers=default_headers)
       body = { "licenseContent" => license_content }
@@ -34,7 +34,7 @@ module KineticSdk
     # Imports the license file
     #
     # @param license [String|File] Either the license file path (String), or the license file (File)
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def import_license(license, headers=default_headers)
       if license.is_a? File

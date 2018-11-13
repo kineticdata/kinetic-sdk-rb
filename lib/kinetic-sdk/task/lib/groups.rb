@@ -4,7 +4,7 @@ module KineticSdk
     # Add a group
     #
     # @param name [String] name of the group
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_group(name, headers=default_headers)
       info("Adding group \"#{name}\"")
@@ -89,7 +89,7 @@ module KineticSdk
     #
     # @param login_id [String] login id of the user
     # @param group_name [String] name of the group
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_user_to_group(login_id, group_name, headers=default_headers)
       body = { "loginId" => login_id }
@@ -101,7 +101,7 @@ module KineticSdk
     #
     # @param login_id [String] login id of the user
     # @param group_name [String] name of the group
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def remove_user_from_group(login_id, group_name, headers=default_headers)
       info("Removing user \"#{login_id}\" from group \"#{group_name}\"")
