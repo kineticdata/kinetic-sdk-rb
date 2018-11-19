@@ -93,5 +93,5 @@ message_id = JSON.parse(message_response.content_string)['message']['id']
 # Update the message - (MessageUpdatedMessage)
 sdk.update_message(discussion_id, message_id, "Goodbye cruel world!")
 
-# Subscribe the current user to the topic
+# Subscribe the current user to the topic (ParticipantJoinedMessage)
 sdk.subscribe(discussion_id)
