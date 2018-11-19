@@ -98,20 +98,30 @@ module KineticSdk
       @options = options.delete(:options) || {}
       @username = options[:username]
       @space_slug = options[:space_slug]
-      if options[:app_server_url]
-        @server = options[:app_server_url].chomp('/')
-        if @space_slug.nil?
-          @api_url = "#{@server}/app/api/v1"
+
+      if options[:topics_server_url]
+        @topics_ws_server = "#{options[:topics_server_url].gsub('http', 'ws')}/#{@space_slug}/socket"
+      end
+
+      if options[:discussions_server_url]
+        @server = options[:discussions_server_url].chomp('/')
+        @api_url = "#{@server}/#{@space_slug}/app/api/v1"
+        if @topics_ws_server.nil?
           @topics_ws_server = "#{@server.gsub('http', 'ws')}/app/topics/socket"
-        else
-          @api_url = "#{@server}/#{@space_slug}/app/api/v1"
+        end
+      elsif options[:app_server_url]
+        @server = options[:app_server_url].chomp('/')
+        @api_url = "#{@server}/#{@space_slug}/app/api/v1"
+        if @topics_ws_server.nil?
           @topics_ws_server = "#{@server.gsub('http', 'ws')}/#{@space_slug}/app/topics/socket"
         end
       else
         raise StandardError.new "The :space_slug option is required when using the :space_server_url option" if @space_slug.nil?
         @server = options[:space_server_url].chomp('/')
         @api_url = "#{@server}/app/#{@space_slug}/api/v1"
-        @topics_ws_server = "#{@server.gsub('http', 'ws')}/app/topics/socket"
+        if @topics_ws_server.nil?
+          @topics_ws_server = "#{@server.gsub('http', 'ws')}/app/topics/socket"
+        end
       end
       @jwt = @space_slug.nil? ? nil : generate_jwt(options)
       @version = 1
@@ -129,15 +139,20 @@ module KineticSdk
 
     # Creates a reference to the Kinetic Request CE SDK
     def kinetic_core_sdk(options)
-      KineticSdk::RequestCe.new({
-        space_server_url: options[:space_server_url],
+      kinetic_core_options = {
         space_slug: options[:space_slug],
         username: options[:username],
         password: options[:password],
         options: {
           log_level: options[:sdk_level] || "off"
         }
-      })
+      }
+      if options[:app_server_url]
+        kinetic_core_options[:app_server_url] = options[:app_server_url]
+      else
+        kinetic_core_options[:space_server_url] = options[:space_server_url]
+      end
+      KineticSdk::RequestCe.new(kinetic_core_options)
     end
     
   end

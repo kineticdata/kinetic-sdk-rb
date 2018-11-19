@@ -52,7 +52,10 @@ sdk = KineticSdk::Discussions.new(config)
 if ARGV.size > 1 && ARGV[1] == "cleanup"
   JSON.parse(sdk.find_discussions.content_string)['discussions'].each do |d|
     if (d['title'].start_with?('SDK Testing'))
+      puts("Deleting discussion \"#{d['title']}\" - #{d['id']}")
       sdk.delete_discussion(d['id'])
+    else
+      puts("Keeping discussion \"#{d['title']}\" - #{d['id']}")
     end
   end
   exit
@@ -60,7 +63,7 @@ end
 
 # Create a discussion
 discussion_response = sdk.add_discussion({"title" => "SDK Testing - #{Time.now.to_i}"})
-discussion_id = discussion_response.content['discussion']['id']
+discussion_id = JSON.parse(discussion_response.content_string)['discussion']['id']
 
 # Update the discussion - (DiscussionUpdateMessage)
 sdk.update_discussion(discussion_id, {"description" => "Discussion for testing system messages"})
