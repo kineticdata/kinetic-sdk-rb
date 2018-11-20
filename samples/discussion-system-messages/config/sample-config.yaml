@@ -14,3 +14,4 @@
 # Discussion System Messages - driver variables
 :invitation_email: "my-user@example.com"
 :admin_username: "super@example.com"
+:admin_password: "s3cretP@ssword"
