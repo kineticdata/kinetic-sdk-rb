@@ -4,8 +4,11 @@ module KineticSdk
     # Add a Discussion
     #
     # @param properties [Hash] discussion properties
-    #   - +title+
-    #   - +description+
+    #   - +title+ [String]
+    #   - +description+ [String]
+    #   - +joinPolicy+ [String] name of the security policy that defines who can join
+    #   - +owningUsers+ [Array] array of user usernames
+    #   - +owningTeams+ [Array] array of team names
     # @param headers [Hash] hash of headers to send, default is bearer authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_discussion(properties={}, headers=default_jwt_headers)
@@ -48,8 +51,12 @@ module KineticSdk
     #
     # @param discussion_id [String] id of the Discussion
     # @param properties [Hash] form properties to update
-    #   - +title+
-    #   - +description+
+    #   - +title+ [String]
+    #   - +description+ [String]
+    #   - +isArchived+ [Boolean]
+    #   - +joinPolicy+ [String] name of the security policy that defines who can join
+    #   - +owningUsers+ [Array] array of user usernames
+    #   - +owningTeams+ [Array] array of team names
     # @param headers [Hash] hash of headers to send, default is bearer authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_discussion(discussion_id, properties={}, headers=default_jwt_headers)
