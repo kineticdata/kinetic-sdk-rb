@@ -12,7 +12,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_category(category, headers=default_headers)
       info("Add category \"#{category['name']}\"")
-      post("#{@api_url}/categories", category, headers)
+      response = post("#{@api_url}/categories", category, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Delete a Category
@@ -22,7 +25,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_category(name, headers=header_basic_auth)
       info("Deleting Category \"#{name}\"")
-      delete("#{@api_url}/categories/#{encode(name)}", headers)
+      response = delete("#{@api_url}/categories/#{encode(name)}", headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Delete all Categories
@@ -32,7 +38,10 @@ module KineticSdk
     def delete_categories(headers=header_basic_auth)
       info("Deleting all categories")
       (find_categories(headers).content["categories"] || []).each do |category|
-        delete_category(category['name'], headers)
+        response = delete_category(category['name'], headers)
+        if @options[:raise_exceptions] && [200].include?(response.status) == false
+          raise "#{response.status} #{response.message}"
+        end
       end
     end
 
@@ -49,6 +58,9 @@ module KineticSdk
       raise StandardError.new "An export directory must be defined to export a category." if @options[:export_directory].nil?
       if category.is_a? String
         response = find_category(category, { "include" => "handlers,trees,policyRules" }, headers)
+        if @options[:raise_exceptions] && [200].include?(response.status) == false
+          raise "#{response.status} #{response.message}"
+        end
         category = response.content
       end
       info("Exporting category \"#{category['name']}\" to #{@options[:export_directory]}.")
@@ -84,7 +96,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_categories(params={}, headers=header_basic_auth)
       info("Finding all categories")
-      get("#{@api_url}/categories", params, headers)
+      response = get("#{@api_url}/categories", params, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Find a category
@@ -95,7 +110,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_category(name, params={}, headers=header_basic_auth)
       info("Finding Category \"#{name}\"")
-      get("#{@api_url}/categories/#{encode(name)}", params, headers)
+      response = get("#{@api_url}/categories/#{encode(name)}", params, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Update a category
@@ -111,7 +129,10 @@ module KineticSdk
     #
     def update_category(original_name, body={}, headers=default_headers)
       info("Updating Category \"#{original_name}\"")
-      put("#{@api_url}/categories/#{encode(original_name)}", body, headers)
+      response = put("#{@api_url}/categories/#{encode(original_name)}", body, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
 
@@ -124,7 +145,10 @@ module KineticSdk
     def add_handler_to_category(handler_id, category_name, headers=default_headers)
       body = { "definitionId" => handler_id }
       info("Adding handler \"#{handler_id}\" to category \"#{category_name}\"")
-      post("#{@api_url}/categories/#{encode(category_name)}/handlers", body, headers)
+      response = post("#{@api_url}/categories/#{encode(category_name)}/handlers", body, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Remove a handler from a category
@@ -135,7 +159,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def remove_handler_from_category(handler_id, category_name, headers=default_headers)
       info("Removing handler \"#{handler_id}\" from category \"#{category_name}\"")
-      delete("#{@api_url}/categories/#{encode(category_name)}/handlers/#{encode(handler_id)}", headers)
+      response = delete("#{@api_url}/categories/#{encode(category_name)}/handlers/#{encode(handler_id)}", headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Add a global routine to a category
@@ -147,7 +174,10 @@ module KineticSdk
     def add_routine_to_category(routine_id, category_name, headers=default_headers)
       body = { "definitionId" => routine_id }
       info("Adding routine \"#{routine_id}\" to category \"#{category_name}\"")
-      post("#{@api_url}/categories/#{encode(category_name)}/routines", body, headers)
+      response = post("#{@api_url}/categories/#{encode(category_name)}/routines", body, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Remove a global routine from a category
@@ -158,7 +188,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def remove_routine_from_category(routine_id, category_name, headers=default_headers)
       info("Removing routine \"#{routine_id}\" from category \"#{category_name}\"")
-      delete("#{@api_url}/categories/#{encode(category_name)}/routines/#{encode(routine_id)}", headers)
+      response = delete("#{@api_url}/categories/#{encode(category_name)}/routines/#{encode(routine_id)}", headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Add a policy rule to a category
@@ -171,7 +204,10 @@ module KineticSdk
     def add_policy_rule_to_category(policy_rule_type, policy_rule_name, category_name, headers=default_headers)
       body = { "type" => policy_rule_type, "name" => policy_rule_name }
       info("Adding policy rule \"#{policy_rule_type} - #{policy_rule_name}\" to category \"#{category_name}\"")
-      post("#{@api_url}/categories/#{encode(category_name)}/policyRules", body, headers)
+      response = post("#{@api_url}/categories/#{encode(category_name)}/policyRules", body, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Remove a policy rule from a category
@@ -183,7 +219,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def remove_policy_rule_from_category(policy_rule_type, policy_rule_name, category_name, headers=default_headers)
       info("Removing policy rule \"#{policy_rule_type} - #{policy_rule_name}\" from category \"#{category_name}\"")
-      delete("#{@api_url}/categories/#{encode(category_name)}/policyRules/#{encode(policy_rule_type)}/#{encode(policy_rule_name)}", headers)
+      response = delete("#{@api_url}/categories/#{encode(category_name)}/policyRules/#{encode(policy_rule_type)}/#{encode(policy_rule_name)}", headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
   end

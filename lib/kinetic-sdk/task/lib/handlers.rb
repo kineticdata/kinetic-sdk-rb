@@ -10,7 +10,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_handler(definition_id, headers=header_basic_auth)
       info("Deleting Handler \"#{definition_id}\"")
-      delete("#{@api_url}/handlers/#{definition_id}", headers)
+      response = delete("#{@api_url}/handlers/#{definition_id}", headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Delete all Handlers
@@ -20,7 +23,10 @@ module KineticSdk
     def delete_handlers(headers=header_basic_auth)
       info("Deleting all handlers")
       (find_handlers(headers).content['handlers'] || []).each do |handler|
-        delete("#{@api_url}/handlers/#{handler['definition_id']}", headers)
+        response = delete("#{@api_url}/handlers/#{handler['definition_id']}", headers)
+        if @options[:raise_exceptions] && [200].include?(response.status) == false
+          raise "#{response.status} #{response.message}"
+        end
       end
     end
 
@@ -31,7 +37,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_handlers(params={}, headers=header_basic_auth)
       info("Find all handlers")
-      get("#{@api_url}/handlers", params, headers)
+      response = get("#{@api_url}/handlers", params, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Find a handler
@@ -42,7 +51,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_handler(definition_id, params={}, headers=header_basic_auth)
       info("Finding handler \"#{definition_id}\"")
-      get("#{@api_url}/handlers/#{definition_id}", params, headers)
+      response = get("#{@api_url}/handlers/#{definition_id}", params, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Import a handler file
@@ -56,7 +68,10 @@ module KineticSdk
     def import_handler(handler, force_overwrite=false, headers=header_basic_auth)
       body = { "package" => handler }
       info("Importing Handler #{File.basename(handler)}")
-      post_multipart("#{@api_url}/handlers?force=#{force_overwrite}", body, headers)
+      response = post_multipart("#{@api_url}/handlers?force=#{force_overwrite}", body, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Modifies the properties and info values for a handler
@@ -67,7 +82,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_handler(definition_id, body, headers=default_headers)
       info("Updating handler #{definition_id}")
-      put("#{@api_url}/handlers/#{definition_id}", body, headers)
+      response = put("#{@api_url}/handlers/#{definition_id}", body, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Export a single handler
@@ -83,7 +101,11 @@ module KineticSdk
       handler_file = File.join(handler_dir, "#{definition_id}.zip")
       # write the file
       File.open(handler_file, "wb") do |file|
-        file.write get("#{@api_url}/handlers/#{definition_id}/zip", {}, headers).content_string
+        response = get("#{@api_url}/handlers/#{definition_id}/zip", {}, headers)
+        if @options[:raise_exceptions] && [200].include?(response.status) == false
+          raise "#{response.status} #{response.message}"
+        end
+        file.write response.content_string
       end
       info("Exported handler: #{definition_id} to #{handler_file}")
     end
@@ -97,6 +119,9 @@ module KineticSdk
       info("Exporting handlers to #{@options[:export_directory]}.")
       # Get the handler metadata to geta all handler_ids
       response = find_handlers(headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
       # Parse the response and export each handler
       (response.content["handlers"] || []).each do |handler|
         export_handler(handler['definitionId'], headers)

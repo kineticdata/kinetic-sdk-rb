@@ -13,7 +13,10 @@ module KineticSdk
     #
     def delete_run(id, headers=header_basic_auth)
       info("Deleting run \"#{id}\"")
-      delete("#{@api_url}/runs/#{id}", headers)
+      response = delete("#{@api_url}/runs/#{id}", headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Find runs.
@@ -36,7 +39,10 @@ module KineticSdk
     #
     def find_runs(params={}, headers=header_basic_auth)
       info("Finding Runs")
-      get("#{@api_url}/runs", params, headers)
+      response = get("#{@api_url}/runs", params, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
   end

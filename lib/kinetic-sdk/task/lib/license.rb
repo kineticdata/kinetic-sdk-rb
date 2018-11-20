@@ -7,7 +7,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_license(headers=header_basic_auth)
       info("Deleting the license")
-      delete("#{@api_url}/config/license", {}, headers)
+      response = delete("#{@api_url}/config/license", {}, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Find the license
@@ -17,7 +20,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_license(params={}, headers=header_basic_auth)
       info("Finding the license")
-      get("#{@api_url}/config/license", params, headers)
+      response = get("#{@api_url}/config/license", params, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Update the license
@@ -28,7 +34,10 @@ module KineticSdk
     def update_license(license_content, headers=default_headers)
       body = { "licenseContent" => license_content }
       info("Updating license")
-      post("#{@api_url}/config/license", body, headers)
+      response = post("#{@api_url}/config/license", body, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Imports the license file

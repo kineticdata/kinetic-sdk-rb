@@ -27,7 +27,10 @@ module KineticSdk
     #
     def add_access_key(access_key={}, headers=default_headers)
       info("Adding access key " + (access_key.has_key?('identifier') ? access_key['identifier'] : ""))
-      post("#{@api_url}/access-keys", access_key, headers)
+      response = post("#{@api_url}/access-keys", access_key, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Delete an access key
@@ -37,7 +40,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_access_key(identifier, headers=header_basic_auth)
       info("Deleting access key \"#{identifier}\"")
-      delete("#{@api_url}/access-keys/#{encode(identifier)}", headers)
+      response = delete("#{@api_url}/access-keys/#{encode(identifier)}", headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Delete all access keys
@@ -46,8 +52,15 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_access_keys(headers=header_basic_auth)
       info("Deleting all access keys")
-      (find_access_keys(headers).content["accessKeys"] || []).each do |access_key|
-        delete("#{@api_url}/access_keys/#{encode(access_key['identifier'])}", headers)
+      find_response = find_access_keys(headers)
+      if @options[:raise_exceptions] && [200].include?(find_response.status) == false
+        raise "#{find_response.status} #{find_response.message}"
+      end
+      (find_response.content["accessKeys"] || []).each do |access_key|
+        response = delete("#{@api_url}/access_keys/#{encode(access_key['identifier'])}", headers)
+        if @options[:raise_exceptions] && [200].include?(response.status) == false
+          raise "#{response.status} #{response.message}"
+        end
       end
     end
 
@@ -58,7 +71,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_access_keys(params={}, headers=header_basic_auth)
       info("Finding all access keys")
-      get("#{@api_url}/access-keys", params, headers)
+      response = get("#{@api_url}/access-keys", params, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Find an access key
@@ -69,7 +85,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_access_key(identifier, params={}, headers=default_headers)
       info("Finding access key \"#{identifier}\"")
-      get("#{@api_url}/access-keys/#{encode(identifier)}", params, headers)
+      response = get("#{@api_url}/access-keys/#{encode(identifier)}", params, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Update an access key
@@ -87,7 +106,10 @@ module KineticSdk
     #
     def update_access_key(identifier, body={}, headers=default_headers)
       info("Updating the \"#{identifier}\" access key")
-      put("#{@api_url}/access-keys/#{encode(identifier)}", body, headers)
+      response = put("#{@api_url}/access-keys/#{encode(identifier)}", body, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
   end

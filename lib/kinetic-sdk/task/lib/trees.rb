@@ -28,7 +28,10 @@ module KineticSdk
         title = "#{tree.to_s}"
       end
       info("Deleting Tree \"#{title}\"")
-      delete("#{@api_url}/trees/#{encode(title)}", headers)
+      response = delete("#{@api_url}/trees/#{encode(title)}", headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Delete trees.
@@ -55,7 +58,10 @@ module KineticSdk
 
       (find_trees(params, headers).content['trees'] || []).each do |tree|
         info("Deleting tree \"#{tree['title']}\"")
-        delete("#{@api_url}/trees/#{encode(tree['title'])}", headers)
+        response = delete("#{@api_url}/trees/#{encode(tree['title'])}", headers)
+        if @options[:raise_exceptions] && [200].include?(response.status) == false
+          raise "#{response.status} #{response.message}"
+        end
       end
     end
 
@@ -80,7 +86,10 @@ module KineticSdk
     #
     def find_trees(params={}, headers=header_basic_auth)
       info("Finding Trees")
-      get("#{@api_url}/trees", params, headers)
+      response = get("#{@api_url}/trees", params, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Find routines.
@@ -104,6 +113,9 @@ module KineticSdk
     def find_routines(params={}, headers=header_basic_auth)
       info("Finding Routines")
       response = get("#{@api_url}/trees", params, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
 
       routines = []
       (response.content["trees"] || []).each do |tree|
@@ -130,7 +142,10 @@ module KineticSdk
     def import_tree(tree, force_overwrite=false, headers=header_basic_auth)
       body = { "content" => tree }
       info("Importing Tree #{File.basename(tree)}")
-      post_multipart("#{@api_url}/trees?force=#{force_overwrite}", body, headers)
+      response = post_multipart("#{@api_url}/trees?force=#{force_overwrite}", body, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Import a routine
@@ -145,7 +160,10 @@ module KineticSdk
     def import_routine(routine, force_overwrite=false, headers=header_basic_auth)
       body = { "content" => routine }
       info("Importing Routine #{File.basename(routine)}")
-      post_multipart("#{@api_url}/trees?force=#{force_overwrite}", body, headers)
+      response = post_multipart("#{@api_url}/trees?force=#{force_overwrite}", body, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Find a single tree by title (Source Name :: Group Name :: Tree Name)
@@ -164,7 +182,10 @@ module KineticSdk
     #
     def find_tree(title, params={}, headers=header_basic_auth)
       info("Finding the \"#{title}\" Tree")
-      get("#{@api_url}/trees/#{encode(title)}", params, headers)
+      response = get("#{@api_url}/trees/#{encode(title)}", params, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Export a single tree or routine
@@ -178,6 +199,9 @@ module KineticSdk
       info("Exporting tree \"#{title}\" to #{@options[:export_directory]}.")
       # Get the tree
       response = find_tree(title, { "include" => "export" })
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
       # Parse the response and export the tree
       tree = response.content
 
@@ -219,6 +243,9 @@ module KineticSdk
 
       # Get all the trees and routines for the source
       response = find_trees({ "source" => source_name, "include" => "export" })
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
       # Parse the response and export each tree
       (response.content["trees"] || []).each do |tree|
         # determine which directory to write the file to
@@ -258,7 +285,10 @@ module KineticSdk
       parts = title.split(" :: ")
       raise StandardError.new "Title is invalid: #{title}" if parts.size != 3
       url = "#{@api_v1_url}/run-tree/#{encode(parts[0])}/#{encode(parts[1])}/#{encode(parts[2])}"
-      post(url, body, headers)
+      response = post(url, body, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Update a tree
@@ -269,7 +299,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_tree(title, body={}, headers=default_headers)
       info("Updating the \"#{title}\" Tree")
-      put("#{@api_url}/trees/#{encode(title)}", body, headers)
+      response = put("#{@api_url}/trees/#{encode(title)}", body, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
   end

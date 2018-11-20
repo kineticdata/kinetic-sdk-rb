@@ -8,7 +8,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_db(params={}, headers=header_basic_auth)
       info("Finding the database configuration")
-      get("#{@api_url}/config/db", params, headers)
+      response = get("#{@api_url}/config/db", params, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
 
@@ -19,7 +22,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_session_configuration(params={}, headers=header_basic_auth)
       info("Finding the session timeout")
-      get("#{@api_url}/config/session", params, headers)
+      response = get("#{@api_url}/config/session", params, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
 
@@ -43,7 +49,10 @@ module KineticSdk
     #
     def update_authentication(settings, headers=default_headers)
       info("Updating the authentication properties")
-      put("#{@api_url}/config/auth", settings, headers)
+      response = put("#{@api_url}/config/auth", settings, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
 
@@ -67,7 +76,10 @@ module KineticSdk
     #
     def update_db(settings, headers=default_headers)
       info("Updating the database properties")
-      put("#{@api_url}/config/db", settings, headers)
+      response = put("#{@api_url}/config/db", settings, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
 
@@ -87,12 +99,18 @@ module KineticSdk
     #
     def update_engine(settings, headers=default_headers)
       info("Updating the engine properties")
-      put("#{@api_url}/config/engine", settings, headers)
+      response = put("#{@api_url}/config/engine", settings, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
 
       # start the task engine?
       if !settings['Sleep Delay'].nil? && settings['Sleep Delay'].to_i > 0
         info("Starting the engine")
-        start_engine
+        response = start_engine
+        if @options[:raise_exceptions] && [200].include?(response.status) == false
+          raise "#{response.status} #{response.message}"
+        end
       end
     end
 
@@ -117,7 +135,10 @@ module KineticSdk
     #
     def update_identity_store(settings, headers=default_headers)
       info("Updating the identity store properties")
-      put("#{@api_url}/config/identityStore", settings, headers)
+      response = put("#{@api_url}/config/identityStore", settings, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
 
@@ -145,7 +166,10 @@ module KineticSdk
     #
     def update_properties(settings, headers=default_headers)
       info("Updating the web server properties")
-      put("#{@api_url}/config/server", settings, headers)
+      response = put("#{@api_url}/config/server", settings, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
 
       # reset the configuration user
       @config_user = {
@@ -169,7 +193,10 @@ module KineticSdk
     #
     def update_session_configuration(settings, headers=default_headers)
       info("Updating the session configuration settings")
-      put("#{@api_url}/config/session", settings, headers)
+      response = put("#{@api_url}/config/session", settings, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Find the system policy rule
@@ -179,7 +206,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_system_policy_rule(params={}, headers=header_basic_auth)
       info("Finding the system policy rule")
-      get("#{@api_url}/config/systemPolicyRule", params, headers)
+      response = get("#{@api_url}/config/systemPolicyRule", params, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Update the system policy rule
@@ -195,7 +225,10 @@ module KineticSdk
     def update_system_policy_rule(policy_rule_name, headers=default_headers)
       info("Updating the system policy rule")
       payload = { "name" => policy_rule_name }
-      put("#{@api_url}/config/systemPolicyRule", payload, headers)
+      response = put("#{@api_url}/config/systemPolicyRule", payload, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
   end

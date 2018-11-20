@@ -18,7 +18,10 @@ module KineticSdk
     #
     def add_policy_rule(policy, headers=default_headers)
       info("Adding policy rule \"#{policy['type']} - #{policy['name']}\"")
-      post("#{@api_url}/policyRules/#{encode(policy['type'])}", policy, headers)
+      response = post("#{@api_url}/policyRules/#{encode(policy['type'])}", policy, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Delete a Policy Rule.
@@ -38,7 +41,10 @@ module KineticSdk
     #
     def delete_policy_rule(policy, headers=header_basic_auth)
       info("Deleting policy rule \"#{policy['type']} - #{policy['name']}\"")
-      delete("#{@api_url}/policyRules/#{encode(policy['type'])}/#{encode(policy['name'])}", headers)
+      response = delete("#{@api_url}/policyRules/#{encode(policy['type'])}/#{encode(policy['name'])}", headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Delete all Policy Rules.
@@ -113,6 +119,9 @@ module KineticSdk
       response = nil
       ["API Access", "Category Access", "Console Access", "System Default"].each do |type|
         response = get("#{@api_url}/policyRules/#{encode(type)}", params, headers)
+        if @options[:raise_exceptions] && [200].include?(response.status) == false
+          raise "#{response.status} #{response.message}"
+        end
         policy_rules.concat(response.content["policyRules"] || [])
       end
       final_content = { "policyRules" => policy_rules }
@@ -137,7 +146,10 @@ module KineticSdk
     #
     def find_policy_rule(policy_rule, params={}, headers=header_basic_auth)
       info("Finding the \"#{policy_rule['type']} - #{policy_rule['name']}\" Policy Rule")
-      get("#{@api_url}/policyRules/#{encode(policy_rule['type'])}/#{encode(policy_rule['name'])}", params, headers)
+      response = get("#{@api_url}/policyRules/#{encode(policy_rule['type'])}/#{encode(policy_rule['name'])}", params, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
 
@@ -159,7 +171,10 @@ module KineticSdk
     #
     def update_policy_rule(policy_rule, body={}, headers=default_headers)
       info("Updating the \"#{policy_rule['type']} - #{policy_rule['name']}\" Policy Rule")
-      put("#{@api_url}/policyRules/#{encode(policy_rule['type'])}/#{encode(policy_rule['name'])}", body, headers)
+      response = put("#{@api_url}/policyRules/#{encode(policy_rule['type'])}/#{encode(policy_rule['name'])}", body, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
   end

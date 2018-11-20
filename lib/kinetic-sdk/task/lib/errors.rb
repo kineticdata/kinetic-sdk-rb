@@ -9,7 +9,10 @@ module KineticSdk
     # @since Task v4.3.0
     def delete_error(id, headers=header_basic_auth)
       info("Deleting Error \"#{id}\"")
-      delete("#{@api_url}/errors/#{id}", headers)
+      response = delete("#{@api_url}/errors/#{id}", headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Resolve multiple errors with the same action and resolution notes.
@@ -28,7 +31,10 @@ module KineticSdk
     def resolve_errors(ids, action, resolution, headers=default_headers)
       info("Resolving errors #{ids}")
       body = { "ids" => ids, "action" => action, "resolution" => resolution }
-      post("#{@api_url}/errors/resolve", body, headers)
+      response = post("#{@api_url}/errors/resolve", body, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Find a list of errors.
@@ -58,7 +64,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_errors(params={}, headers=header_basic_auth)
       info("Finding errors")
-      get("#{@api_url}/errors", params, headers)
+      response = get("#{@api_url}/errors", params, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Find an Error
@@ -69,7 +78,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_error(id, params={}, headers=header_basic_auth)
       info("Finding error #{id}")
-      get("#{@api_url}/errors/#{id}", params, headers)
+      response = get("#{@api_url}/errors/#{id}", params, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Find Active Errors by Handler Id

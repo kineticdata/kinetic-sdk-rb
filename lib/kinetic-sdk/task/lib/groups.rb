@@ -8,7 +8,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_group(name, headers=default_headers)
       info("Adding group \"#{name}\"")
-      post("#{@api_url}/groups", { "name" => name }, headers)
+      response = post("#{@api_url}/groups", { "name" => name }, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Delete a Group
@@ -18,7 +21,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_group(name, headers=header_basic_auth)
       info("Deleting Group \"#{name}\"")
-      delete("#{@api_url}/groups/#{encode(name)}", headers)
+      response = delete("#{@api_url}/groups/#{encode(name)}", headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Delete all Groups
@@ -28,7 +34,10 @@ module KineticSdk
     def delete_groups(headers=header_basic_auth)
       info("Deleting all groups")
       (find_groups(headers).content['groups'] || []).each do |group|
-        delete("#{@api_url}/groups/#{encode(group['name'])}", headers)
+        response = delete("#{@api_url}/groups/#{encode(group['name'])}", headers)
+        if @options[:raise_exceptions] && [200].include?(response.status) == false
+          raise "#{response.status} #{response.message}"
+        end
       end
     end
 
@@ -41,6 +50,9 @@ module KineticSdk
       raise StandardError.new "An export directory must be defined to export a group." if @options[:export_directory].nil?
       if group.is_a? String
         response = find_group(group, {}, headers)
+        if @options[:raise_exceptions] && [200].include?(response.status) == false
+          raise "#{response.status} #{response.message}"
+        end
         group = response.content
       end
       info("Exporting group \"#{group['name']}\" to #{@options[:export_directory]}.")
@@ -49,6 +61,9 @@ module KineticSdk
       group_file = File.join(group_dir, "#{group['name'].slugify}.json")
       # write the file
       responseObj = get("#{@api_url}/groups/#{encode(group['name'])}", {}, headers)
+      if @options[:raise_exceptions] && [200].include?(responseObj.status) == false
+        raise "#{responseObj.status} #{responseObj.message}"
+      end
       File.write(group_file, JSON.pretty_generate(responseObj.content))
       info("Exported group: #{group['name']} to #{group_file}")
     end
@@ -71,7 +86,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_groups(params={}, headers=header_basic_auth)
       info("Finding all groups")
-      get("#{@api_url}/groups", params, headers)
+      response = get("#{@api_url}/groups", params, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Find Group
@@ -82,7 +100,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_group(name, params={}, headers=header_basic_auth)
       info("Finding the #{name} group")
-      get("#{@api_url}/groups/#{encode(name)}", params, headers)
+      response = get("#{@api_url}/groups/#{encode(name)}", params, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Add user to group
@@ -94,7 +115,10 @@ module KineticSdk
     def add_user_to_group(login_id, group_name, headers=default_headers)
       body = { "loginId" => login_id }
       info("Adding user \"#{login_id}\" to group \"#{group_name}\"")
-      post("#{@api_url}/groups/#{encode(group_name)}/users", body, headers)
+      response = post("#{@api_url}/groups/#{encode(group_name)}/users", body, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Remove user from group
@@ -105,7 +129,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def remove_user_from_group(login_id, group_name, headers=default_headers)
       info("Removing user \"#{login_id}\" from group \"#{group_name}\"")
-      post("#{@api_url}/groups/#{encode(group_name)}/users/#{encode(login_id)}", headers)
+      response = post("#{@api_url}/groups/#{encode(group_name)}/users/#{encode(login_id)}", headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
   end

@@ -7,7 +7,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def start_engine(headers=default_headers)
       body = { "action" => "start" }
-      post("#{@api_url}/engine", body, headers)
+      response = post("#{@api_url}/engine", body, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Stop the task engine
@@ -16,7 +19,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def stop_engine(headers=default_headers)
       body = { "action" => "stop" }
-      post("#{@api_url}/engine", body, headers)
+      response = post("#{@api_url}/engine", body, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Get the engine info
@@ -25,7 +31,10 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def engine_info(params={}, headers=header_basic_auth)
-      get("#{@api_url}/engine", params, headers)
+      response = get("#{@api_url}/engine", params, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Get the engine status
@@ -34,6 +43,9 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def engine_status(headers=header_basic_auth)
       response = engine_info({}, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
       data = response.content
       data.nil? ? "Unknown" : data['status']
     end

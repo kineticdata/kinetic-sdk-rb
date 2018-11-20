@@ -10,7 +10,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def complete_deferred_task(source_name, body, headers=default_headers)
       info("Completing deferred task for the \"#{source_name}\" Source.")
-      post("#{@api_v1_url}/complete-deferred-task/#{encode(source_name)}", body, headers)
+      response = post("#{@api_v1_url}/complete-deferred-task/#{encode(source_name)}", body, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
   end

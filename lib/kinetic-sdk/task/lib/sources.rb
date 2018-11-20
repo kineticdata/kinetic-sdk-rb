@@ -30,7 +30,10 @@ module KineticSdk
     def add_source(source, headers=default_headers)
       name = source['name']
       info("Adding the #{name} source")
-      post("#{@api_url}/sources", source, headers)
+      response = post("#{@api_url}/sources", source, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Delete a Source
@@ -40,7 +43,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_source(name, headers=header_basic_auth)
       info("Deleting Source \"#{name}\"")
-      delete("#{@api_url}/sources/#{encode(name)}", headers)
+      response = delete("#{@api_url}/sources/#{encode(name)}", headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Delete all Sources
@@ -50,7 +56,10 @@ module KineticSdk
     def delete_sources(headers=header_basic_auth)
       info("Deleting all sources")
       (find_sources(headers).content['sources'] || []).each do |source|
-        delete("#{@api_url}/sources/#{encode(source['name'])}", headers)
+        response = delete("#{@api_url}/sources/#{encode(source['name'])}", headers)
+        if @options[:raise_exceptions] && [200].include?(response.status) == false
+          raise "#{response.status} #{response.message}"
+        end
       end
     end
 
@@ -61,7 +70,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_sources(params={}, headers=header_basic_auth)
       info("Finding all sources")
-      get("#{@api_url}/sources", params, headers)
+      response = get("#{@api_url}/sources", params, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Find a source
@@ -72,7 +84,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_source(name, params={}, headers=header_basic_auth)
       info("Finding source named \"#{name}\"")
-      get("#{@api_url}/sources/#{encode(name)}", params, headers)
+      response = get("#{@api_url}/sources/#{encode(name)}", params, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Update a source
@@ -102,7 +117,10 @@ module KineticSdk
     #
     def update_source(source, body={}, headers=default_headers)
       info("Updating the \"#{source['name']}\" Source")
-      put("#{@api_url}/sources/#{encode(source['name'])}", body, headers)
+      response = put("#{@api_url}/sources/#{encode(source['name'])}", body, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Add policy rule to source
@@ -115,7 +133,10 @@ module KineticSdk
     def add_policy_rule_to_source(policy_rule_type, policy_rule_name, source_name, headers=default_headers)
       body = { "type" => policy_rule_type, "name" => policy_rule_name }
       info("Adding policy rule \"#{policy_rule_type} - #{policy_rule_name}\" to source \"#{source_name}\"")
-      post("#{@api_url}/sources/#{encode(source_name)}/policyRules", body, headers)
+      response = post("#{@api_url}/sources/#{encode(source_name)}/policyRules", body, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Remove policy rule from source
@@ -127,7 +148,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def remove_policy_rule_from_source(policy_rule_type, policy_rule_name, source_name, headers=default_headers)
       info("Removing policy rule \"#{policy_rule_type} - #{policy_rule_name}\" from source \"#{source_name}\"")
-      delete("#{@api_url}/sources/#{encode(source_name)}/policyRules/#{encode(policy_rule_type)}/#{encode(policy_rule_name)}", headers)
+      response = delete("#{@api_url}/sources/#{encode(source_name)}/policyRules/#{encode(policy_rule_type)}/#{encode(policy_rule_name)}", headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
   end

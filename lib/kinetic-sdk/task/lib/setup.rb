@@ -23,6 +23,9 @@ module KineticSdk
     def test_db_connection(db={}, headers=default_headers)
       info("Testing database connection")
       response = post("#{@api_url}/setup/db/test", db, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
       response.content
     end
 
@@ -49,6 +52,9 @@ module KineticSdk
     def migrate_db(db={}, headers=default_headers)
       info("Running database migrations")
       response = post("#{@api_url}/setup/db/migrate", db, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
       response.content
     end
 

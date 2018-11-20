@@ -17,7 +17,10 @@ module KineticSdk
     #
     def add_user(user, headers=default_headers)
       info("Add user \"#{user['loginId']}\"")
-      post("#{@api_url}/users", user, headers)
+      response = post("#{@api_url}/users", user, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Delete a User
@@ -27,7 +30,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_user(login_id, headers=header_basic_auth)
       info("Deleting User \"#{login_id}\"")
-      delete("#{@api_url}/users/#{encode(login_id)}", headers)
+      response = delete("#{@api_url}/users/#{encode(login_id)}", headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Delete all Users
@@ -37,7 +43,10 @@ module KineticSdk
     def delete_users(headers=header_basic_auth)
       info("Deleting all users")
       (find_users(headers).content["users"] || []).each do |user|
-        delete("#{@api_url}/users/#{encode(user['login_id'])}", headers)
+        response = delete("#{@api_url}/users/#{encode(user['login_id'])}", headers)
+        if @options[:raise_exceptions] && [200].include?(response.status) == false
+          raise "#{response.status} #{response.message}"
+        end
       end
     end
 
@@ -48,7 +57,10 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_users(params={}, headers=header_basic_auth)
       info("Finding all users")
-      get("#{@api_url}/users", params, headers)
+      response = get("#{@api_url}/users", params, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
     # Update a user
@@ -68,7 +80,10 @@ module KineticSdk
     #
     def update_user(login_id, user, headers=default_headers)
       info("Updating user \"#{login_id}\"")
-      put("#{@api_url}/users/#{encode(login_id)}", user, headers)
+      response = put("#{@api_url}/users/#{encode(login_id)}", user, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
   end

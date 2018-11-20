@@ -7,7 +7,10 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def environment(params={}, headers=header_basic_auth)
-      get("#{@api_url}/environment", params, headers)
+      response = get("#{@api_url}/environment", params, headers)
+      if @options[:raise_exceptions] && [200].include?(response.status) == false
+        raise "#{response.status} #{response.message}"
+      end
     end
 
   end
