@@ -11,6 +11,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Stop the task engine
@@ -23,6 +24,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Get the engine info
@@ -35,6 +37,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Get the engine status

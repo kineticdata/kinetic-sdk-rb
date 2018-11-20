@@ -34,6 +34,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Delete a Source
@@ -47,6 +48,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Delete all Sources
@@ -74,6 +76,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Find a source
@@ -88,6 +91,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Update a source
@@ -121,6 +125,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Add policy rule to source
@@ -137,6 +142,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Remove policy rule from source
@@ -152,6 +158,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
   end

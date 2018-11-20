@@ -14,6 +14,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Delete all Handlers
@@ -41,6 +42,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Find a handler
@@ -55,6 +57,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Import a handler file
@@ -72,6 +75,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Modifies the properties and info values for a handler
@@ -86,6 +90,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Export a single handler

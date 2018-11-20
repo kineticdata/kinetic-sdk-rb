@@ -12,6 +12,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
 
@@ -26,6 +27,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
 
@@ -53,6 +55,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
 
@@ -80,6 +83,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
 
@@ -139,6 +143,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
 
@@ -197,6 +202,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Find the system policy rule
@@ -210,6 +216,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Update the system policy rule
@@ -229,6 +236,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
   end

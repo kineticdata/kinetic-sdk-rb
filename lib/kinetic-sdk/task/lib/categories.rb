@@ -16,6 +16,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Delete a Category
@@ -29,6 +30,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Delete all Categories
@@ -100,6 +102,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Find a category
@@ -114,6 +117,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Update a category
@@ -133,6 +137,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
 
@@ -149,6 +154,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Remove a handler from a category
@@ -163,6 +169,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Add a global routine to a category
@@ -178,6 +185,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Remove a global routine from a category
@@ -192,6 +200,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Add a policy rule to a category
@@ -208,6 +217,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Remove a policy rule from a category
@@ -223,6 +233,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
   end

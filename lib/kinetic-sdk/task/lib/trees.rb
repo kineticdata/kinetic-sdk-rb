@@ -32,6 +32,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Delete trees.
@@ -90,6 +91,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Find routines.
@@ -146,6 +148,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Import a routine
@@ -164,6 +167,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Find a single tree by title (Source Name :: Group Name :: Tree Name)
@@ -186,6 +190,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Export a single tree or routine
@@ -243,7 +248,7 @@ module KineticSdk
 
       # Get all the trees and routines for the source
       response = find_trees({ "source" => source_name, "include" => "export" })
-      if @options[:raise_exceptions] && [200].include?(response.status) == false
+      if @options[:raise_exceptions] && response.class == KineticSdk::Utils::KineticHttpResponse && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
       # Parse the response and export each tree
@@ -289,6 +294,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
     # Update a tree
@@ -303,6 +309,7 @@ module KineticSdk
       if @options[:raise_exceptions] && [200].include?(response.status) == false
         raise "#{response.status} #{response.message}"
       end
+      response
     end
 
   end
