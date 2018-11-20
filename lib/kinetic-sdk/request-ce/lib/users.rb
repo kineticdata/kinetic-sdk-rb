@@ -160,6 +160,16 @@ module KineticSdk
       put("#{@api_url}/users/#{encode(username)}", body, headers)
     end
 
+    # Find all users
+    #
+    # @param params [Hash] Query parameters that are added to the URL, such as +include+
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
+    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    def find_users(params={}, headers=default_headers)
+      info("Finding Users \"#{username}\"")
+      get("#{@api_url}/users", params, headers)
+    end
+
     # Find the user
     #
     # @param username [String] username of the user
