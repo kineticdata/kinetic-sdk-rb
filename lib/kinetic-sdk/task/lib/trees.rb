@@ -1,4 +1,8 @@
 require 'fileutils'
+require 'rexml/document'
+
+pwd = File.expand_path(File.dirname(__FILE__))
+require File.join(pwd, '..', '..', 'utils', 'xml-formatter')
 
 module KineticSdk
   class Task
@@ -191,8 +195,14 @@ module KineticSdk
         tree_dir = FileUtils::mkdir_p(File.join(@options[:export_directory], "trees", tree['sourceName'].slugify))
         tree_file = File.join(tree_dir, "#{tree['sourceName'].slugify}.#{tree['sourceGroup'].slugify}.#{tree['name'].slugify}.xml")
       end
+
       # write the file
-      File.write(tree_file, tree['export'])
+      xml_doc = REXML::Document.new(tree['export'])
+      xml_doc.context[:attribute_quote] = :quote
+      xml_formatter = ComparisonFormat.new
+      xml_formatter.width = 0
+      xml_formatter.write(xml_doc, File.open(tree_file, "w"))
+
       info("Exported #{tree['type']}: #{tree['title']} to #{tree_file}")
     end
 
@@ -231,8 +241,14 @@ module KineticSdk
           tree_dir = FileUtils::mkdir_p(File.join(@options[:export_directory], "trees", source_name.slugify))
           tree_file = File.join(tree_dir, "#{source_name.slugify}.#{tree['sourceGroup'].slugify}.#{tree['name'].slugify}.xml")
         end
+
         # write the file
-        File.write(tree_file, tree['export'])
+        xml_doc = REXML::Document.new(tree['export'])
+        xml_doc.context[:attribute_quote] = :quote
+        xml_formatter = ComparisonFormat.new
+        xml_formatter.width = 0
+        xml_formatter.write(xml_doc, File.open(tree_file, "w"))
+
         info("Exported #{tree['type']}: #{tree['title']} to #{tree_file}")
       end
     end
