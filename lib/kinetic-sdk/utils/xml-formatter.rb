@@ -1,6 +1,6 @@
 require 'rexml/document'
 
-class ComparisonFormat < REXML::Formatters::Pretty
+class ComparisonFormat < REXML::Formatters::Default
 
     def write_element(elm, out)
         att = elm.attributes
@@ -14,19 +14,6 @@ class ComparisonFormat < REXML::Formatters::Pretty
         end
 
         super(elm, out)
-    end
-
-    def write_text( node, output )
-        s = node.to_s()
-        #s.gsub!(/\s/,' ')
-        #s.squeeze!(" ")
-
-        #The Pretty formatter code mistakenly used 80 instead of the @width variable
-        #s = wrap(s, 80-@level)
-        #s = wrap(s, @width-@level)
-
-        s = indent_text(s, @level, " ", true)
-        output << (' '*@level + s)
     end
 
 end
