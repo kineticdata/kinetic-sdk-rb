@@ -118,7 +118,7 @@ module KineticSdk
       else
         raise StandardError.new "The :space_slug option is required when using the :space_server_url option" if @space_slug.nil?
         @server = options[:space_server_url].chomp('/')
-        @api_url = "#{@server}/app/#{@space_slug}/api/v1"
+        @api_url = "#{@server}/app/discussions/api/v1"
         if @topics_ws_server.nil?
           @topics_ws_server = "#{@server.gsub('http', 'ws')}/app/topics/socket"
         end
