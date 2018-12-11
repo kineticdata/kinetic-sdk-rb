@@ -144,7 +144,7 @@ module KineticSdk
         username: options[:username],
         password: options[:password],
         options: {
-          log_level: options[:sdk_level] || "off"
+          log_level: options[:log_level] || "off"
         }
       }
       if options[:app_server_url]
