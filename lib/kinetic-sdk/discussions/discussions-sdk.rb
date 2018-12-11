@@ -95,7 +95,7 @@ module KineticSdk
       end
 
       # process any individual options
-      @options = options.delete(:options) || {}
+      @options = options[:options] || {}
       @username = options[:username]
       @space_slug = options[:space_slug]
 
@@ -143,9 +143,7 @@ module KineticSdk
         space_slug: options[:space_slug],
         username: options[:username],
         password: options[:password],
-        options: {
-          log_level: options[:log_level] || "off"
-        }
+        options: options[:options] || {}
       }
       if options[:app_server_url]
         kinetic_core_options[:app_server_url] = options[:app_server_url]
