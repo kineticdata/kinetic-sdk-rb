@@ -23,7 +23,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is bearer authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_invitation_by_username(discussion_id, username, message=nil, headers=default_jwt_headers)
-      payload = { "username" => username }
+      payload = { "user" => { "username" => username } }
       payload["message"] = message unless message.nil?
       info("Inviting #{username} to the #{discussion_id} Discussion")
       post("#{@api_url}/discussions/#{discussion_id}/invitations", payload, headers)
