@@ -64,5 +64,44 @@ module KineticSdk
       put("#{@api_url}/discussions/#{discussion_id}", properties, headers)
     end
 
+    # Export all discussion attachments
+    #
+    # This method streams the attachments in chunks to avoid consuming large
+    # amounts of memory.
+    #
+    # The message attachments will be saved to the 
+    # `{export_directory}/{discussion_id}/files/{message_id}` directory, where:
+    #
+    #   * +export_directory+: the directory specified in the SDK configuration
+    #   * +discussion_id+: the id of the discussion
+    #   * +message_id+: the id of the message that contains the attachment
+    #
+    # @param discussion_id [String] id of the discussion
+    # @param params [Hash] Query parameters that are added to the URL, such as +include+
+    # @param headers [Hash] hash of headers to send, default is bearer authentication
+    def export_discussion_attachments(discussion_id, params={}, headers=header_bearer_auth)
+      raise StandardError.new "An export directory must be defined to export a file attachment." if @options[:export_directory].nil?
+      info("Exporting all file attachments in the #{discussion_id} Discussion.")
+      info("This may take a while.")
+      # File Counter
+      counter = 0
+      # write the files
+      find_messages(discussion_id, params, headers).content['messages'].each do |m|
+        message_id = m['id']
+        updated_at = m['updatedAt']
+        m['content'].each do |item|
+          if (item['type'] == "attachment")
+            document_id = item['value']['documentId']
+            filename = item['value']['filename']
+            # count the files
+            counter = counter + 1
+            # export the file attachments
+            export_message_attachment(discussion_id, message_id, document_id, filename, params, headers)
+          end
+        end
+      end
+      info("Exported #{counter} file attachments for the #{discussion_id} Discussion")
+    end 
+
   end
 end

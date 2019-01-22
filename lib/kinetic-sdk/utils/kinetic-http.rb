@@ -261,7 +261,20 @@ module KineticSdk
 
         # prepare the payload
         payload = data.inject({}) do |h,(k,v)| 
-          h[k] = (v.class == File) ? UploadIO.new(v, mimetype(v), File.basename(v)) : v; h
+          if v.class == File
+            h[k] = UploadIO.new(v, mimetype(v), File.basename(v))
+          elsif v.class == Array
+            # f = v.first
+            # h[k] = UploadIO.new(f, mimetype(f), File.basename(f)) unless f.nil?
+            h[k] = v.inject([]) do |files, part|
+              if part.class == File
+                files << UploadIO.new(part, mimetype(part), File.basename(part))
+              end
+            end
+          else
+            h[k] = v
+          end
+          h
         end
 
         # build the http object
@@ -338,6 +351,84 @@ module KineticSdk
         end
       end
 
+      # Determine the final redirect location
+      # 
+      # @param url [String] url to send the request to
+      # @param params [Hash] Query parameters that are added to the URL, such as +include+
+      # @param headers [Hash] hash of headers to send
+      # @param redirect_limit [Fixnum] max number of times to redirect
+      # @return [String] redirection url, or url if there is no redirection
+      def redirect_url(url, params={}, headers={}, redirect_limit=max_redirects)
+        # parse the URL
+        uri = URI.parse(url)
+        # add URL parameters
+        uri.query = URI.encode_www_form(params)
+
+        # build the http object
+        http = build_http(uri)
+        # build the request
+        request = Net::HTTP::Head.new(uri.request_uri, headers)
+
+        # send the request
+        response = http.request(request)
+        # handle the response
+        case response
+        when Net::HTTPRedirection then
+          if redirect_limit > 0
+            url = response['location']
+            head_raw(response['location'], params, headers, redirect_limit - 1)
+          end
+        end
+        url
+      end
+
+      # Download attachment from a URL and save to file.
+      #
+      # Streams the download to limit memory consumption. The user account
+      # utilizing the SDK must have write access to the file path.
+      # 
+      # @param url [String] url to send the request to
+      # @param params [Hash] Query parameters that are added to the URL, such as +include+
+      # @param headers [Hash] hash of headers to send
+      # @param redirect_limit [Fixnum] max number of times to redirect
+      def stream_download_to_file(file_path, url, params={}, headers={}, redirect_limit=max_redirects)
+        # Determine if redirection is involved
+        url = redirect_url(url, params, headers, max_redirects)
+        # parse the URL
+        uri = URI.parse(url)
+  
+        debug("Streaming Download #{uri}  #{headers.inspect}")
+  
+        # build the http object
+        http = build_http(uri)
+  
+        # stream the attachment
+        file = File.open(file_path, "wb")
+        file_name = File.basename(file_path)
+        response_code = nil
+        message = nil
+        begin
+          http.request_get(uri.request_uri, headers) do |response|
+            response_code = response.code
+            if response_code == "200"
+              response.read_body { |chunk| file.write(chunk) }
+            else
+              message = response.body
+              break
+            end
+          end
+          if response_code == "200"
+            info("Exported file attachment: #{file_name} to #{file_path}")
+          else
+            warn("Failed to export file attachment \"#{file_name}\": #{message}")
+          end
+        rescue StandardError => e
+          warn("Failed to export file attachment \"#{file_name}\": (#{e})")
+        ensure
+          file.close()
+        end
+      end
+  
       # alias methods to allow wrapper modules to handle the
       # response object.
       alias_method :delete_raw, :delete
@@ -386,11 +477,6 @@ module KineticSdk
         )
         limit.nil? ? 5 : limit.to_i
       end
-
-
-      #------------------------------------------
-      # Private Instance methods
-      #------------------------------------------
 
       private
 

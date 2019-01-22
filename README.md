@@ -14,6 +14,7 @@ The following Kinetic Data applications are supported in this SDK library:
 * Kinetic Task 4.0+
 * Kinetic Bridgehub 1.0+
 * Kinetic Filehub 1.0+
+* Kinetic Discussions 1.0+
 
 ## Getting Started
 
@@ -41,6 +42,10 @@ The Kinetic Ruby SDK uses the following gems, which are conveniently packaged in
 * [parallel](https://github.com/grosser/parallel) used in some of the samples for importing data in parallel threads.
 * [ruby-progressbar](https://github.com/jfelchner/ruby-progressbar) used by parallel gem to indicate progress.
 * [slugify](https://github.com/Slicertje/Slugify) for converting names to slugs.
+* [kontena-websocket-client](https://github.com/kontena/kontena-websocket-client) used by Discussions SDK.
+* [websocket-driver](https://github.com/faye/websocket-driver-ruby) used by Discussions SDK with C Ruby.
+* [websocket-driver-java](https://github.com/faye/websocket-driver-ruby) used by Discussions SDK with JRuby.
+* [websocket-extensions](https://github.com/faye/websocket-extensions-ruby) used by Discussions SDK.
 
 ## Usage
 
@@ -177,6 +182,58 @@ task_sdk = KineticSdk::Task.new({
   }
 })
 response = task_sdk.environment()
+
+puts response.code            # String value of HTTP response code ("200", "400", "500", etc...)
+puts response.status          # Ruby Fixnum value of response.code (200, 400, 500, etc...)
+puts response.content         # Ruby Hash
+puts response.content_string  # JSON formatted response body
+```
+
+### Kinetic Discussions SDK example of a Space User
+
+```ruby
+discussions_sdk = KineticSdk::Discussions.new({
+  app_server_url: "http://localhost:8080",
+  space_slug: "foo",
+  username: "space-user-1",
+  password: "password",
+  options: {
+    log_level: "info",
+    export_directory: "/Users/jboespflug/tmp/discussions",
+    oauth_client_id: "kinops",
+    oauth_client_secret: "kinops",
+    max_redirects: 3
+  }
+})
+response = discussions_sdk.find_discussions()
+discussions = response.content['discussions']
+
+puts response.code            # String value of HTTP response code ("200", "400", "500", etc...)
+puts response.status          # Ruby Fixnum value of response.code (200, 400, 500, etc...)
+puts response.content         # Ruby Hash
+puts response.content_string  # JSON formatted response body
+```
+
+### Kinetic Discussions SDK example of a Subdomain
+
+This example requires a proxy server configured to rewrite the space slug subdomain to the expected Discussions API route.
+
+```ruby
+discussions_sdk = KineticSdk::Discussions.new({
+  space_server_url: "https://foo.myapp.io",
+  space_slug: "foo",
+  username: "space-user-1",
+  password: "password",
+  options: {
+    log_level: "info",
+    export_directory: "/Users/jboespflug/tmp/discussions",
+    oauth_client_id: "kinops",
+    oauth_client_secret: "kinops",
+    max_redirects: 3
+  }
+})
+response = discussions_sdk.find_discussions()
+discussions = response.content['discussions']
 
 puts response.code            # String value of HTTP response code ("200", "400", "500", etc...)
 puts response.status          # Ruby Fixnum value of response.code (200, 400, 500, etc...)

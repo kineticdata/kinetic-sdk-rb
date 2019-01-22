@@ -28,6 +28,7 @@ module KineticSdk
     # @option opts [String] :password the password for the user
     # @option opts [Hash<Symbol, Object>] :options ({}) optional settings
     #
+    #   * :export_directory (String) (_example: /opt/exports/kinetic-task) directory to write files when exporting,
     #   * :log_level (String) (_defaults to: off_) level of logging - off | info | debug | trace
     #   * :max_redirects (Fixnum) (_defaults to: 10_) maximum number of redirects to follow
     #   * :ssl_ca_file (String) full path to PEM certificate used to verify the server

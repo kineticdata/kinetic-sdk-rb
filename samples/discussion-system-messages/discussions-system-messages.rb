@@ -53,7 +53,7 @@ sdk = KineticSdk::Discussions.new(config)
 
 # Cleanup and exit if specified
 if ARGV.size > 1 && ARGV[1] == "cleanup"
-  JSON.parse(sdk.find_discussions.content_string)['discussions'].each do |d|
+  sdk.find_discussions.content['discussions'].each do |d|
     if (d['title'].start_with?('SDK Testing'))
       puts("Deleting discussion \"#{d['title']}\" - #{d['id']}")
       sdk.delete_discussion(d['id'])
@@ -71,10 +71,15 @@ if ARGV.size > 1 && ARGV[1] == "cleanup"
 end
 
 
+retrieve a discussion
+discussion_id = sdk.find_discussions.content['discussions'][0]['id']
+puts sdk.find_discussion(discussion_id).content['discussion']
+return
+
 
 # Create a discussion
 discussion_response = sdk.add_discussion({"title" => "SDK Testing - #{Time.now.to_i}"})
-discussion = JSON.parse(discussion_response.content_string)['discussion']
+discussion = discussion_response.content['discussion']
 discussion_id = discussion['id']
 
 
@@ -89,7 +94,7 @@ sdk.update_discussion(discussion_id, {
 # System Message - (MessageUpdatedMessage)
 # Create a message and then update the message
 message_response = sdk.add_message(discussion_id, "Hello World!")
-message_id = JSON.parse(message_response.content_string)['message']['id']
+message_id = message_response.content['message']['id']
 sdk.update_message(discussion_id, message_id, "Goodbye cruel world!")
 
 

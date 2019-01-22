@@ -6,10 +6,9 @@
 :options:
   # SDK log level (off | info | debug | trace)
   :log_level: "info"
-
-# Discussions oauth client configuration
-:oauth_client_id: "discussions-app"
-:oauth_client_secret: "generated-secret"
+  # Discussions oauth client configuration
+  :oauth_client_id: "discussions-app"
+  :oauth_client_secret: "generated-secret"
 
 # Discussion System Messages - driver variables
 :invitation_email: "my-user@example.com"

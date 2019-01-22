@@ -32,7 +32,10 @@ module KineticSdk
     # @option opts [Hash<Symbol, Object>] :options ({}) optional settings
     #
     #   * :log_level (String) (_defaults to: off_) level of logging - off | info | debug | trace
+    #   * :export_directory (String) (_example: /opt/exports/kinetic-task) directory to write file attachments when exporting,
     #   * :max_redirects (Fixnum) (_defaults to: 10_) maximum number of redirects to follow
+    #   * :oauth_client_id (String) id of the Kinetic Core oauth client
+    #   * :oauth_client_secret (String) secret of the Kinetic Core oauth client
     #   * :ssl_ca_file (String) full path to PEM certificate used to verify the server
     #   * :ssl_verify_mode (String) (_defaults to: none_) - none | peer
     #
@@ -51,6 +54,9 @@ module KineticSdk
     #       password: "admin",
     #       options: {
     #         log_level: "debug",
+    #         export_directory: "/opt/exports/discussions",
+    #         oauth_client_id: "my-oauth-client-id",
+    #         oauth_client_secret: "secret",
     #         ssl_verify_mode: "peer",
     #         ssl_ca_file: "/usr/local/self_signing_ca.pem"
     #       }
@@ -65,6 +71,8 @@ module KineticSdk
     #       password: "password",
     #       options: {
     #           log_level: "debug",
+    #           oauth_client_id: "my-oauth-client-id",
+    #           oauth_client_secret: "secret",
     #           ssl_verify_mode: "peer",
     #           ssl_ca_file: "/usr/local/self_signing_ca.pem"
     #       }
@@ -130,8 +138,8 @@ module KineticSdk
     # Generate a JWT for bearer authentication based on the user credentials,
     # and oauth client configuration.
     def generate_jwt(options={})
-      oauth_client_id = options[:oauth_client_id]
-      oauth_client_secret = options[:oauth_client_secret]
+      oauth_client_id = options[:options][:oauth_client_id]
+      oauth_client_secret = options[:options][:oauth_client_secret]
 
       jwt_response = kinetic_core_sdk(options).jwt_token(oauth_client_id, oauth_client_secret)
       jwt_response.content['access_token']
