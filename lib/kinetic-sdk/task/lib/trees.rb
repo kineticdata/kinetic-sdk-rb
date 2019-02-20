@@ -229,7 +229,6 @@ module KineticSdk
       xml_doc = REXML::Document.new(tree['export'])
       xml_doc.context[:attribute_quote] = :quote
       xml_formatter = ComparisonFormat.new
-      xml_formatter.width = 0
       xml_formatter.write(xml_doc, File.open(tree_file, "w"))
 
       info("Exported #{tree['type']}: #{tree['title']} to #{tree_file}")
@@ -278,7 +277,6 @@ module KineticSdk
         xml_doc = REXML::Document.new(tree['export'])
         xml_doc.context[:attribute_quote] = :quote
         xml_formatter = ComparisonFormat.new
-        xml_formatter.width = 0
         xml_formatter.write(xml_doc, File.open(tree_file, "w"))
 
         info("Exported #{tree['type']}: #{tree['title']} to #{tree_file}")
