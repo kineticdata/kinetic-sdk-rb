@@ -104,7 +104,11 @@ module KineticSdk
             KineticHttpResponse.new(response)
           end
         rescue StandardError => e
-          info("HTTP response code: #{response.code}") unless trace?
+          if response.nil
+            info("HTTP error: #{e.inspect}") unless trace?
+          else
+            info("HTTP response code: #{response.code}") unless trace?
+          end
           KineticHttpResponse.new(e)
         end
       end
