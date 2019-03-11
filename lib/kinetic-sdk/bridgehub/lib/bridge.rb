@@ -10,7 +10,7 @@ module KineticSdk
     #   - +ipAddresses+
     #   - +useAccessKeys+
     #   - +properties+
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_bridge(payload, headers=default_headers)
       info("Adding Bridge \"#{payload['name']}\" with slug \"#{payload['slug']}\"")
@@ -20,7 +20,7 @@ module KineticSdk
     # Delete a Bridge
     #
     # @param slug [String] slug of the bridge
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_bridge(slug, headers=default_headers)
       info("Deleting Bridge \"#{slug}\"")
@@ -30,7 +30,7 @@ module KineticSdk
     # Find Bridges
     #
     # @param params [Hash] Query parameters that are added to the URL, such as +include+
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_bridges(params={}, headers=default_headers)
       info("Finding Bridges")
@@ -41,7 +41,7 @@ module KineticSdk
     #
     # @param slug [String] slug of the bridge
     # @param params [Hash] Query parameters that are added to the URL, such as +include+
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_bridge(slug, params={}, headers=default_headers)
       info("Finding Bridge \"#{slug}\"")
@@ -58,7 +58,7 @@ module KineticSdk
     #   - +ipAddresses+
     #   - +useAccessKeys+
     #   - +properties+
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_bridge(slug, payload, headers=default_headers)
       info("Updating Bridge \"#{slug}\"")

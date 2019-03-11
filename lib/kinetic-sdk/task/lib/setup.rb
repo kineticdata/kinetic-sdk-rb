@@ -4,7 +4,7 @@ module KineticSdk
     # Test the database connection
     #
     # @param db [Hash] Database configuration seettings to send as the request body
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     #
     # Example
@@ -30,7 +30,7 @@ module KineticSdk
     # Run the database migrations
     #
     # @param db [Hash] Database configuration seettings to send as the request body
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     #
     # Example

@@ -6,7 +6,7 @@ module KineticSdk
     # @param name [String] name of the attribute definition
     # @param description [String] description of the attribute definition
     # @param allows_multiple [Boolean] whether the attribute allows multiple values
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_user_attribute_definition(name, description, allows_multiple, headers=default_headers)
       body = {
@@ -24,7 +24,7 @@ module KineticSdk
     # @param name [String] name of the attribute definition
     # @param description [String] description of the attribute definition
     # @param allows_multiple [Boolean] whether the attribute allows multiple values
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_user_profile_attribute_definition(name, description, allows_multiple, headers=default_headers)
       body = {
@@ -42,7 +42,7 @@ module KineticSdk
     # @param name [String] name of the attribute definition
     # @param description [String] description of the attribute definition
     # @param allows_multiple [Boolean] whether the attribute allows multiple values
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_space_attribute_definition(name, description, allows_multiple, headers=default_headers)
       body = {
@@ -60,7 +60,7 @@ module KineticSdk
     # @param name [String] name of the attribute definition
     # @param description [String] description of the attribute definition
     # @param allows_multiple [Boolean] whether the attribute allows multiple values
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_datastore_form_attribute_definition(name, description, allows_multiple, headers=default_headers)
       body = {
@@ -79,7 +79,7 @@ module KineticSdk
     # @param name [String] name of the attribute definition
     # @param description [String] description of the attribute definition
     # @param allows_multiple [Boolean] whether the attribute allows multiple values
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_category_attribute_definition(kapp_slug, name, description, allows_multiple, headers=default_headers)
       body = {
@@ -98,7 +98,7 @@ module KineticSdk
     # @param name [String] name of the attribute definition
     # @param description [String] description of the attribute definition
     # @param allows_multiple [Boolean] whether the attribute allows multiple values
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_form_attribute_definition(kapp_slug, name, description, allows_multiple, headers=default_headers)
       body = {
@@ -117,7 +117,7 @@ module KineticSdk
     # @param name [String] name of the attribute definition
     # @param description [String] description of the attribute definition
     # @param allows_multiple [Boolean] whether the attribute allows multiple values
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_kapp_attribute_definition(kapp_slug, name, description, allows_multiple, headers=default_headers)
       body = {
@@ -135,7 +135,7 @@ module KineticSdk
     # @param name [String] name of the attribute definition
     # @param description [String] description of the attribute definition
     # @param allows_multiple [Boolean] whether the attribute allows multiple values
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_team_attribute_definition(name, description, allows_multiple, headers=default_headers)
       body = {

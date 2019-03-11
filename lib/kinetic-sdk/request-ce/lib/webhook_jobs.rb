@@ -4,7 +4,7 @@ module KineticSdk
     # Find space webhook jobs
     #
     # @param params [Hash] Query parameters that are added to the URL, such as +status+
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_space_webhook_jobs(params={}, headers=default_headers)
       info("Finding webhook jobs in the Space")
@@ -21,7 +21,7 @@ module KineticSdk
     #
     #
     # @param params [Hash] Query parameters that are added to the URL, such as +status+
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_all_space_webhook_jobs(params={}, headers=default_headers)
       # Make the initial request of pages jobs
@@ -46,7 +46,7 @@ module KineticSdk
     #
     # @param kapp_slug [String] the Kapp slug
     # @param params [Hash] Query parameters that are added to the URL, such as +status+
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_kapp_webhook_jobs(kapp_slug, params={}, headers=default_headers)
       info("Finding webhook jobs in the \"#{kapp_slug}\" Kapp")
@@ -63,7 +63,7 @@ module KineticSdk
     #
     #
     # @param params [Hash] Query parameters that are added to the URL, such as +status+
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_all_kapp_webhook_jobs(kapp_slug, params={}, headers=default_headers)
       # Make the initial request of pages jobs
@@ -103,7 +103,7 @@ module KineticSdk
     #   - +type+ -  "Submission",
     #   - +url+ -  "http://my.server.com/api",
     #   - +webhookId+ -  "00000000-0000-1000-8000-000000000000"
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_space_webhook_job(job_id, job_properties={}, headers=default_headers)
       info("Updating the webhook job #{job_id} in Space")
@@ -131,7 +131,7 @@ module KineticSdk
     #   - +type+ -  "Submission",
     #   - +url+ -  "http://my.server.com/api",
     #   - +webhookId+ -  "00000000-0000-1000-8000-000000000000"
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_kapp_webhook_job(kapp_slug, job_id, job_properties={}, headers=default_headers)
       info("Updating the webhook job #{job_id} in the \"#{kapp_slug}\" Kapp")

@@ -5,6 +5,9 @@ require 'net/http'
 require 'net/http/post/multipart'
 require 'openssl'
 
+require File.join(File.dirname(File.expand_path(__FILE__)), "kinetic-http-headers.rb")
+require File.join(File.dirname(File.expand_path(__FILE__)), "kinetic-http-response.rb")
+
 # The KineticSdk module contains functionality to interact with Kinetic Data applications
 # using their built-in REST APIs.
 module KineticSdk
@@ -44,12 +47,20 @@ module KineticSdk
           # handle the response
           case response
           when Net::HTTPRedirection then
-            raise Net::HTTPFatalError.new("Too many redirects", response) if redirect_limit == 0
-            delete_raw(response['location'], headers, redirect_limit - 1)
+            if redirect_limit == -1
+              info("HTTP response code: #{response.code}") unless trace?
+              KineticHttpResponse.new(response)
+            elsif redirect_limit == 0
+              raise Net::HTTPFatalError.new("Too many redirects", response)
+            else
+              delete_raw(response['location'], headers, redirect_limit - 1)
+            end
           else
+            info("HTTP response code: #{response.code}") unless trace?
             KineticHttpResponse.new(response)
           end
         rescue StandardError => e
+          info("HTTP response code: #{response.code}") unless trace?
           KineticHttpResponse.new(e)
         end
       end
@@ -80,12 +91,68 @@ module KineticSdk
           # handle the response
           case response
           when Net::HTTPRedirection then
-            raise Net::HTTPFatalError.new("Too many redirects", response) if redirect_limit == 0
-            get_raw(response['location'], params, headers, redirect_limit - 1)
+            if redirect_limit == -1
+              info("HTTP response code: #{response.code}") unless trace?
+              KineticHttpResponse.new(response)
+            elsif redirect_limit == 0
+              raise Net::HTTPFatalError.new("Too many redirects", response)
+            else
+              get_raw(response['location'], params, headers, redirect_limit - 1)
+            end
           else
+            info("HTTP response code: #{response.code}") unless trace?
             KineticHttpResponse.new(response)
           end
         rescue StandardError => e
+          if response.nil
+            info("HTTP error: #{e.inspect}") unless trace?
+          else
+            info("HTTP response code: #{response.code}") unless trace?
+          end
+          KineticHttpResponse.new(e)
+        end
+      end
+
+      # Send an HTTP HEAD request
+      # 
+      # @param url [String] url to send the request to
+      # @param params [Hash] Query parameters that are added to the URL, such as +include+
+      # @param headers [Hash] hash of headers to send
+      # @param redirect_limit [Fixnum] max number of times to redirect
+      # @return [KineticSdk::Utils::KineticHttpResponse] response
+      def head(url, params={}, headers={}, redirect_limit=max_redirects)
+        # parse the URL
+        uri = URI.parse(url)
+        # add URL parameters
+        uri.query = URI.encode_www_form(params)
+
+        debug("HEAD #{uri}  #{headers.inspect}")
+
+        # build the http object
+        http = build_http(uri)
+        # build the request
+        request = Net::HTTP::Head.new(uri.request_uri, headers)
+
+        # send the request
+        begin
+          response = http.request(request)
+          # handle the response
+          case response
+          when Net::HTTPRedirection then
+            if redirect_limit == -1
+              info("HTTP response code: #{response.code}") unless trace?
+              KineticHttpResponse.new(response)
+            elsif redirect_limit == 0
+              raise Net::HTTPFatalError.new("Too many redirects", response)
+            else
+              head_raw(response['location'], params, headers, redirect_limit - 1)
+            end
+          else
+            info("HTTP response code: #{response.code}") unless trace?
+            KineticHttpResponse.new(response)
+          end
+        rescue StandardError => e
+          info("HTTP response code: #{response.code}") unless trace?
           KineticHttpResponse.new(e)
         end
       end
@@ -117,12 +184,20 @@ module KineticSdk
           # handle the response
           case response
           when Net::HTTPRedirection then
-            raise Net::HTTPFatalError.new("Too many redirects", response) if redirect_limit == 0
-            patch_raw(response['location'], data, headers, redirect_limit - 1)
+            if redirect_limit == -1
+              info("HTTP response code: #{response.code}") unless trace?
+              KineticHttpResponse.new(response)
+            elsif redirect_limit == 0
+              raise Net::HTTPFatalError.new("Too many redirects", response)
+            else
+              patch_raw(response['location'], data, headers, redirect_limit - 1)
+            end
           else
+            info("HTTP response code: #{response.code}") unless trace?
             KineticHttpResponse.new(response)
           end
         rescue StandardError => e
+          info("HTTP response code: #{response.code}") unless trace?
           KineticHttpResponse.new(e)
         end
       end
@@ -154,12 +229,20 @@ module KineticSdk
           # handle the response
           case response
           when Net::HTTPRedirection then
-            raise Net::HTTPFatalError.new("Too many redirects", response) if redirect_limit == 0
-            post_raw(response['location'], data, headers, redirect_limit - 1)
+            if redirect_limit == -1
+              info("HTTP response code: #{response.code}") unless trace?
+              KineticHttpResponse.new(response)
+            elsif redirect_limit == 0
+              raise Net::HTTPFatalError.new("Too many redirects", response)
+            else
+              post_raw(response['location'], data, headers, redirect_limit - 1)
+            end
           else
+            info("HTTP response code: #{response.code}") unless trace?
             KineticHttpResponse.new(response)
           end
         rescue StandardError => e
+          info("HTTP response code: #{response.code}") unless trace?
           KineticHttpResponse.new(e)
         end
       end
@@ -182,7 +265,20 @@ module KineticSdk
 
         # prepare the payload
         payload = data.inject({}) do |h,(k,v)| 
-          h[k] = (v.class == File) ? UploadIO.new(v, mimetype(v), File.basename(v)) : v; h
+          if v.class == File
+            h[k] = UploadIO.new(v, mimetype(v), File.basename(v))
+          elsif v.class == Array
+            # f = v.first
+            # h[k] = UploadIO.new(f, mimetype(f), File.basename(f)) unless f.nil?
+            h[k] = v.inject([]) do |files, part|
+              if part.class == File
+                files << UploadIO.new(part, mimetype(part), File.basename(part))
+              end
+            end
+          else
+            h[k] = v
+          end
+          h
         end
 
         # build the http object
@@ -196,12 +292,20 @@ module KineticSdk
           # handle the response
           case response
           when Net::HTTPRedirection then
-            raise Net::HTTPFatalError.new("Too many redirects", response) if redirect_limit == 0
-            post_multipart_raw(response['location'], data, headers, redirect_limit - 1)
+            if redirect_limit == -1
+              info("HTTP response code: #{response.code}") unless trace?
+              KineticHttpResponse.new(response)
+            elsif redirect_limit == 0
+              raise Net::HTTPFatalError.new("Too many redirects", response)
+            else
+              post_multipart_raw(response['location'], data, headers, redirect_limit - 1)
+            end
           else
+            info("HTTP response code: #{response.code}") unless trace?
             KineticHttpResponse.new(response)
           end
         rescue StandardError => e
+          info("HTTP response code: #{response.code}") unless trace?
           KineticHttpResponse.new(e)
         end
       end
@@ -233,70 +337,112 @@ module KineticSdk
           # handle the response
           case response
           when Net::HTTPRedirection then
-            raise Net::HTTPFatalError.new("Too many redirects", response) if redirect_limit == 0
-            put_raw(response['location'], data, headers, redirect_limit - 1)
+            if redirect_limit == -1
+              info("HTTP response code: #{response.code}") unless trace?
+              KineticHttpResponse.new(response)
+            elsif redirect_limit == 0
+              raise Net::HTTPFatalError.new("Too many redirects", response)
+            else
+              put_raw(response['location'], data, headers, redirect_limit - 1)
+            end
           else
+            info("HTTP response code: #{response.code}") unless trace?
             KineticHttpResponse.new(response)
           end
         rescue StandardError => e
+          info("HTTP response code: #{response.code}") unless trace?
           KineticHttpResponse.new(e)
         end
       end
 
+      # Determine the final redirect location
+      # 
+      # @param url [String] url to send the request to
+      # @param params [Hash] Query parameters that are added to the URL, such as +include+
+      # @param headers [Hash] hash of headers to send
+      # @param redirect_limit [Fixnum] max number of times to redirect
+      # @return [String] redirection url, or url if there is no redirection
+      def redirect_url(url, params={}, headers={}, redirect_limit=max_redirects)
+        # parse the URL
+        uri = URI.parse(url)
+        # add URL parameters
+        uri.query = URI.encode_www_form(params)
+
+        # build the http object
+        http = build_http(uri)
+        # build the request
+        request = Net::HTTP::Head.new(uri.request_uri, headers)
+
+        # send the request
+        response = http.request(request)
+        # handle the response
+        case response
+        when Net::HTTPRedirection then
+          if redirect_limit > 0
+            url = response['location']
+            head_raw(response['location'], params, headers, redirect_limit - 1)
+          end
+        end
+        url
+      end
+
+      # Download attachment from a URL and save to file.
+      #
+      # Streams the download to limit memory consumption. The user account
+      # utilizing the SDK must have write access to the file path.
+      # 
+      # @param url [String] url to send the request to
+      # @param params [Hash] Query parameters that are added to the URL, such as +include+
+      # @param headers [Hash] hash of headers to send
+      # @param redirect_limit [Fixnum] max number of times to redirect
+      def stream_download_to_file(file_path, url, params={}, headers={}, redirect_limit=max_redirects)
+        # Determine if redirection is involved
+        url = redirect_url(url, params, headers, max_redirects)
+        # parse the URL
+        uri = URI.parse(url)
+  
+        debug("Streaming Download #{uri}  #{headers.inspect}")
+  
+        # build the http object
+        http = build_http(uri)
+  
+        # stream the attachment
+        file = File.open(file_path, "wb")
+        file_name = File.basename(file_path)
+        response_code = nil
+        message = nil
+        begin
+          http.request_get(uri.request_uri, headers) do |response|
+            response_code = response.code
+            if response_code == "200"
+              response.read_body { |chunk| file.write(chunk) }
+            else
+              message = response.body
+              break
+            end
+          end
+          if response_code == "200"
+            info("Exported file attachment: #{file_name} to #{file_path}")
+          else
+            warn("Failed to export file attachment \"#{file_name}\": #{message}")
+          end
+        rescue StandardError => e
+          warn("Failed to export file attachment \"#{file_name}\": (#{e})")
+        ensure
+          file.close()
+        end
+      end
+  
       # alias methods to allow wrapper modules to handle the
       # response object.
       alias_method :delete_raw, :delete
       alias_method :get_raw, :get
+      alias_method :head_raw, :head
       alias_method :patch_raw, :patch
       alias_method :post_raw, :post
       alias_method :post_multipart_raw, :post_multipart
       alias_method :put_raw, :put
 
-
-      # Provides a accepts header set to application/json
-      #
-      # @return [Hash] Accepts header set to application/json
-      def header_accepts_json
-        { "Accepts" => "application/json" }
-      end
-
-      # Provides a basic authentication header
-      # 
-      # @param username [String] username to authenticate
-      # @param password [String] password associated to the username
-      # @return [Hash] Authorization: Basic base64 hash of username and password
-      def header_basic_auth(username=@username, password=@password)
-        { "Authorization" => "Basic #{Base64.encode64(username.to_s + ":" + password.to_s).gsub("\n", "")}" }
-      end
-
-      # Provides a content-type header set to application/json
-      #
-      # @return [Hash] Content-Type header set to application/json
-      def header_content_json
-        { "Content-Type" => "application/json" }
-      end
-
-      # Provides a user-agent header set to Kinetic Ruby SDK
-      #
-      # @return [Hash] User-Agent header set to Kinetic Reuby SDK
-      def header_user_agent
-        { "User-Agent" => "Kinetic Ruby SDK #{KineticSdk.version}" }
-      end
-
-      # Provides a hash of default headers
-      #
-      # @param username [String] username to authenticate
-      # @param password [String] password associated to the username
-      # @return [Hash] Hash of headers
-      #   - Accepts: application/json
-      #   - Authorization: Basic base64 hash of username and password if username is provided
-      #   - Content-Type: application/json
-      #   - User-Agent: Kinetic Ruby SDK {KineticSdk.version}
-      def default_headers(username=@username, password=@password)
-        headers = header_accepts_json.merge(header_content_json).merge(header_user_agent)
-        headers.merge!(header_basic_auth(username, password)) unless username.nil?
-        headers
-      end
 
       # Encode URI components
       #
@@ -384,76 +530,6 @@ module KineticSdk
 
     end
     
-
-    # The KineticHttpResponse object normalizes the HTTP response object
-    # properties so they are consistent regardless of what HTTP library is used.
-    #
-    # If the object passed in the constructor is a StandardError, the status code is
-    # set to 0, and the #exception and #backtrace methods can be used to get the 
-    # details.
-    #
-    # Regardless of whether an HTTP Response object or a StandardError object was 
-    # passed in the constructor, the #code and #message methods will give information
-    # about the response.
-    class KineticHttpResponse
-      # response code [String] - always '0' if constructor object is a StandardError
-      attr_reader :code
-      # the parsed JSON response body if content-type is application/json
-      attr_accessor :content
-      # the raw response body string
-      attr_accessor :content_string
-      # the response content-type
-      attr_reader :content_type
-      # the resonse headers
-      attr_reader :headers
-      # response status message
-      attr_reader :message
-      # the raw response object
-      attr_reader :response
-      # response code [Fixnum] - always 0 if constructor object is a StandardError
-      attr_reader :status
-      
-      # the StandardError backtrace if constructor object is a StandardError
-      attr_reader :backtrace
-      # the raw StandardError if constructor object is a StandardError
-      attr_reader :exception
-
-      # Constructor
-      #
-      # @param object [Net::HTTPResponse | StandardError] either an HTTP Response or a StandardError
-      def initialize(object)
-        case object
-        when Net::HTTPResponse then
-          @code = object.code
-          @content_string = object.body
-          @content_type = object.content_type
-          @headers = object.each_header.inject({}) { |h,(k,v)| h[k] = v; h }
-          @message = object.message
-          @response = object
-          @status = @code.to_i
-
-          # if content type is json, try to parse the content string
-          @content = case @content_type
-            when "application/json" then
-              # will raise an exception if content_string is not valid json
-              JSON.parse(@content_string)
-            else
-              {}
-            end
-        when StandardError then
-          @code = "0"
-          @content = {}
-          @content_string = nil
-          @content_type = nil
-          @backtrace = object.backtrace
-          @exception = object.exception
-          @message = object.message
-          @status = @code.to_i
-        else
-          raise StandardError.new("Invalid response object: #{object.class}")
-        end
-      end
-    end
 
   end
 end

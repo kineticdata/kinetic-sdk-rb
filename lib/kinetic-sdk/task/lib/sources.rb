@@ -9,7 +9,7 @@ module KineticSdk
     #   - +type+ - name of one of the source consumers registered in the task engine
     #   - +properties+ - hash of properties specific to the source consumer
     #   - +policyRules+ - array of policy rules to associate with the source
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     #
     # Example
@@ -80,7 +80,7 @@ module KineticSdk
     # @param source [Hash] hash of existing source properties that must contain 'name'
     #   - +name+ - name of the source
     # @param body [Hash] - source properties to update
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     #
     # Exammple
@@ -110,7 +110,7 @@ module KineticSdk
     # @param policy_rule_type [String] the type of policy rule
     # @param policy_rule_name [String] the name of the policy rule
     # @param source_name [String] name of the source to add the policy rule to
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_policy_rule_to_source(policy_rule_type, policy_rule_name, source_name, headers=default_headers)
       body = { "type" => policy_rule_type, "name" => policy_rule_name }
@@ -123,7 +123,7 @@ module KineticSdk
     # @param policy_rule_type [String] the type of policy rule
     # @param policy_rule_name [String] the name of the policy rule
     # @param source_name [String] name of the source to add the policy rule to
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def remove_policy_rule_from_source(policy_rule_type, policy_rule_name, source_name, headers=default_headers)
       info("Removing policy rule \"#{policy_rule_type} - #{policy_rule_name}\" from source \"#{source_name}\"")

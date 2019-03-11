@@ -8,7 +8,7 @@ module KineticSdk
     #   - +description+
     #   - +id+
     #   - +secret+
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_access_key(slug, payload, headers=default_headers)
       info("Adding Access Key for Filestore \"#{slug}\"")
@@ -19,7 +19,7 @@ module KineticSdk
     #
     # @param slug [String] slug of the filestore
     # @param id [String] id (key) of the access key
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_access_key(slug, id, headers=default_headers)
       info("Deleting Access Key #{id} for Filestore \"#{slug}\"")
@@ -30,7 +30,7 @@ module KineticSdk
     #
     # @param slug [String] slug of the filestore
     # @param params [Hash] Query parameters that are added to the URL, such as +include+
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_access_keys(slug, params={}, headers=default_headers)
       info("Finding Access Keys for Filestore \"#{slug}\"")
@@ -42,7 +42,7 @@ module KineticSdk
     # @param slug [String] slug of the filestore
     # @param id [String] id (key) of the access key
     # @param params [Hash] Query parameters that are added to the URL, such as +include+
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_access_key(slug, id, params={}, headers=default_headers)
       info("Finding Access Key \"#{id}\" for Filestore \"#{slug}\"")
@@ -56,7 +56,7 @@ module KineticSdk
     # @param payload [Hash] properties for the access key
     #   - +description+
     #   - +secret+
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_access_key(slug, id, payload, headers=default_headers)
       info("Updating Access Key \"#{id}\" for Filestore \"#{slug}\"")

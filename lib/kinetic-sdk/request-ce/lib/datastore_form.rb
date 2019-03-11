@@ -17,7 +17,7 @@ module KineticSdk
     #   - +pages+
     #   - +securityPolicies+
     #   - +indexDefinitions+
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_datastore_form(form_properties={}, headers=default_headers)
       info("Adding the \"#{form_properties['name']}\" Form.")
@@ -27,7 +27,7 @@ module KineticSdk
     # Delete a Datastore Form
     #
     # @param form_slug [String] slug of the form
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_datastore_form(form_slug, headers=default_headers)
       info("Deleting the \"#{form_slug}\" Datastore Form")
@@ -37,7 +37,7 @@ module KineticSdk
     # Export a Datastore Form
     #
     # @param form_slug [String] slug of the form
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def export_datastore_form(form_slug, headers=default_headers)
       info("Exporting the \"#{form_slug}\" Datastore Form.")
@@ -47,7 +47,7 @@ module KineticSdk
     # Find Datastore Forms
     #
     # @param params [Hash] Query parameters that are added to the URL, such as +include+
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_datastore_forms(params={}, headers=default_headers)
       info("Finding Forms.")
@@ -58,7 +58,7 @@ module KineticSdk
     #
     # @param form_slug [String] slug of the form
     # @param params [Hash] Query parameters that are added to the URL, such as +include+
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_datastore_form(form_slug, params={}, headers=default_headers)
       info("Finding the \"#{form_slug}\" Datastore Form")
@@ -82,7 +82,7 @@ module KineticSdk
     #   - +pages+
     #   - +securityPolicies+
     #   - +indexDefinitions+
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_datastore_form(form_slug, properties={}, headers=default_headers)
       info("Updating the \"#{form_slug}\" Datastore Form.")
@@ -93,7 +93,7 @@ module KineticSdk
     # 
     # @param form_slug [String] slug of the form
     # @param indexes [Array] array of index names to build indexes
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def build_datastore_form_indexes(form_slug, indexes, headers=default_headers)
       payload = {

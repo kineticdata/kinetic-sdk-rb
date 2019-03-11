@@ -203,8 +203,8 @@ if options.exportCE
     # Delete all Existing Files in this Directory (if we delete an item from an exported space we want it deleted)
     FileUtils.rm_rf Dir.glob("#{ceDir}/*")
 
-    # Create space.json (All Arrays except attributes and security policies should be excluded)
-    includeWithSpace = ['attributes', 'securityPolicies'];
+    # Create space.json (include the following properties in the space.json file (can be created with space on import))
+    includeWithSpace = ['attributes', 'securityPolicies', 'enabledLocales', 'trustedFrameDomains', 'trustedResourceDomains'];
     spaceJson = JSON.pretty_generate(space.reject {|k,v| (v.is_a?(Array) || k === 'datastore') && !includeWithSpace.include?(k)})
     File.open("#{ceDir}/space.json", 'w') { |file| file.write(spaceJson) }
 

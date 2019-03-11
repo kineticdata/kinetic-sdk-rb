@@ -4,7 +4,7 @@ module KineticSdk
     # Add an access key
     #
     # @param access_key [Hash] properties for the access key
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     #
     # Example
@@ -65,7 +65,7 @@ module KineticSdk
     #
     # @param identifier [String] access key identifier
     # @param params [Hash] Query parameters that are added to the URL, such as +include+
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_access_key(identifier, params={}, headers=default_headers)
       info("Finding access key \"#{identifier}\"")
@@ -76,7 +76,7 @@ module KineticSdk
     #
     # @param identifier [String] access key identifier
     # @param body [Hash] properties to update, all optional
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     #
     # Exammple

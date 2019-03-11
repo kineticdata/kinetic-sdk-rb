@@ -5,7 +5,7 @@ module KineticSdk
     #
     # @param attribute_name [String] name of the attribute
     # @param attribute_value [String] value of the attribute
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_space_attribute(attribute_name, attribute_value, headers=default_headers)
       # first find the space
@@ -47,7 +47,7 @@ module KineticSdk
     # Update a space
     #
     # @param body [Hash] properties for the Space
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_space(body={}, headers=default_headers)
       info("Updating Space \"#{@space_slug}\"")
@@ -56,7 +56,7 @@ module KineticSdk
 
     # Export a space
     #
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def export_space(headers=default_headers)
       info("Exporting Space \"#{@space_slug}\"")
@@ -66,7 +66,7 @@ module KineticSdk
     # Find the space
     #
     # @param params [Hash] Query parameters that are added to the URL, such as +include+
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_space(params={}, headers=default_headers)
       info("Finding Space \"#{@space_slug}\"")
@@ -77,7 +77,7 @@ module KineticSdk
     #
     # @param slug [String] slug of the space
     # @param params [Hash] Query parameters that are added to the URL, such as +include+
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def space_exists?(slug, params={}, headers=default_headers)
       info("Checking if the \"#{slug}\" space exists")

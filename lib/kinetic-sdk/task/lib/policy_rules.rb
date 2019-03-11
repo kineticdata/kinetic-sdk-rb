@@ -4,7 +4,7 @@ module KineticSdk
     # Add a policy Rule
     #
     # @param policy [Hash] hash of properties for the new policy rule
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     # 
     # Example
@@ -147,7 +147,7 @@ module KineticSdk
     #   - +type+ - Policy Rule type ( API Access | Console Access | Category Access | System Default )
     #   - +name+ - Policy Rule name to export
     # @param body [Hash] Policy rule properties to update
-    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     #
     # Exammple
