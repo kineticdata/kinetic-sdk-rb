@@ -5,6 +5,9 @@ sdk_log_level: "info"
 platform:
   task_source_name: ""
 
+# Whether the system uses the space slug as a subdomain
+proxy_subdomains: false
+
 # Properties for the Kinetic Request CE Source
 ce:
   server: "http://localhost:8080/kinetic"
@@ -21,10 +24,13 @@ ce:
   filestore:
     type: "Local"
     directory: "/home/filesDirectory"
+  # lift of kapps/forms that should have data exported
   export_form_data:
+  # list of datastore forms that should have data exported
   export_datastore_form_data:
     - "notification-template-dates"
     - "notification-data"
+  # fields that should be removed from exported form/datastore form data
   remove_data_attributes:
     - "createdAt"
     - "createdBy"
