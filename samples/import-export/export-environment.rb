@@ -151,7 +151,6 @@ if options.exportCE
     "username" => "kinops-export@kinops.io",
     "password" => KineticSdk::Utils::Random.simple
   }
-  ce_task_source_name = env["ce"]["task_source_name"]
 
   # Connect to the CE System API
   requestce_sdk = KineticSdk::RequestCe.new({
