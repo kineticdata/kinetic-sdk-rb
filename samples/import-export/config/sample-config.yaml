@@ -38,6 +38,8 @@ ce:
     - "updatedBy"
     - "closedAt"
     - "closedBy"
+    - "submittedAt"
+    - "submittedBy"
     - "id"
     - "authStrategy"
     - "key"
