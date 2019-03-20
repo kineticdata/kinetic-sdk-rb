@@ -16,9 +16,9 @@ module KineticSdk
   module Utils
 
     # The KineticHttpUtils module provides common HTTP methods, and returns a 
-    # KineticSdk::Utils::KineticHttpResponse object with all methods. The
-    # raw Net::HTTPResponse is available by calling the 
-    # KineticHttpRespone#response method.
+    # {KineticSdk::Utils::KineticHttpResponse} object with all methods. The raw 
+    # Net::HTTPResponse is available by calling the 
+    # {KineticSdk::Utils::KineticHttpResponse#response} method.
     module KineticHttpUtils
 
       # Include the Logger module

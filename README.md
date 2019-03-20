@@ -51,7 +51,7 @@ The Kinetic Ruby SDK uses the following gems, which are conveniently packaged in
 
 Each Kinetic Data application SDK is meant to be used independent of other application SDKs. With this in mind, each application SDK must be initialized individually.
 
-All of the HTTP methods return a KineticSdk::Utils::KineticHttpResponse object that contains additional methods to obtain information about the request status, the reponse body content, the response headers, and access to the raw response object.
+All of the HTTP methods return a {KineticSdk::Utils::KineticHttpResponse} object that contains additional methods to obtain information about the request status, the reponse body content, the response headers, and access to the raw response object.
 
 ### Require the SDK
 
@@ -299,7 +299,7 @@ space_sdk = KineticSdk::RequestCe.new({
 
 If you need to make a custom HTTP call for some reason, there is a class that allows you to do that. Simply make sure the KineticSdk is required in your program. See the [Getting Started Guide](docs/GettingStarted.md) for details.
 
-Then you need to instantiate a new instance of the KineticHttp class, and call the desired HTTP method with the appropriate information. Each response will be returned as a KineticSdk::Utils::KineticHttpResponse object.
+Then you need to instantiate a new instance of the {Kinetic::Utils::KineticHttp} class, and call the desired HTTP method with the appropriate information. Each response will be returned as a {KineticSdk::Utils::KineticHttpResponse} object.
 
 ```ruby
 # instantiate the KineticHttp class without authentication

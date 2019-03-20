@@ -1,15 +1,15 @@
 module KineticSdk
   module Utils
 
-    # The KineticHttpResponse object normalizes the HTTP response object
-    # properties so they are consistent regardless of what HTTP library is used.
+    # The KineticHttpResponse object normalizes the Net::HTTPResponse object
+    # properties so they are always consistent.
     #
     # If the object passed in the constructor is a StandardError, the status code is
-    # set to 0, and the #exception and #backtrace methods can be used to get the 
+    # set to 0, and the {#exception} and {#backtrace} methods can be used to get the 
     # details.
     #
-    # Regardless of whether an HTTP Response object or a StandardError object was 
-    # passed in the constructor, the #code and #message methods will give information
+    # Regardless of whether a Net::HTTPResponse object or a StandardError object was 
+    # passed in the constructor, the {#code} and {#message} methods will give information
     # about the response.
     class KineticHttpResponse
       # response code [String] - always '0' if constructor object is a StandardError
@@ -36,7 +36,7 @@ module KineticSdk
 
       # Constructor
       #
-      # @param object [Net::HTTPResponse | StandardError] either an HTTP Response or a StandardError
+      # @param object [Net::HTTPResponse | StandardError] either a Net::HTTPResponse or a StandardError
       def initialize(object)
         case object
         when Net::HTTPResponse then
