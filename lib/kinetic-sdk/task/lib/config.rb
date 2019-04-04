@@ -103,19 +103,24 @@ module KineticSdk
     #
     def update_engine(settings, headers=default_headers)
       info("Updating the engine properties")
-      response = put("#{@api_url}/config/engine", settings, headers)
-      if @options[:raise_exceptions] && [200].include?(response.status) == false
-        raise "#{response.status} #{response.message}"
+      return_result = []
+      response_update = put("#{@api_url}/config/engine", settings, headers)
+      return_result.push(response_update)
+      if @options[:raise_exceptions] && [200].include?(response_update.status) == false
+        raise "#{response_update.status} #{response_update.message}"
       end
 
       # start the task engine?
       if !settings['Sleep Delay'].nil? && settings['Sleep Delay'].to_i > 0
         info("Starting the engine")
-        response = start_engine
-        if @options[:raise_exceptions] && [200].include?(response.status) == false
-          raise "#{response.status} #{response.message}"
+        response_start = start_engine
+        return_result.push(response_start)
+        if @options[:raise_exceptions] && [200].include?(response_start.status) == false
+          raise "#{response_start.status} #{response_start.message}"
         end
       end
+      
+      return_result
     end
 
 
@@ -181,6 +186,8 @@ module KineticSdk
         username: settings["Configurator Username"],
         password: settings["Configurator Password"]
       }
+      
+      response
     end
 
 
