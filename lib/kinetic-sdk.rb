@@ -1,5 +1,6 @@
 require 'fileutils'
 require 'json'
+require 'uri'
 require 'yaml'
 
 pwd = File.expand_path(File.dirname(__FILE__))
