@@ -9,18 +9,24 @@ module KineticSdk
     #   - +origin+ - Origin ID of the submission to be added
     #   - +parent+ - Parent ID of the submission to be added
     #   - +values+ - hash of field values for the submission
+    # @param parameters [Hash] hash of query parameters to append to the URL
+    #   - +include+ - comma-separated list of properties to include in the response
+    #   - +completed+ - signals that the submission should be completed, default is false
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
-    def add_submission(kapp_slug, form_slug, payload={}, headers=default_headers)
+    def add_submission(kapp_slug, form_slug, payload={}, parameters={}, headers=default_headers)
       # initialize "values" if nil
       payload["values"] = {} if payload["values"].nil?
       # set origin hash if origin was passed as a string
       payload["origin"] = { "id" => payload["origin"] } if payload["origin"].is_a? String
       # set parent hash if parent was passed as a string
       payload["parent"] = { "id" => payload["parent"] } if payload["parent"].is_a? String
+      # build the uri with the encoded parameters
+      uri = URI.parse("#{@api_url}/kapps/#{kapp_slug}/forms/#{form_slug}/submissions")
+      uri.query = URI.encode_www_form(parameters) unless parameters.empty?
       # Create the submission
       info("Adding a submission in the \"#{form_slug}\" Form.")
-      post("#{@api_url}/kapps/#{kapp_slug}/forms/#{form_slug}/submissions", payload, headers)
+      post(uri.to_s, payload, headers)
     end
 
     # Add a Submission page
@@ -32,18 +38,27 @@ module KineticSdk
     #   - +origin+ - Origin ID of the submission to be added
     #   - +parent+ - Parent ID of the submission to be added
     #   - +values+ - hash of field values for the submission
+    # @param parameters [Hash] hash of query parameters to append to the URL
+    #   - +include+ - comma-separated list of properties to include in the response
+    #   - +staged+ - Indicates whether field validations and page advancement should occur, default is false
+    #   - +defer+ - Indicates the submission is for a subform embedded in a parent, default is false
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
-    def add_submission_page(kapp_slug, form_slug, page_name, payload={}, headers=default_headers)
+    def add_submission_page(kapp_slug, form_slug, page_name, payload={}, parameters={}, headers=default_headers)
       # initialize "values" if nil
       payload["values"] = {} if payload["values"].nil?
       # set origin hash if origin was passed as a string
       payload["origin"] = { "id" => payload["origin"] } if payload["origin"].is_a? String
       # set parent hash if parent was passed as a string
       payload["parent"] = { "id" => payload["parent"] } if payload["parent"].is_a? String
+      # add the page name to the parameters
+      parameters["page"] = page_name
+      # build the uri with the encoded parameters
+      uri = URI.parse("#{@api_url}/kapps/#{kapp_slug}/forms/#{form_slug}/submissions")
+      uri.query = URI.encode_www_form(parameters)
       # Create the submission
       info("Adding a submission page in the \"#{form_slug}\" Form.")
-      post("#{@api_url}/kapps/#{kapp_slug}/forms/#{form_slug}/submissions?page=#{encode(page_name)}", payload, headers)
+      post(uri.to_s, payload, headers)
     end
 
     # Patch a new Submission
