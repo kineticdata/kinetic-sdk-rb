@@ -55,12 +55,15 @@ module KineticSdk
             else
               delete_raw(response['location'], headers, redirect_limit - 1)
             end
+          when NilClass then
+            info("HTTP response code: 0") unless trace?
+            raise Net::HTTPFatalError.new("No response from server", response)
           else
             info("HTTP response code: #{response.code}") unless trace?
             KineticHttpResponse.new(response)
           end
         rescue StandardError => e
-          info("HTTP response code: #{response.code}") unless trace?
+          info("HTTP response: #{response.inspect}") unless trace?
           KineticHttpResponse.new(e)
         end
       end
@@ -99,16 +102,15 @@ module KineticSdk
             else
               get_raw(response['location'], params, headers, redirect_limit - 1)
             end
+          when NilClass then
+            info("HTTP response code: 0") unless trace?
+            raise Net::HTTPFatalError.new("No response from server", response)
           else
             info("HTTP response code: #{response.code}") unless trace?
             KineticHttpResponse.new(response)
           end
         rescue StandardError => e
-          if response.nil
-            info("HTTP error: #{e.inspect}") unless trace?
-          else
-            info("HTTP response code: #{response.code}") unless trace?
-          end
+          info("HTTP response: #{response.inspect}") unless trace?
           KineticHttpResponse.new(e)
         end
       end
@@ -147,12 +149,15 @@ module KineticSdk
             else
               head_raw(response['location'], params, headers, redirect_limit - 1)
             end
+          when NilClass then
+            info("HTTP response code: 0") unless trace?
+            raise Net::HTTPFatalError.new("No response from server", response)
           else
             info("HTTP response code: #{response.code}") unless trace?
             KineticHttpResponse.new(response)
           end
         rescue StandardError => e
-          info("HTTP response code: #{response.code}") unless trace?
+          info("HTTP response: #{response.inspect}") unless trace?
           KineticHttpResponse.new(e)
         end
       end
@@ -192,12 +197,15 @@ module KineticSdk
             else
               patch_raw(response['location'], data, headers, redirect_limit - 1)
             end
+          when NilClass then
+            info("HTTP response code: 0") unless trace?
+            raise Net::HTTPFatalError.new("No response from server", response)
           else
             info("HTTP response code: #{response.code}") unless trace?
             KineticHttpResponse.new(response)
           end
         rescue StandardError => e
-          info("HTTP response code: #{response.code}") unless trace?
+          info("HTTP response: #{response.inspect}") unless trace?
           KineticHttpResponse.new(e)
         end
       end
@@ -237,12 +245,15 @@ module KineticSdk
             else
               post_raw(response['location'], data, headers, redirect_limit - 1)
             end
+          when NilClass then
+            info("HTTP response code: 0") unless trace?
+            raise Net::HTTPFatalError.new("No response from server", response)
           else
             info("HTTP response code: #{response.code}") unless trace?
             KineticHttpResponse.new(response)
           end
         rescue StandardError => e
-          info("HTTP response code: #{response.code}") unless trace?
+          info("HTTP response: #{response.inspect}") unless trace?
           KineticHttpResponse.new(e)
         end
       end
@@ -300,12 +311,15 @@ module KineticSdk
             else
               post_multipart_raw(response['location'], data, headers, redirect_limit - 1)
             end
+          when NilClass then
+            info("HTTP response code: 0") unless trace?
+            raise Net::HTTPFatalError.new("No response from server", response)
           else
             info("HTTP response code: #{response.code}") unless trace?
             KineticHttpResponse.new(response)
           end
         rescue StandardError => e
-          info("HTTP response code: #{response.code}") unless trace?
+          info("HTTP response: #{response.inspect}") unless trace?
           KineticHttpResponse.new(e)
         end
       end
@@ -345,12 +359,15 @@ module KineticSdk
             else
               put_raw(response['location'], data, headers, redirect_limit - 1)
             end
+          when NilClass then
+            info("HTTP response code: 0") unless trace?
+            raise Net::HTTPFatalError.new("No response from server", response)
           else
             info("HTTP response code: #{response.code}") unless trace?
             KineticHttpResponse.new(response)
           end
         rescue StandardError => e
-          info("HTTP response code: #{response.code}") unless trace?
+          info("HTTP response: #{response.inspect}") unless trace?
           KineticHttpResponse.new(e)
         end
       end
