@@ -42,16 +42,16 @@ end
 require 'parallel'
 require 'slugify'
 
-require "kinetic_sdk/version"
+require File.join(pwd, "kinetic_sdk/version")
 
-require "kinetic_sdk/utils/logger"
-require "kinetic_sdk/utils/random"
-require "kinetic_sdk/utils/kinetic-http-headers"
-require "kinetic_sdk/utils/kinetic-http-response"
-require "kinetic_sdk/utils/kinetic-http"
+require File.join(pwd, "kinetic_sdk/utils/logger")
+require File.join(pwd, "kinetic_sdk/utils/random")
+require File.join(pwd, "kinetic_sdk/utils/kinetic-http-headers")
+require File.join(pwd, "kinetic_sdk/utils/kinetic-http-response")
+require File.join(pwd, "kinetic_sdk/utils/kinetic-http")
 
-require "kinetic_sdk/bridgehub/bridgehub-sdk"
-require "kinetic_sdk/discussions/discussions-sdk"
-require "kinetic_sdk/filehub/filehub-sdk"
-require "kinetic_sdk/request_ce/request-ce-sdk"
-require "kinetic_sdk/task/task-sdk"
+require File.join(pwd, "kinetic_sdk/bridgehub/bridgehub-sdk")
+require File.join(pwd, "kinetic_sdk/discussions/discussions-sdk")
+require File.join(pwd, "kinetic_sdk/filehub/filehub-sdk")
+require File.join(pwd, "kinetic_sdk/request_ce/request-ce-sdk")
+require File.join(pwd, "kinetic_sdk/task/task-sdk")
