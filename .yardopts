@@ -4,4 +4,4 @@
 --output-dir rdoc
 --readme README.md
 --load .yardoc-includes/yard-helpers.rb
-'lib/**/*.rb' - 'docs/*.md'
+'lib/**/*.rb' - GettingStarted.md README.md

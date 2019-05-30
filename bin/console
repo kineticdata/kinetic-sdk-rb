@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+
+if !Gem::Specification.find_all_by_name('kinetic_sdk').empty?
+  require "bundler/setup"
+else
+  $:.unshift File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
+end
+require "kinetic_sdk"
+
+
+require "irb"
+IRB.start(__FILE__)
