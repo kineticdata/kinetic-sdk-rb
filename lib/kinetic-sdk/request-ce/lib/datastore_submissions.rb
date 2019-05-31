@@ -130,6 +130,17 @@ module KineticSdk
       get(url, params, headers)
     end
 
+    # Find a Datastore submission
+    #
+    # @param submission_id [String] String value of the Submission Id (UUID)
+    # @param params [Hash] Query parameters that are added to the URL, such as +include+
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
+    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    def find_datastore_submission(submission_id, params={}, headers=default_headers)
+      info("Finding Datastore Submission \"#{submission_id}\"")
+      get("#{@api_url}/datastore/submissions/#{encode(submission_id)}", params, headers)
+    end
+
 
     # Update a Datastore submission
     #
