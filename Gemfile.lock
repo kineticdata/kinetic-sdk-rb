@@ -1,8 +1,7 @@
 PATH
   remote: .
   specs:
-    kinetic_sdk (0.1.1)
-      kontena-websocket-client (= 0.1.1)
+    kinetic_sdk (0.1.2.beta.1)
       mime-types (= 3.1)
       multipart-post (= 2.0.0)
       parallel (= 1.12.1)
@@ -33,6 +32,7 @@ PLATFORMS
 DEPENDENCIES
   bundler (~> 1.16)
   kinetic_sdk!
+  kontena-websocket-client (= 0.1.1)
   rake (~> 12.3.0)
   yard (~> 0.9.12)
 
