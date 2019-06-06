@@ -41,7 +41,7 @@ module KineticSdk
       #
       # @return [Hash] User-Agent header set to Kinetic Reuby SDK
       def header_user_agent
-        { "User-Agent" => "Kinetic Ruby SDK #{KineticSdk.version}" }
+        { "User-Agent" => "Kinetic Ruby SDK #{KineticSdk::VERSION}" }
       end
 
       # Provides a hash of default headers
@@ -52,7 +52,7 @@ module KineticSdk
       #   - Accepts: application/json
       #   - Authorization: Basic base64 hash of username and password if username is provided
       #   - Content-Type: application/json
-      #   - User-Agent: Kinetic Ruby SDK {KineticSdk.version}
+      #   - User-Agent: Kinetic Ruby SDK {KineticSdk::VERSION}
       def default_headers(username=@username, password=@password)
         headers = header_accept_json.merge(header_content_json).merge(header_user_agent)
         headers.merge!(header_basic_auth(username, password)) unless username.nil?
@@ -66,7 +66,7 @@ module KineticSdk
       #   - Accepts: application/json
       #   - Authorization: Bearer jwt
       #   - Content-Type: application/json
-      #   - User-Agent: Kinetic Ruby SDK {KineticSdk.version}
+      #   - User-Agent: Kinetic Ruby SDK {KineticSdk::VERSION}
       def default_jwt_headers(token=@jwt)
         headers = header_accept_json.merge(header_content_json).merge(header_user_agent)
         headers.merge!(header_bearer_auth(token)) unless token.nil?
@@ -113,7 +113,7 @@ module KineticSdk
       #
       # @return [Hash] User-Agent header set to Kinetic Reuby SDK
       def self.header_user_agent
-        { "User-Agent" => "Kinetic Ruby SDK #{KineticSdk.version}" }
+        { "User-Agent" => "Kinetic Ruby SDK #{KineticSdk::VERSION}" }
       end
 
       # Provides a hash of default headers
@@ -124,7 +124,7 @@ module KineticSdk
       #   - Accept: application/json
       #   - Authorization: Basic base64 hash of username and password if username is provided
       #   - Content-Type: application/json
-      #   - User-Agent: Kinetic Ruby SDK {KineticSdk.version}
+      #   - User-Agent: Kinetic Ruby SDK {KineticSdk::VERSION}
       def self.default_headers(username=@username, password=@password)
         headers = self.header_accept_json.merge(self.header_content_json).merge(self.header_user_agent)
         headers.merge!(self.header_basic_auth(username, password)) unless username.nil?
@@ -138,7 +138,7 @@ module KineticSdk
       #   - Accepts: application/json
       #   - Authorization: Bearer jwt
       #   - Content-Type: application/json
-      #   - User-Agent: Kinetic Ruby SDK {KineticSdk.version}
+      #   - User-Agent: Kinetic Ruby SDK {KineticSdk::VERSION}
       def self.default_jwt_headers(token=@jwt)
         headers = self.header_accept_json.merge(self.header_content_json).merge(self.header_user_agent)
         headers.merge!(self.header_bearer_auth(token)) unless token.nil?

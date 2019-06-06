@@ -1,7 +1,7 @@
-ruby '~> 2.0'
-source 'https://rubygems.org'
+source "https://rubygems.org"
+ruby '~> 2.2'
 
-group :test, :development do
-  gem 'rake', '~> 12.3.0'
-  gem 'yard', '~> 0.9.12'
-end
+git_source(:github) { "https://github.com/kineticdata/kinetic-sdk-rb" }
+
+# Specify your gem's dependencies in kinetic_sdk.gemspec
+gemspec

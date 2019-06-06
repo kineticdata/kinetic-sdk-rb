@@ -18,42 +18,52 @@ The following Kinetic Data applications are supported in this SDK library:
 
 ## Getting Started
 
-See the [Getting Started Guide](docs/GettingStarted.md) for getting started quickly.
+See the [Getting Started Guide](GettingStarted.md) for getting started quickly.
 
 ## Requirements
 
-The following are a list of requirements to use this SDK
+The following are a list of requirements to use this SDK:
 
 ### Ruby
 
-The Kinetic Ruby SDK requires Ruby 2.0+, which includes JRuby 9000+. You can determine the version of Ruby you are using with the following command:
+The Kinetic Ruby SDK requires Ruby 2.2+, which includes JRuby 9.0+. You can determine the version of Ruby you are using with the following command:
 
 ```bash
 ruby -v
 ```
 
-### Included Dependency Gems
-
-The Kinetic Ruby SDK uses the following gems, which are conveniently packaged in the SDK. You do not need to install these gems to the default gem path.
-
-* [mime-types](https://github.com/mime-types/ruby-mime-types) used by the multipart-post gem.
-* [mime-types-data](https://github.com/mime-types/mime-types-data) used by the multipart-post gem.
-* [multipart-post](https://github.com/nicksieger/multipart-post) for uploading files to the application REST APIs.
-* [parallel](https://github.com/grosser/parallel) used in some of the samples for importing data in parallel threads.
-* [ruby-progressbar](https://github.com/jfelchner/ruby-progressbar) used by parallel gem to indicate progress.
-* [slugify](https://github.com/Slicertje/Slugify) for converting names to slugs.
-* [kontena-websocket-client](https://github.com/kontena/kontena-websocket-client) used by Discussions SDK.
-* [websocket-driver](https://github.com/faye/websocket-driver-ruby) used by Discussions SDK with C Ruby.
-* [websocket-driver-java](https://github.com/faye/websocket-driver-ruby) used by Discussions SDK with JRuby.
-* [websocket-extensions](https://github.com/faye/websocket-extensions-ruby) used by Discussions SDK.
-
 ## Usage
 
 Each Kinetic Data application SDK is meant to be used independent of other application SDKs. With this in mind, each application SDK must be initialized individually.
 
-All of the HTTP methods return a KineticSdk::Utils::KineticHttpResponse object that contains additional methods to obtain information about the request status, the reponse body content, the response headers, and access to the raw response object.
+All of the HTTP methods return a {KineticSdk::Utils::KineticHttpResponse} object that contains additional methods to obtain information about the request status, the reponse body content, the response headers, and access to the raw response object.
 
-### Require the SDK
+### Installing and requiring the SDK
+
+## Installation
+
+If you are using Bundler, add this line to your application's Gemfile:
+
+```ruby
+gem 'kinetic_sdk'
+```
+
+And then execute:
+
+    $ bundle
+
+Or install it yourself as:
+
+    $ gem install kinetic_sdk
+
+Then in your application, include the SDK with the following code:
+
+```ruby
+require 'kinetic_sdk'
+```
+
+If you cloned or downloaded the Kinetic SDK source repository, then you can include
+the SDK with the following code.
 
 ```ruby
 # Assumes the SDK is installed to vendor/kinetic-sdk-rb
@@ -245,7 +255,7 @@ puts response.content_string  # JSON formatted response body
 
 Starting in Kinetic SDK version 0.0.2, server certificate validation is turned off by default.  In version 0.0.1 it was enabled, but this caused problems with self-signed certificates and there was no way to disable it.
 
-In version 0.0.2, there are now two additional options that can be passed when constructing the SDK object.
+Beginning with version 0.0.2, there are now two additional options that can be passed when constructing the SDK object.
 
 * `ssl_verify_mode`: allows server certificate validation when the value `peer` is used. (default `none`).
 * `ssl_ca_file`: allows specifying the server certificate key file (PEM format). Used when server certificate validation is enabled (`ssl_verify_mode: "peer"`).
@@ -297,9 +307,9 @@ space_sdk = KineticSdk::RequestCe.new({
 
 ## Advanced Usage
 
-If you need to make a custom HTTP call for some reason, there is a class that allows you to do that. Simply make sure the KineticSdk is required in your program. See the [Getting Started Guide](docs/GettingStarted.md) for details.
+If you need to make a custom HTTP call for some reason, there is a class that allows you to do that. Simply make sure the KineticSdk is required in your program. See the [Getting Started Guide](GettingStarted.md) for details.
 
-Then you need to instantiate a new instance of the KineticHttp class, and call the desired HTTP method with the appropriate information. Each response will be returned as a KineticSdk::Utils::KineticHttpResponse object.
+Then you need to instantiate a new instance of the {KineticSdk::Utils::KineticHttp} class, and call the desired HTTP method with the appropriate information. Each response will be returned as a {KineticSdk::Utils::KineticHttpResponse} object.
 
 ```ruby
 # instantiate the KineticHttp class without authentication
@@ -367,13 +377,7 @@ Finally, install the dependency gems:
 Now that the required documentation generation gem is installed, a simple Rake command can be run to generate the inline documentation. For this SDK, the following commands are all equivalent:
 
 ```ruby
-bundle exec rake doc
-```
-
-```ruby
-bundle exec rake yard
-```
-
-```ruby
 bundle exec rake
+bundle exec rake doc
+bundle exec rake yard
 ```

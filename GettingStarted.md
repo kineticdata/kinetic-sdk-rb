@@ -8,7 +8,7 @@ The Kinetic SDK is a library that provides easy to use methods for interacting w
 
 ## How To
 
-This document assumes you have the necessary [requirements](../README.md) installed on your client computer before proceeding.
+This document assumes you have the necessary requirements installed on your client computer before proceeding.
 
 This guide also assumes you have the `git` program installed on your client machine in order to obtain the latest kinetic-sdk-rb code from Github.
 
@@ -52,7 +52,7 @@ ruby driver.rb
 If you would like to generate the inline documentation for this SDK, perform the following steps.
 
 ```bash
-# install the bundler gem, and then then necessary documenation gems
+# install the bundler gem, and then then necessary documentation gems
 cd my_project/vendor/kinetic-sdk-rb
 gem install bundler
 bundle install
