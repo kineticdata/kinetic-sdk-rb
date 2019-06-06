@@ -2,31 +2,31 @@ Dir[File.join(File.dirname(File.expand_path(__FILE__)), "lib", "**", "*.rb")].ea
 
 module KineticSdk
 
-  # RequestCe is a Ruby class that acts as a wrapper for the Kinetic Request CE REST API
-  # without having to make explicit HTTP requests.
+  # Core is a Ruby class that acts as a wrapper for the Core REST API without 
+  # having to make explicit HTTP requests.
   #
-  class RequestCe
+  class Core
 
     # Include the KineticHttpUtils module
     include KineticSdk::Utils::KineticHttpUtils
 
     attr_reader :api_url, :username, :options, :password, :space_slug, :server, :version
 
-    # Initalize the Request CE SDK with the web server URL, the space user
+    # Initalize the Core SDK with the web server URL, the space user
     # username and password, along with any custom option values.
     #
-    # @param [Hash<Symbol, Object>] opts Kinetic Request CE properties
+    # @param [Hash<Symbol, Object>] opts Kinetic Core properties
     # @option opts [String] :config_file optional - path to the YAML configuration file
     #
-    #   * Ex: /opt/config/request-ce-configuration1.yaml
+    #   * Ex: /opt/config/core-configuration1.yaml
     #
-    # @option opts [String] :app_server_url the URL to the Kinetic Request CE web application
+    # @option opts [String] :app_server_url the URL to the Kinetic Core web application
     #
     #   * Must not be used when `:space_server_url` is also used.
     #   * If space_slug is provided, it will be appended to the URL as a path parameter
     #   * Ex: <http://192.168.0.1:8080/kinetic>
     #
-    # @option opts [String] :space_server_url the URL to the Kinetic Request CE space
+    # @option opts [String] :space_server_url the URL to the Kinetic Core space
     #
     #   * Must not be used when `app_server_url` is used
     #   * Typically used when using a proxy server that supports space slugs as subdomains
@@ -51,13 +51,13 @@ module KineticSdk
     #
     # Example: using a configuration file
     #
-    #     KineticSdk::RequestCe.new({
+    #     KineticSdk::Core.new({
     #       config_file: "/opt/config1.yaml"
     #     })
     #
     # Example: space user properties hash
     #
-    #     KineticSdk::RequestCe.new({
+    #     KineticSdk::Core.new({
     #       app_server_url: "http://localhost:8080/kinetic",
     #       space_slug: "foo",
     #       username: "space-user-1",
@@ -71,7 +71,7 @@ module KineticSdk
     #
     # Example: system user properties hash
     #
-    #     KineticSdk::RequestCe.new({
+    #     KineticSdk::Core.new({
     #       app_server_url: "http://localhost:8080/kinetic",
     #       username: "admin",
     #       password: "password",
@@ -88,7 +88,7 @@ module KineticSdk
     #     #
     #     #   app_server_url: https://myapp.io
     #
-    #     KineticSdk::RequestCe.new({
+    #     KineticSdk::Core.new({
     #       space_server_url: "https://myapp.io/foo",
     #       space_slug: "foo",
     #       username: "space-user-1",
@@ -106,7 +106,7 @@ module KineticSdk
     #     #
     #     #   Ex: https://myapp.io/foo
     #
-    #     KineticSdk::RequestCe.new({
+    #     KineticSdk::Core.new({
     #       space_server_url: "https://foo.myapp.io",
     #       space_slug: "foo",
     #       username: "space-user-1",

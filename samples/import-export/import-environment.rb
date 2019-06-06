@@ -82,28 +82,28 @@ class ImportOptions
       end
 
       opts.on("-t IMPORT_TYPE", IMPORT_TYPES,
-                    "The type of import to do: (ce|task|ce/task|all)",
-                    "  CE Will Only Import CE Data",
-                    "  Task Will Only Import Task Data",
-                    "  CE/TASK will import CE and Task Data and configure both",
-                    "  All will import CE/Task & configure Filehub and Bridgehub as well") do |type|
-        if type.to_s.downcase == "ce"
-          options.importCE = true
+                    "The type of import to do: (core|task|core/task|all)",
+                    "  core Will Only Import Core Data",
+                    "  task Will Only Import Task Data",
+                    "  core/task will import Core and Task data and configure both",
+                    "  All will import Core/Task & configure Filehub and Bridgehub as well") do |type|
+        if type.to_s.downcase == "core"
+          options.importCore = true
           options.importTask = false
           options.configureFH = false
           options.configureBH = false
         elsif type.to_s.downcase == "task"
-          options.importCE = false
+          options.importCore = false
           options.importTask = true
           options.configureFH = false
           options.configureBH = false
         elsif  type.to_s.downcase == "ce/task"
-          options.importCE = true
+          options.importCore = true
           options.importTask = true
           options.configureFH = false
           options.configureBH = false
         else
-          options.importCE = true
+          options.importCore = true
           options.importTask = true
           options.configureFH = true
           options.configureBH = true
@@ -170,24 +170,24 @@ platform_task_source_name = env.has_key?("platform") ? env["platform"]["task_sou
 # SDK Logging
 log_level = ENV['SDK_LOG_LEVEL'] || env['sdk_log_level'] || "info"
 
-# Request CE
-ce_server = env["ce"]["server"]
+# Core
+ce_server = env["core"]["server"]
 ce_space_server = (env["proxy_subdomains"] || false) ?
   ce_server.gsub("://", "://#{space_slug}.") :
   "#{ce_server}/#{space_slug}"
-ce_task_source_name = env["ce"]["task_source_name"]
-ce_integration_username = env["ce"]["space_integration_credentials"]["username"]
-ce_integration_displayname = env["ce"]["space_integration_credentials"]["display_name"]
+ce_task_source_name = env["core"]["task_source_name"]
+ce_integration_username = env["core"]["space_integration_credentials"]["username"]
+ce_integration_displayname = env["core"]["space_integration_credentials"]["display_name"]
 ce_integration_password = KineticSdk::Utils::Random.simple
-# Get the Request CE configurator user credentials from an external file
+# Get the Core configurator user credentials from an external file
 ce_credentials = {
-  "username" => env["ce"]["system_credentials"]["username"],
-  "password" => env["ce"]["system_credentials"]["password"]
+  "username" => env["core"]["system_credentials"]["username"],
+  "password" => env["core"]["system_credentials"]["password"]
 }
-# Get the Request CE space user credentials from an external file
+# Get the Core space user credentials from an external file
 ce_credentials_space_admin = {
-  "username" => env["ce"]["space_admin_credentials"]["username"],
-  "password" => env["ce"]["space_admin_credentials"]["password"]
+  "username" => env["core"]["space_admin_credentials"]["username"],
+  "password" => env["core"]["space_admin_credentials"]["password"]
 }
 
 # Task
@@ -199,7 +199,7 @@ task_oauth_redirect_server = (env["task"].has_key?("oauth") && env["task"]["oaut
   env["task"]["oauth"]["redirect_endpoint_server"] :
   task_server
 task_access_key = {
-  "description" => env["task"]["api_access_key_description"] || "Request CE",
+  "description" => env["task"]["api_access_key_description"] || "Core",
   "identifier" => env["task"]["api_access_key_identifier"] || "request-ce",
   "secret" => KineticSdk::Utils::Random.simple
 }
@@ -219,16 +219,16 @@ bridge_slug = "ce-#{space_slug}"
 # FileHub
 filehub_server = env['filehub']['server']
 filestore_slug = "ce-#{space_slug}"
-filestore_data_location = (env['ce'].has_key?('filestore') ?
-    env['ce']['filestore']['directory'] : "") || "/home/filesDirectory"
+filestore_data_location = (env["core"].has_key?('filestore') ?
+    env["core"]['filestore']['directory'] : "") || "/home/filesDirectory"
 
 
 #--------------------------------------------------------------------------
-# Request CE
+# Core
 #--------------------------------------------------------------------------
-if options.importCE
+if options.importCore
 
-  requestce_sdk_system = KineticSdk::RequestCe.new({
+  requestce_sdk_system = KineticSdk::Core.new({
     app_server_url: ce_server,
     username: ce_credentials["username"],
     password: ce_credentials["password"],
@@ -250,10 +250,10 @@ if options.importCE
   if import
 
     # Locate Space Import Directory
-    request_ce_dir = "#{space_dir}/ce"
+    core_dir = "#{space_dir}/ce"
 
     # Load the space
-    space = JSON.parse(File.read("#{request_ce_dir}/space.json"))
+    space = JSON.parse(File.read("#{core_dir}/space.json"))
 
     # Create the space
     puts "Creating the \"#{space_slug}\" space"
@@ -261,7 +261,7 @@ if options.importCE
     raise "#{response.code} #{response.message}" if response.status != 200
 
     # Create a Space User that will be used with integrations (eg: Kinetic Task)
-    puts "Adding the \"#{ce_integration_username}\" user to the \"#{space_slug}\" Request CE space."
+    puts "Adding the \"#{ce_integration_username}\" user to the \"#{space_slug}\" Core space."
     requestce_sdk_system.add_user({
       "space_slug" => space_slug,
       "username" => ce_integration_username,
@@ -272,7 +272,7 @@ if options.importCE
     })
 
     # Create a Space Admin user with a known password
-    puts "Adding the \"#{ce_credentials_space_admin["username"]}\" user to the \"#{space_slug}\" Request CE space."
+    puts "Adding the \"#{ce_credentials_space_admin["username"]}\" user to the \"#{space_slug}\" Core space."
     requestce_sdk_system.add_user({
       "space_slug" => space_slug,
       "username" => ce_credentials_space_admin["username"],
@@ -283,9 +283,9 @@ if options.importCE
     })
 
     # Create space users that were defined to be added on import
-    (env['ce']['add_space_users_on_import'] || []).each do |user|
+    (env["core"]['add_space_users_on_import'] || []).each do |user|
       if user['username']
-        puts "Adding the #{user['username']} user to the \"#{space_slug}\" Request CE space."
+        puts "Adding the #{user['username']} user to the \"#{space_slug}\" Core space."
         requestce_sdk_system.add_user({
           "space_slug" => space_slug,
           "username" => user['username'],
@@ -305,7 +305,7 @@ if options.importCE
     })
 
     # Log into the Space with the Space Admin user
-    requestce_sdk_space = KineticSdk::RequestCe.new({
+    requestce_sdk_space = KineticSdk::Core.new({
       space_server_url: ce_space_server,
       space_slug: space_slug,
       username: ce_credentials_space_admin["username"],
@@ -323,18 +323,18 @@ if options.importCE
     }
     # add space attribute definitions
     space['spaceAttributeDefinitions'] =
-      JSON.parse(File.read("#{request_ce_dir}/spaceAttributeDefinitions.json"))
+      JSON.parse(File.read("#{core_dir}/spaceAttributeDefinitions.json"))
     # add team attribute definitions
     space['teamAttributeDefinitions'] =
-      JSON.parse(File.read("#{request_ce_dir}/teamAttributeDefinitions.json"))
+      JSON.parse(File.read("#{core_dir}/teamAttributeDefinitions.json"))
     # add user attribute definitions
     space['userAttributeDefinitions'] =
-      JSON.parse(File.read("#{request_ce_dir}/userAttributeDefinitions.json"))
+      JSON.parse(File.read("#{core_dir}/userAttributeDefinitions.json"))
     # add user profile attribute definitions
     space['userProfileAttributeDefinitions'] =
-      JSON.parse(File.read("#{request_ce_dir}/userProfileAttributeDefinitions.json"))
+      JSON.parse(File.read("#{core_dir}/userProfileAttributeDefinitions.json"))
     # add bridges
-    space['bridges'] = Dir["#{request_ce_dir}/bridges/bridges/*"].map do |bridge_file|
+    space['bridges'] = Dir["#{core_dir}/bridges/bridges/*"].map do |bridge_file|
       JSON.parse(File.read("#{bridge_file}")).delete_if { |k,v| k == "key" }
     end
 
@@ -348,18 +348,18 @@ if options.importCE
     requestce_sdk_space.update_space(space)
 
     # add bridge models
-    Dir["#{request_ce_dir}/bridges/bridgeModels/*"].each do |bridge_model_file|
+    Dir["#{core_dir}/bridges/bridgeModels/*"].each do |bridge_model_file|
       requestce_sdk_space.add_bridge_model(JSON.parse(File.read("#{bridge_model_file}")))
     end
 
     # add teams
-    Dir["#{request_ce_dir}/teams/*"].each do |team_file|
+    Dir["#{core_dir}/teams/*"].each do |team_file|
       requestce_sdk_space.add_team(JSON.parse(File.read("#{team_file}")))
     end
 
     # add security policy definitions
     requestce_sdk_space.delete_space_security_policy_definitions
-    JSON.parse(File.read("#{request_ce_dir}/securityPolicyDefinitions.json")).each do |policy|
+    JSON.parse(File.read("#{core_dir}/securityPolicyDefinitions.json")).each do |policy|
       requestce_sdk_space.add_space_security_policy_definition(policy)
     end
 
@@ -367,13 +367,13 @@ if options.importCE
     requestce_sdk_space.delete_kapp("catalog");
 
     # Import Datastore Forms
-    Dir["#{request_ce_dir}/datastore/forms/*"].each do |form|
+    Dir["#{core_dir}/datastore/forms/*"].each do |form|
       requestce_sdk_space.add_datastore_form(JSON.parse(File.read("#{form}")))
     end
 
     # Import Datastore Submissions
     submissions_count = 0
-    Dir["#{request_ce_dir}/datastore/data/*"].each do |form|
+    Dir["#{core_dir}/datastore/data/*"].each do |form|
       # Parse form slug from directory path
       form_slug = File.basename(form, '.json')
       puts "Importing datastore submissions for: #{form_slug}"
@@ -386,14 +386,14 @@ if options.importCE
           "values" => submission['values']
         })
         if (submissions_count += 1) % 25 == 0
-          puts "Resetting the Request CE license submission count"
+          puts "Resetting the Core license submission count"
           requestce_sdk_system.reset_license_count
         end
       end
     end
 
     # Import Kapps
-    Dir["#{request_ce_dir}/kapp-*"].each do |dirname|
+    Dir["#{core_dir}/kapp-*"].each do |dirname|
 
       # Import Kapp
       kapp = JSON.parse(File.read("#{dirname}/kapp.json"))
@@ -457,7 +457,7 @@ if options.importCE
             "values" => submission['values']
           })
           if (submissions_count += 1) % 25 == 0
-            puts "Resetting the Request CE license submission count"
+            puts "Resetting the Core license submission count"
             requestce_sdk_system.reset_license_count
           end
         end
@@ -470,7 +470,7 @@ if options.importCE
     end
 
     # Import Space Webhooks
-    JSON.parse(File.read("#{request_ce_dir}/webhooks.json")).each do |webhook|
+    JSON.parse(File.read("#{core_dir}/webhooks.json")).each do |webhook|
       requestce_sdk_space.add_space_webhook(webhook)
     end
 
@@ -521,7 +521,7 @@ if options.importCE
     end
 
     # Clear the value of the "Discussion Server Url" Space attribute
-    if env['ce']['remove_discussion_server'].to_s.downcase == "true"
+    if env["core"]['remove_discussion_server'].to_s.downcase == "true"
       requestce_sdk_space.add_space_attribute("Discussion Server Url", "")
     end
     # Set the value of the "Task Server Url" Space attribute
@@ -529,7 +529,7 @@ if options.importCE
     # Set the value of the "Web Server Url" Space attribute
     requestce_sdk_space.add_space_attribute("Web Server Url", ce_server)
 
-    # Update Bridge on Request CE with the bridgehub slug value.
+    # Update Bridge on Core with the bridgehub slug value.
     requestce_sdk_space.update_bridge("Kinetic Core", {
       "url" => "#{bridgehub_server}/app/api/v1/bridges/#{bridge_slug}/"
     })
@@ -548,7 +548,7 @@ if options.importCE
       requestce_sdk_space.update_oauth_client(task_oauth['clientId'], task_oauth)
     end
   else
-    puts "The #{space_slug} space already exists, skipping Request CE import."
+    puts "The #{space_slug} space already exists, skipping Core import."
   end
 end
 
@@ -569,7 +569,7 @@ if options.importTask
 
   import = false
 
-  # Check if the Request CE source exists
+  # Check if the Core source exists
   ce_source_response = task_sdk.find_source(ce_task_source_name, { "include" => "policyRules" })
   if (ce_source_response.status == 404 || (ce_source_response.status == 200 && options.import_overwrite))
     import = true
@@ -581,7 +581,7 @@ if options.importTask
     task_sdk.add_source({
       "name" => ce_task_source_name,
       "status" => "Active",
-      "type" => "Kinetic Request CE",
+      "type" => "Kinetic Core",
       "properties" => {
           "Space Slug" => space_slug,
           "Web Server" => ce_server,
@@ -649,7 +649,7 @@ if options.importTask
       "authenticator" => "com.kineticdata.core.v1.authenticators.OAuthAuthenticator",
       "authenticationJsp" => "/WEB-INF/app/login.jsp",
       "properties" => {
-        "Provider Name" => "Kinops Request CE",
+        "Provider Name" => "Kinops Core",
         "Auto Redirect Login" => "Yes",
         "Authorize Endpoint" => "#{task_oauth_server}/#{space_slug}/app/oauth/authorize",
         "Token Endpoint" => "#{ce_server}/#{space_slug}/app/oauth/token",
@@ -682,8 +682,8 @@ if options.importTask
 
       # if import was successful, set the handler properties
       if tries > 0
-        # Update the Request CE Notification Template V1 handler
-        if File.basename(handler_file).start_with?("kinetic_request_ce_notification_template_send_v1")
+        # Update the Core Notification Template V1 handler
+        if File.basename(handler_file).start_with?("kinetic_core_notification_template_send_v1")
           task_sdk.update_handler(File.basename(handler_file, ".zip"), {
             "properties" => {
               'smtp_server' => env["notification_template_handler"]["smtp_server"],
@@ -699,8 +699,8 @@ if options.importTask
               'enable_debug_logging' => 'Yes'
             }
           })
-        # Update the Request CE Notification Template V2 handler
-        elsif File.basename(handler_file).start_with?("kinetic_request_ce_notification_template_send_v2")
+        # Update the Core Notification Template V2 handler
+        elsif File.basename(handler_file).start_with?("kinetic_core_notification_template_send_v2")
           task_sdk.update_handler(File.basename(handler_file, ".zip"), {
             "properties" => {
               'smtp_server' => env["notification_template_handler"]["smtp_server"],
@@ -717,8 +717,8 @@ if options.importTask
               'enable_debug_logging' => 'Yes'
             }
           })
-        # update each Kinetic Request handler - need API to get list of info values?
-        elsif File.basename(handler_file).start_with?("kinetic_request_ce")
+        # update each Kinetic Core handler - need API to get list of info values?
+        elsif File.basename(handler_file).start_with?("kinetic_core")
           task_sdk.update_handler(File.basename(handler_file, ".zip"), {
             "properties" => {
               "api_server" => ce_server,
@@ -857,7 +857,7 @@ if options.importTask
     if task_sdk.find_policy_rule({ "type" => "API Access", "name" => "Valid Signature" }).status == 404
       task_sdk.add_policy_rule(signature_policy_rule)
     end
-    # Add the Valid Signature policy rule to the Request CE source
+    # Add the Valid Signature policy rule to the Core source
     task_sdk.add_policy_rule_to_source(
       signature_policy_rule['type'], signature_policy_rule['name'], ce_task_source_name
     )
@@ -936,11 +936,11 @@ if options.configureBH
 
     # Create a new bridge access key
     bridge_access_key = bridgehub_sdk.add_access_key(bridge_slug, {
-      "description" => "Kinetic Request CE space #{space_name} (#{space_slug})"
+      "description" => "Kinetic Core space #{space_name} (#{space_slug})"
     }).content["accessKey"]
 
     # Log into the Space with the kdadmin user
-    requestce_sdk_space = KineticSdk::RequestCe.new({
+    requestce_sdk_space = KineticSdk::Core.new({
       space_server_url: ce_space_server,
       space_slug: space_slug,
       username: ce_credentials_space_admin["username"],
@@ -948,7 +948,7 @@ if options.configureBH
       options: { log_level: log_level }
     })
 
-    # Update Request CE with the Bridge Access Key information
+    # Update Core with the Bridge Access Key information
     requestce_sdk_space.update_bridge("Kinetic Core", {
       "key" => bridge_access_key["id"],
       "secret" => bridge_access_key["secret"]
@@ -1006,11 +1006,11 @@ if options.configureFH
 
     # Create a new filestore access key
     filestore_access_key = filehub_sdk.add_access_key(filestore_slug, {
-      "description" => "Kinetic Request CE space #{space_name} (#{space_slug})"
+      "description" => "Kinetic Core space #{space_name} (#{space_slug})"
     }).content["accessKey"]
 
     # Log into the Space with the kdadmin user
-    requestce_sdk_space = KineticSdk::RequestCe.new({
+    requestce_sdk_space = KineticSdk::Core.new({
       space_server_url: ce_space_server,
       space_slug: space_slug,
       username: ce_credentials_space_admin["username"],
@@ -1018,7 +1018,7 @@ if options.configureFH
       options: { log_level: log_level }
     })
 
-    # Update Request CE with the Filehub information
+    # Update Core with the Filehub information
     requestce_sdk_space.update_space({
       "filestore" => {
         "filehubUrl" => filehub_server,

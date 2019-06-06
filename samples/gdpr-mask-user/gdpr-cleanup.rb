@@ -101,14 +101,14 @@ end
 # SDK Logging
 log_level = ENV['SDK_LOG_LEVEL'] || env['sdk_log_level'] || "info"
 
-# Request CE
-ce_server = env["ce"]["server"]
-ce_task_source_name = env["ce"]["task_source_name"]
+# Core
+ce_server = env["core"]["server"]
+ce_task_source_name = env["core"]["task_source_name"]
 
-# Get the Request CE space user credentials from an external file
+# Get the Core space user credentials from an external file
 ce_credentials_space_admin = {
-  "username" => env["ce"]["space_admin_credentials"]["username"],
-  "password" => env["ce"]["space_admin_credentials"]["password"]
+  "username" => env["core"]["space_admin_credentials"]["username"],
+  "password" => env["core"]["space_admin_credentials"]["password"]
 }
 
 # Get List of Strings to Mask from Config File
@@ -126,11 +126,11 @@ task_server = env["task"]["server"]
 masked_submission_ids = []
 
 #--------------------------------------------------------------------------
-# Request CE
+# Core
 #--------------------------------------------------------------------------
 
 # Log into the Space with the Space Admin user
-requestce_sdk_space = KineticSdk::RequestCe.new({
+requestce_sdk_space = KineticSdk::Core.new({
   app_server_url: ce_server,
   space_slug: space_slug,
   username: ce_credentials_space_admin["username"],

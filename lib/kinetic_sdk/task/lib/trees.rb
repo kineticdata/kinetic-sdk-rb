@@ -1,9 +1,3 @@
-require 'fileutils'
-require 'rexml/document'
-
-pwd = File.expand_path(File.dirname(__FILE__))
-require File.join(pwd, '..', '..', 'utils', 'xml-formatter')
-
 module KineticSdk
   class Task
 
@@ -197,11 +191,10 @@ module KineticSdk
       end
 
       # write the file
-      xml_doc = REXML::Document.new(tree['export'])
+      xml_doc = REXML::Document.new(tree["export"])
       xml_doc.context[:attribute_quote] = :quote
-      xml_formatter = ComparisonFormat.new
+      xml_formatter = Prettier.new
       xml_formatter.write(xml_doc, File.open(tree_file, "w"))
-
       info("Exported #{tree['type']}: #{tree['title']} to #{tree_file}")
     end
 
@@ -242,11 +235,10 @@ module KineticSdk
         end
 
         # write the file
-        xml_doc = REXML::Document.new(tree['export'])
+        xml_doc = REXML::Document.new(tree["export"])
         xml_doc.context[:attribute_quote] = :quote
-        xml_formatter = ComparisonFormat.new
+        xml_formatter = Prettier.new
         xml_formatter.write(xml_doc, File.open(tree_file, "w"))
-
         info("Exported #{tree['type']}: #{tree['title']} to #{tree_file}")
       end
     end

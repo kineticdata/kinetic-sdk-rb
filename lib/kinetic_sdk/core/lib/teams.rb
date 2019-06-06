@@ -1,7 +1,7 @@
 require 'digest/md5'
 
 module KineticSdk
-  class RequestCe
+  class Core
 
     # Add an attribute to a team
     #

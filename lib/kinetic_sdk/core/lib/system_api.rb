@@ -1,5 +1,5 @@
 module KineticSdk
-  class RequestCe
+  class Core
 
     # Add a new Space
     #

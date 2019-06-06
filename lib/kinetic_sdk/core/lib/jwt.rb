@@ -1,5 +1,5 @@
 module KineticSdk
-  class RequestCe
+  class Core
 
     # Gets an authentication code
     #

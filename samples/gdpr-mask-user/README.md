@@ -1,6 +1,6 @@
 # GDPR Mask User Driver
 
-Documentation for masking a user given a set of strings in the Kinetic Request CE System.
+Documentation for masking a user given a set of strings in the Kinetic Core System.
 
 ## Configuration File
 
@@ -8,7 +8,7 @@ Documentation for masking a user given a set of strings in the Kinetic Request C
   * Use the `sample-config.yaml` file as a template.
   * Change the values to correspond to the environment you are working with
     * CE configuration options
-      * ce:server - URL of the Kinetic Request CE web application
+      * ce:server - URL of the Kinetic Core web application
       * ce:space_admin_credentials:username - username of a space admin user
       * ce:space_admin_credentials:password - password of the space admin user
       * task properties are used with the `-t task`, `-t ce/task`, or `-t all` option flag

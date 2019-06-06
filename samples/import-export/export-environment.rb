@@ -49,15 +49,15 @@ class ExportOptions
     opts.separator ""
 
     opts.on("-t EXPORT TYPE",
-            "The type of export to run (ce,task,all)") do |type|
-      if type.to_s.downcase == "ce"
-        options.exportCE = true
+            "The type of export to run (core,task,all)") do |type|
+      if type.to_s.downcase == "core"
+        options.exportCore = true
         options.exportTask = false
       elsif type.to_s.downcase == "task"
-        options.exportCE = false
+        options.exportCore = false
         options.exportTask = true
       else
-        options.exportCE = true
+        options.exportCore = true
         options.exportTask = true
       end
     end
@@ -124,39 +124,39 @@ FileUtils.mkdir_p(space_dir, :mode => 0700) unless Dir.exist?(space_dir)
 Dir.chdir(space_dir)
 
 # Build mapping of kapp/forms/datastores to export submissions for
-forms_to_export = env['ce']['export_form_data'] || {}
-datastore_forms_to_export = env['ce']['export_datastore_form_data'] || []
+forms_to_export = env["core"]['export_form_data'] || {}
+datastore_forms_to_export = env["core"]['export_datastore_form_data'] || []
 
 # Build an Array of All attributes to remove from JSON export
 # authStrategy is for webhooks / key is for bridges
-attrs_to_delete = env['ce']['remove_data_attributes'] || []
+attrs_to_delete = env["core"]['remove_data_attributes'] || []
 
 # Array or kapps to export, leave empty for all kapps
-kapps_to_export = env['ce']['kapps'] || []
+kapps_to_export = env["core"]['kapps'] || []
 
-if options.exportCE
+if options.exportCore
   #--------------------------------------------------------------------------
-  # Request CE
+  # Core
   #--------------------------------------------------------------------------
 
   # CE
-  ce_server = env["ce"]["server"]
+  ce_server = env["core"]["server"]
   ce_space_server = (env["proxy_subdomains"] || false) ?
     ce_server.gsub("://", "://#{space_slug}.") :
     "#{ce_server}/#{space_slug}"
-  # Get the Request CE configurator user credentials from the config file
+  # Get the Core configurator user credentials from the config file
   ce_credentials = {
-    "username" => env["ce"]["system_credentials"]["username"],
-    "password" => env["ce"]["system_credentials"]["password"]
+    "username" => env["core"]["system_credentials"]["username"],
+    "password" => env["core"]["system_credentials"]["password"]
   }
-  # Get the Request CE space user credentials from the config file
+  # Get the Core space user credentials from the config file
   ce_credentials_space_admin = {
     "username" => "kinops-export@kinops.io",
     "password" => KineticSdk::Utils::Random.simple
   }
 
   # Connect to the CE System API
-  requestce_sdk = KineticSdk::RequestCe.new({
+  requestce_sdk = KineticSdk::Core.new({
     app_server_url: ce_server,
     username: ce_credentials["username"],
     password: ce_credentials["password"],
@@ -171,7 +171,7 @@ if options.exportCE
     puts "Exporting Space: #{space_slug}"
 
     # Create an export user
-    puts "Creating an export user in the \"#{space_slug}\" Request CE space."
+    puts "Creating an export user in the \"#{space_slug}\" Core space."
     requestce_sdk.add_user({
       "space_slug" => space_slug,
       "username" => ce_credentials_space_admin["username"],
@@ -182,7 +182,7 @@ if options.exportCE
     })
 
     # Log into the Space with the export user
-    requestce_sdk = KineticSdk::RequestCe.new({
+    requestce_sdk = KineticSdk::Core.new({
       space_server_url: ce_space_server,
       space_slug: space_slug,
       username: ce_credentials_space_admin["username"],

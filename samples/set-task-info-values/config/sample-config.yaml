@@ -13,8 +13,8 @@ handlers_to_update:
 
   ###  Add or remove handlers below as needed  ###
 
-  # Kinetic Request kinetic_request_ce_notification_template_send_v1 handler
-  kinetic_request_ce_notification_template_send:
+  # Kinetic Core kinetic_core_notification_template_send_v1 handler
+  kinetic_core_notification_template_send:
     api_server:
     api_username:
     api_password:
@@ -26,8 +26,8 @@ handlers_to_update:
     smtp_password: ""
     smtp_from_address: ""
 
-  # Kinetic Request CE Info (Set on Kinetic Request CE Handlers)
-  kinetic_request_ce:
+  # Kinetic Core Info (Set on Kinetic Core Handlers)
+  kinetic_core:
     api_server: "http://localhost:8080/kinetic"
     api_username: "integration_user"
     api_password: "password"

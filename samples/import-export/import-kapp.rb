@@ -124,27 +124,27 @@ Dir.chdir(space_dir)
 # SDK Logging
 log_level = ENV['SDK_LOG_LEVEL'] || env['sdk_log_level'] || "info"
 
-# Request CE
-ce_server = env["ce"]["server"]
+# Core
+ce_server = env["core"]["server"]
 ce_space_server = (env["proxy_subdomains"] || false) ?
   ce_server.gsub("://", "://#{space_slug}.") :
   "#{ce_server}/#{space_slug}"
-# Get the Request CE configurator user credentials from an external file
+# Get the Core configurator user credentials from an external file
 ce_credentials = {
-  "username" => env["ce"]["system_credentials"]["username"],
-  "password" => env["ce"]["system_credentials"]["password"]
+  "username" => env["core"]["system_credentials"]["username"],
+  "password" => env["core"]["system_credentials"]["password"]
 }
-# Get the Request CE space user credentials from an external file
+# Get the Core space user credentials from an external file
 ce_credentials_space_admin = {
-  "username" => env["ce"]["space_admin_credentials"]["username"],
-  "password" => env["ce"]["space_admin_credentials"]["password"]
+  "username" => env["core"]["space_admin_credentials"]["username"],
+  "password" => env["core"]["space_admin_credentials"]["password"]
 }
 
 
 #--------------------------------------------------------------------------
-# Request CE
+# Core
 #--------------------------------------------------------------------------
-requestce_sdk_system = KineticSdk::RequestCe.new({
+requestce_sdk_system = KineticSdk::Core.new({
   app_server_url: ce_server,
   username: ce_credentials["username"],
   password: ce_credentials["password"],
@@ -156,7 +156,7 @@ space_exists = requestce_sdk_system.space_exists?(space_slug)
 
 if space_exists
   # Log into the Space with the Space Admin user
-  requestce_sdk_space = KineticSdk::RequestCe.new({
+  requestce_sdk_space = KineticSdk::Core.new({
     space_server_url: ce_space_server,
     space_slug: space_slug,
     username: ce_credentials_space_admin["username"],
@@ -169,7 +169,7 @@ if space_exists
   if kapp_response.status == 404
 
     # Import Kapp
-    Dir["#{request_ce_dir}/kapp-#{kapp_slug}"].each do |dirname|
+    Dir["#{core_dir}/kapp-#{kapp_slug}"].each do |dirname|
 
       # Import Kapp
       kapp = JSON.parse(File.read("#{dirname}/kapp.json"))
@@ -232,7 +232,7 @@ if space_exists
             "values" => submission['values']
           })
           if (submissions_count += 1) % 25 == 0
-            puts "Resetting the Request CE license submission count"
+            puts "Resetting the Core license submission count"
             requestce_sdk_system.reset_license_count
           end
         end

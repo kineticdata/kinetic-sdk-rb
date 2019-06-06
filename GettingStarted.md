@@ -35,7 +35,7 @@ cp my_project/vendor/kinetic-sdk-rb/samples/driver/driver.rb my_project/driver.r
 
 ### Try the driver
 
-Modify the sample driver program with your Kinetic Request CE (or other Kinetic Application) information, and try it out.
+Modify the sample driver program with your Kinetic Core (or other Kinetic Application) information, and try it out.
 
 ```bash
 # make sure to change back to the project root directory

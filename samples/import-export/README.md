@@ -8,7 +8,7 @@ Documentation for Importing and Exporting spaces and space related items.
   * Use the `sample-config.yaml` file as a template.
   * Change the values to correspond to the environment you are exporting
     * ce properties are used with the `-t ce`, `-t ce/task`, or `-t all` option flag
-      * ce:server - URL of the Kinetic Request CE web application
+      * ce:server - URL of the Kinetic Core web application
       * ce:system_credentials:username - username of the system configuration user
       * ce:system_credentials:password - password of the system configuration user
       * ce:space_admin_credentials:username - username of a space admin user
@@ -38,9 +38,9 @@ specified `space_slug` value will be created for the exported definitions.
 #                   the config/ path.
 #
 # -t <export_type>  What type of definitions are being exported:
-#                     ce   - Kinetic Request CE space defs only.
+#                     ce   - Kinetic Core space defs only.
 #                     task - Kinetic Task defs only.
-#                     all  - both Kinetic Request CE and Kinetic Task defs.
+#                     all  - both Kinetic Core and Kinetic Task defs.
 #
 jruby export-environment.rb -s <space-slug> -c <config-file.yaml> -t <export-type>
 ```
@@ -64,10 +64,10 @@ Run the import script, passing in the appropriate options.
 #                   the config/ path.
 #
 # -t <import_type>  What type of definitions are being imported:
-#                     ce   - Kinetic Request CE space defs only.
+#                     ce   - Kinetic Core space defs only.
 #                     task - Kinetic Task defs only.
-#                     ce/task - both Kinetic Request CE and Kinetic Task defs.
-#                     all  - Kinetic Request CE and Kinetic Task defs, also
+#                     ce/task - both Kinetic Core and Kinetic Task defs.
+#                     all  - Kinetic Core and Kinetic Task defs, also
 #                            configure Kinetic Bridgehub and Kinetic Filehub.
 #
 jruby import-environment.rb -e <export-slug> -s <space-slug> -c <config-file.yaml> -t <import-type>

@@ -1,5 +1,5 @@
 module KineticSdk
-  class RequestCe
+  class Core
 
     # Add an attribute value to the space, or update an attribute if it already exists
     #

@@ -10,7 +10,7 @@ The Kinetic Ruby SDK is a library that consists of and SDK for each supported Ki
 
 The following Kinetic Data applications are supported in this SDK library:
 
-* Kinetic Request CE 1.0.4+
+* Kinetic Core 1.0.4+
 * Kinetic Task 4.0+
 * Kinetic Bridgehub 1.0+
 * Kinetic Filehub 1.0+
@@ -112,10 +112,10 @@ puts response.content         # Ruby Hash
 puts response.content_string  # JSON formatted response body
 ```
 
-### Kinetic Request CE SDK example of a Space User
+### Kinetic Core SDK example of a Space User
 
 ```ruby
-space_sdk = KineticSdk::RequestCe.new({
+space_sdk = KineticSdk::Core.new({
   app_server_url: "http://localhost:8080/kinetic",
   space_slug: "foo",
   username: "space-user-1",
@@ -134,10 +134,10 @@ puts response.content         # Ruby Hash
 puts response.content_string  # JSON formatted response body
 ```
 
-### Kinetic Request CE SDK example of a System User
+### Kinetic Core SDK example of a System User
 
 ```ruby
-system_sdk = KineticSdk::RequestCe.new({
+system_sdk = KineticSdk::Core.new({
   app_server_url: "http://localhost:8080/kinetic",
   username: "configuration-user",
   password: "password",
@@ -154,12 +154,12 @@ puts response.content         # Ruby Hash
 puts response.content_string  # JSON formatted response body
 ```
 
-### Kinetic Request CE SDK example of a Subdomain
+### Kinetic Core SDK example of a Subdomain
 
-This example requires a proxy server configured to rewrite the space slug subdomain to the expected Request CE API route.
+This example requires a proxy server configured to rewrite the space slug subdomain to the expected Core API route.
 
 ```ruby
-space_sdk = KineticSdk::RequestCe.new({
+space_sdk = KineticSdk::Core.new({
   space_server_url: "https://foo.myapp.io",
   space_slug: "foo",
   username: "space-user-1",
@@ -262,19 +262,19 @@ Beginning with version 0.0.2, there are now two additional options that can be p
 
 May be used with all application SDKs.
 
-**Example 1 using Kinetic Request CE without server certificate validation:**
+**Example 1 using Kinetic Core without server certificate validation:**
 
 ```ruby
-space_sdk = KineticSdk::RequestCe.new({
+space_sdk = KineticSdk::Core.new({
   ...
   options: {}
 })
 ```
 
-**Example 2 using Kinetic Request CE without server certificate validation:**
+**Example 2 using Kinetic Core without server certificate validation:**
 
 ```ruby
-space_sdk = KineticSdk::RequestCe.new({
+space_sdk = KineticSdk::Core.new({
   ...
   options: {
     ssl_verify_mode: "none"
@@ -282,10 +282,10 @@ space_sdk = KineticSdk::RequestCe.new({
 })
 ```
 
-**Example using Kinetic Request CE with server certificate validation and known CAs:**
+**Example using Kinetic Core with server certificate validation and known CAs:**
 
 ```ruby
-space_sdk = KineticSdk::RequestCe.new({
+space_sdk = KineticSdk::Core.new({
   ...
   options: {
     ssl_verify_mode: "peer"
@@ -293,10 +293,10 @@ space_sdk = KineticSdk::RequestCe.new({
 })
 ```
 
-**Example using Kinetic Request CE with server certificate validation and a self-signing CA:**
+**Example using Kinetic Core with server certificate validation and a self-signing CA:**
 
 ```ruby
-space_sdk = KineticSdk::RequestCe.new({
+space_sdk = KineticSdk::Core.new({
   ...
   options: {
     ssl_verify_mode: "peer",

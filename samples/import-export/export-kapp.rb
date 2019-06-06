@@ -117,36 +117,36 @@ FileUtils.mkdir_p(space_dir, :mode => 0700) unless Dir.exist?(space_dir)
 Dir.chdir(space_dir)
 
 # Build mapping of kapp/forms to export submissions for
-forms_to_export = env['ce']['export_form_data'] || {}
+forms_to_export = env['core']['export_form_data'] || {}
 
 # Build an Array of All attributes to remove from JSON export
 # authStrategy is for webhooks / key is for bridges
-attrs_to_delete = env['ce']['remove_data_attributes'] || []
+attrs_to_delete = env['core']['remove_data_attributes'] || []
 
 
 #--------------------------------------------------------------------------
-# Request CE
+# Core
 #--------------------------------------------------------------------------
 
-# CE
-ce_server = env["ce"]["server"]
+# Core
+ce_server = env["core"]["server"]
 ce_space_server = (env["proxy_subdomains"] || false) ?
   ce_server.gsub("://", "://#{space_slug}.") :
   "#{ce_server}/#{space_slug}"
-# Get the Request CE configurator user credentials from the config file
+# Get the Core configurator user credentials from the config file
 ce_credentials = {
-  "username" => env["ce"]["system_credentials"]["username"],
-  "password" => env["ce"]["system_credentials"]["password"]
+  "username" => env["core"]["system_credentials"]["username"],
+  "password" => env["core"]["system_credentials"]["password"]
 }
-# Get the Request CE space user credentials from the config file
+# Get the Core space user credentials from the config file
 ce_credentials_space_admin = {
   "username" => "kinops-export@kinops.io",
   "password" => KineticSdk::Utils::Random.simple
 }
-ce_task_source_name = env["ce"]["task_source_name"]
+ce_task_source_name = env["core"]["task_source_name"]
 
-# Connect to the CE System API
-requestce_sdk = KineticSdk::RequestCe.new({
+# Connect to the Core System API
+requestce_sdk = KineticSdk::Core.new({
   app_server_url: ce_server,
   username: ce_credentials["username"],
   password: ce_credentials["password"],
@@ -166,7 +166,7 @@ if requestce_sdk.space_exists?(space_slug)
   )
 
   if user_response.status == 404
-    puts "Creating an export user in the \"#{space_slug}\" Request CE space."
+    puts "Creating an export user in the \"#{space_slug}\" Core space."
     requestce_sdk.add_user({
       "space_slug" => space_slug,
       "username" => ce_credentials_space_admin["username"],
@@ -176,7 +176,7 @@ if requestce_sdk.space_exists?(space_slug)
       "spaceAdmin" => true
     })
   else
-    puts "Updating the export user in the \"#{space_slug}\" Request CE space."
+    puts "Updating the export user in the \"#{space_slug}\" Core space."
     requestce_sdk.update_user(ce_credentials_space_admin["username"], {
       "space_slug" => space_slug,
       "password" => ce_credentials_space_admin["password"],
@@ -186,7 +186,7 @@ if requestce_sdk.space_exists?(space_slug)
   end
 
   # Log into the Space with the export user
-  requestce_sdk = KineticSdk::RequestCe.new({
+  requestce_sdk = KineticSdk::Core.new({
     space_server_url: ce_space_server,
     space_slug: space_slug,
     username: ce_credentials_space_admin["username"],
