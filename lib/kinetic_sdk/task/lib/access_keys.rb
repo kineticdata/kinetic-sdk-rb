@@ -51,6 +51,20 @@ module KineticSdk
       end
     end
 
+    # Export all access keys to :identifier.json file in export_directory/access-keys
+    #
+    # @param headers [Hash] hash of headers to send, default is basic authentication
+    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    def export_access_keys(headers=header_basic_auth)
+      raise StandardError.new "An export directory must be defined to access keys." if @options[:export_directory].nil?
+      response = find_access_keys
+      access_keys_dir = FileUtils::mkdir_p(File.join(@options[:export_directory], "access-keys"))
+      (response.content["accessKeys"] || []).each do |access_key|
+        access_key_file = File.join(access_keys_dir, "#{access_key['identifier'].slugify}.json")
+        write_object_to_file(access_key_file, access_key)
+      end
+    end
+
     # Find all access keys
     #
     # @param params [Hash] Query parameters that are added to the URL, such as +include+

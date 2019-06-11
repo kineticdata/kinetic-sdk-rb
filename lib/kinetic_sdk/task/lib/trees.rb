@@ -69,7 +69,7 @@ module KineticSdk
     #     find_trees({ "source" => "Kinetic Request CE" })
     #
     # Example
-    # 
+    #
     #     find_trees({ "include" => "details" })
     #
     # Example
@@ -230,8 +230,8 @@ module KineticSdk
           tree_file = File.join(routine_dir, "#{tree['name'].slugify}.xml")
         else
           # create the directory if it doesn't yet exist
-          tree_dir = FileUtils::mkdir_p(File.join(@options[:export_directory], "trees", source_name.slugify))
-          tree_file = File.join(tree_dir, "#{source_name.slugify}.#{tree['sourceGroup'].slugify}.#{tree['name'].slugify}.xml")
+          tree_dir = FileUtils::mkdir_p(File.join(@options[:export_directory], "sources", source_name.slugify ,"trees"))
+          tree_file = File.join(tree_dir, "#{tree['sourceGroup'].slugify}.#{tree['name'].slugify}.xml")
         end
 
         # write the file

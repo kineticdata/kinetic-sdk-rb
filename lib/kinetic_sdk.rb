@@ -45,6 +45,7 @@ require 'slugify'
 require File.join(pwd, "kinetic_sdk/version")
 
 require File.join(pwd, "kinetic_sdk/utils/logger")
+require File.join(pwd, "kinetic_sdk/utils/kinetic-export-utils")
 require File.join(pwd, "kinetic_sdk/utils/kinetic-http-headers")
 require File.join(pwd, "kinetic_sdk/utils/kinetic-http-response")
 require File.join(pwd, "kinetic_sdk/utils/kinetic-http")

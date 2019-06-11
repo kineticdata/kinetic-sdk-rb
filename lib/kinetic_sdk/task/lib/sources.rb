@@ -1,6 +1,9 @@
 module KineticSdk
   class Task
 
+    # Include the KineticExportUtils module
+    include KineticSdk::Utils::KineticExportUtils
+
     # Add a source
     #
     # @param source [Hash] Source properties
@@ -51,6 +54,24 @@ module KineticSdk
       info("Deleting all sources")
       (find_sources(headers).content['sources'] || []).each do |source|
         delete("#{@api_url}/sources/#{encode(source['name'])}", headers)
+      end
+    end
+
+    # Export all sources to :source-slug.json file in export_directory/sources
+    #
+    # @param headers [Hash] hash of headers to send, default is basic authentication
+    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    def export_sources(headers=header_basic_auth)
+      raise StandardError.new "An export directory must be defined to export sources." if @options[:export_directory].nil?
+      response = find_sources
+      (response.content["sourceRoots"] || []).each do |source|
+        # determine which directory to write the file to
+        if source['name'] != "-"
+          # create the directory if it doesn't yet exist
+          sources_dir = FileUtils::mkdir_p(File.join(@options[:export_directory], "sources"))
+          source_file = File.join(sources_dir, "#{source['name'].slugify}.json")
+          write_object_to_file(source_file, source)
+        end
       end
     end
 
