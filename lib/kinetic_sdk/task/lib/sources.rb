@@ -1,9 +1,6 @@
 module KineticSdk
   class Task
 
-    # Include the KineticExportUtils module
-    include KineticSdk::Utils::KineticExportUtils
-
     # Add a source
     #
     # @param source [Hash] Source properties
@@ -60,7 +57,7 @@ module KineticSdk
     # Export all sources to :source-slug.json file in export_directory/sources
     #
     # @param headers [Hash] hash of headers to send, default is basic authentication
-    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    # @return nil
     def export_sources(headers=header_basic_auth)
       raise StandardError.new "An export directory must be defined to export sources." if @options[:export_directory].nil?
       response = find_sources

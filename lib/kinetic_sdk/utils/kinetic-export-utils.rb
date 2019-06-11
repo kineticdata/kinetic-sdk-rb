@@ -1,8 +1,15 @@
 module KineticSdk
   module Utils
+
+    # The KineticExportUtils module provides methods to simplify exporting
+    # objects and writing to the local file system.
     module KineticExportUtils
 
-      # Builds the tree structure of the export including variables (ie slug, name, etc)
+      # Builds the tree structure of the export including the arguments
+      #
+      # @param args [Array] list of property names to include in the export:
+      #   (i.e. slug, name, etc)
+      # @return [Hash] struture of the shape to be exported
       def prepare_shape(*args)
         shape = {}
         args.each do |arg|
@@ -23,9 +30,10 @@ module KineticSdk
       end
 
       # Determines if the current path should be extracted further
-      # Params:
-      # +export_path+:: the path in which to determine if further extraction should occur
-      # +export_shape: the directory and file structure of how the data should be written
+      #
+      # @param export_path [String] the path in which to determine if further extraction should occur
+      # @param export_shape [Hash] the directory and file structure of how the data should be written
+      # @return [Boolean] true if the path should be extracted further, otherwise false
       def should_extract(export_path, export_shape)
         # Prepare the metadata
         export_path_segments = export_path.split('.')
@@ -52,9 +60,10 @@ module KineticSdk
       end
 
       # Fetches the variable property of a given path (ie slug, name, etc)
-      # Params:
-      # +export_shape: the directory and file structure of how the data should be written
-      # +object_path+:: the path in which to get the variable property from
+      # 
+      # @param export_shape [Hash] the directory and file structure of how the data should be written
+      # @param object_path [String] the path in which to get the variable property from
+      # @return [String] the value of the variable property, or nil if it doesn't exist
       def get_variable_property(export_shape, object_path)
         # Prepare the metadata
         object_path_segments = object_path.split('.')
@@ -76,9 +85,10 @@ module KineticSdk
       end
 
       # Creates directory structure and writes file
-      # Params:
-      # +filename: the full path and name of the file to be written
-      # +file_contents+:: the content of the file to be written
+      #
+      # @param filename [String] the full path and name of the file to be written
+      # @param file_contents [String] the content of the file to be written
+      # @return nil
       def write_object_to_file(filename, file_contents)
         # Create Folder if not exists
         dir_path = File.dirname(filename)
@@ -88,11 +98,12 @@ module KineticSdk
       end
 
       # Processes and writes data exported from the core service
-      # Params:
-      # +core_path: the root folder path to write the data to
-      # +export_shape+:: the directory and file structure of how the data should be written
-      # +object+:: the object being processed
-      # +object_path+:: the path of the object being processed (used recursively)
+      #
+      # @param core_path [String] the root folder path to write the data to
+      # @param export_shape [Hash] the directory and file structure of how the data should be written
+      # @param object [Hash] the object being processed
+      # @param object_path [String] the path of the object being processed (used recursively)
+      # @return nil
       def process_export(core_path, export_shape, object, object_path='')
         # Prepare metadata
         child_objects = {}

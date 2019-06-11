@@ -1,9 +1,6 @@
 module KineticSdk
   class Core
 
-    # Include the KineticExportUtils module
-    include KineticSdk::Utils::KineticExportUtils
-
     # Add an attribute value to the space, or update an attribute if it already exists
     #
     # @param attribute_name [String] name of the attribute
@@ -60,6 +57,7 @@ module KineticSdk
     # Export a space to the export_directory
     #
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
+    # @return nil
     def export_space(headers=default_headers)
       raise StandardError.new "An export directory must be defined to export space." if @options[:export_directory].nil?
       info("Exporting space definition to #{@options[:export_directory]}.")

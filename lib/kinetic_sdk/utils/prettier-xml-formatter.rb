@@ -1,5 +1,10 @@
 require 'rexml/document'
 
+# Custom REXML formatter that removes blank lines, extra whitespace,
+# and ensures lines are indented properly.
+#
+# This class is used for pre-4.4 Kinetic Task servers to format tree xml 
+# content when exporting trees and routines.
 class Prettier < REXML::Formatters::Default
 
   def initialize( indentation = 4 )

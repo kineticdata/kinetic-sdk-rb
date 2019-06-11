@@ -56,7 +56,7 @@ module KineticSdk
     # Export Groups
     #
     # @param headers [Hash] hash of headers to send, default is basic authentication
-    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    # @return nil
     def export_groups(headers=header_basic_auth)
       raise StandardError.new "An export directory must be defined to export groups." if @options[:export_directory].nil?
       (find_groups.content["groups"] || []).each do |group|

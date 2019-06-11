@@ -169,7 +169,7 @@ module KineticSdk
     #
     # @param title [String] the title of the tree or routine
     # @param headers [Hash] hash of headers to send, default is basic authentication
-    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    # @return nil
     #
     def export_tree(title, headers=header_basic_auth)
       raise StandardError.new "An export directory must be defined to export a tree." if @options[:export_directory].nil?
@@ -191,10 +191,15 @@ module KineticSdk
       end
 
       # write the file
-      xml_doc = REXML::Document.new(tree["export"])
-      xml_doc.context[:attribute_quote] = :quote
-      xml_formatter = Prettier.new
-      xml_formatter.write(xml_doc, File.open(tree_file, "w"))
+      server_version = server_info.content["version"]
+      if server_version > "4.3.z"
+        File.write(tree_file, tree['export'])
+      else
+        xml_doc = REXML::Document.new(tree["export"])
+        xml_doc.context[:attribute_quote] = :quote
+        xml_formatter = Prettier.new
+        xml_formatter.write(xml_doc, File.open(tree_file, "w"))
+      end
       info("Exported #{tree['type']}: #{tree['title']} to #{tree_file}")
     end
 
@@ -204,7 +209,7 @@ module KineticSdk
     #   - Leave blank or pass nil to export all trees and global routines
     #   - Pass "-" to export only global routines
     # @param headers [Hash] hash of headers to send, default is basic authentication
-    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    # @return nil
     def export_trees(source_name=nil, headers=header_basic_auth)
       raise StandardError.new "An export directory must be defined to export trees." if @options[:export_directory].nil?
       if source_name.nil?
@@ -235,10 +240,15 @@ module KineticSdk
         end
 
         # write the file
-        xml_doc = REXML::Document.new(tree["export"])
-        xml_doc.context[:attribute_quote] = :quote
-        xml_formatter = Prettier.new
-        xml_formatter.write(xml_doc, File.open(tree_file, "w"))
+        server_version = server_info.content["version"]
+        if server_version > "4.3.z"
+          File.write(tree_file, tree['export'])
+        else
+          xml_doc = REXML::Document.new(tree["export"])
+          xml_doc.context[:attribute_quote] = :quote
+          xml_formatter = Prettier.new
+          xml_formatter.write(xml_doc, File.open(tree_file, "w"))
+        end
         info("Exported #{tree['type']}: #{tree['title']} to #{tree_file}")
       end
     end
@@ -247,7 +257,7 @@ module KineticSdk
     # Export all global routines
     #
     # @param headers [Hash] hash of headers to send, default is basic authentication
-    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    # @return nil
     def export_routines(headers=header_basic_auth)
       export_trees("-", headers)
     end

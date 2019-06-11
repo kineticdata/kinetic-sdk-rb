@@ -54,9 +54,9 @@ module KineticSdk
     # Export all access keys to :identifier.json file in export_directory/access-keys
     #
     # @param headers [Hash] hash of headers to send, default is basic authentication
-    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    # @return nil
     def export_access_keys(headers=header_basic_auth)
-      raise StandardError.new "An export directory must be defined to access keys." if @options[:export_directory].nil?
+      raise StandardError.new "An export directory must be defined to export access keys." if @options[:export_directory].nil?
       response = find_access_keys
       access_keys_dir = FileUtils::mkdir_p(File.join(@options[:export_directory], "access-keys"))
       (response.content["accessKeys"] || []).each do |access_key|
@@ -93,7 +93,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     #
-    # Exammple
+    # Example
     #
     #     update_identifier("X54DLNU", {
     #       "description": "Updated access key"

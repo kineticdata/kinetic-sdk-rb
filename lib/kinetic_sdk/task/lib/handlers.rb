@@ -72,7 +72,7 @@ module KineticSdk
     #
     # @param definition_id [String] the definition id of the handler
     # @param headers [Hash] hash of headers to send, default is basic authentication
-    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    # @return nil
     def export_handler(definition_id, headers=header_basic_auth)
       raise StandardError.new "An export directory must be defined to export a handler." if @options[:export_directory].nil?
       info("Exporting handler \"#{definition_id}\" to #{@options[:export_directory]}.")
@@ -89,7 +89,7 @@ module KineticSdk
     # Export all handlers
     #
     # @param headers [Hash] hash of headers to send, default is basic authentication
-    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    # @return nil
     def export_handlers(headers=header_basic_auth)
       raise StandardError.new "An export directory must be defined to export handlers." if @options[:export_directory].nil?
       info("Exporting handlers to #{@options[:export_directory]}.")

@@ -61,7 +61,7 @@ module KineticSdk
     #   - +type+ - Policy Rule type ( API Access | Console Access | Category Access | System Default )
     #   - +name+ - Policy Rule name to export
     # @param headers [Hash] hash of headers to send, default is basic authentication
-    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    # @return nil
     def export_policy_rule(policy_rule, headers=header_basic_auth)
       raise StandardError.new "An export directory must be defined to export a policy rule." if @options[:export_directory].nil?
       info("Exporting policy rule \"policy_rule['type']\" : \"#{policy_rule['name']}\" to #{@options[:export_directory]}.")
@@ -93,7 +93,7 @@ module KineticSdk
     # Export Policy Rules
     #
     # @param headers [Hash] hash of headers to send, default is basic authentication
-    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    # @return nil
     def export_policy_rules(headers=header_basic_auth)
       raise StandardError.new "An export directory must be defined to export policy rules." if @options[:export_directory].nil?
       response = find_policy_rules({"include" => "consolePolicyRules"}, headers)

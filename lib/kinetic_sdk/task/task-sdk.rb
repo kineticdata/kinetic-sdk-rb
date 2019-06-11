@@ -10,6 +10,9 @@ module KineticSdk
     # Include the KineticHttpUtils module
     include KineticSdk::Utils::KineticHttpUtils
 
+    # Include the KineticExportUtils module
+    include KineticSdk::Utils::KineticExportUtils
+
     attr_reader :api_url, :api_v1_url, :config_user, :options, :server, :version, :username, :password
 
     # Initalize the Task SDK with the web server URL and user credentials,

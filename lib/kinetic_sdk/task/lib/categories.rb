@@ -44,7 +44,7 @@ module KineticSdk
     #   - +policyRules+ - array of policy rule names associated to the category
     #   - +trees+ - array of tree (routine) definitionIds associated to the category
     # @param headers [Hash] hash of headers to send, default is basic authentication
-    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    # @return nil
     def export_category(category, headers=header_basic_auth)
       raise StandardError.new "An export directory must be defined to export a category." if @options[:export_directory].nil?
       if category.is_a? String
@@ -69,7 +69,7 @@ module KineticSdk
     # Export Categories
     #
     # @param headers [Hash] hash of headers to send, default is basic authentication
-    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    # @return nil
     def export_categories(headers=header_basic_auth)
       raise StandardError.new "An export directory must be defined to export categories." if @options[:export_directory].nil?
       (find_categories({ "include" => "handlers,trees,policyRules" }).content["categories"] || []).each do |category|

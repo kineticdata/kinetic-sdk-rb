@@ -10,6 +10,9 @@ module KineticSdk
     # Include the KineticHttpUtils module
     include KineticSdk::Utils::KineticHttpUtils
 
+    # Include the KineticExportUtils module
+    include KineticSdk::Utils::KineticExportUtils
+
     attr_reader :api_url, :username, :options, :password, :space_slug, :server, :version
 
     # Initalize the Core SDK with the web server URL, the space user
