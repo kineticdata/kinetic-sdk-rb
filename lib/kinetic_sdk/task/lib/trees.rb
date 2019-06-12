@@ -192,7 +192,7 @@ module KineticSdk
 
       # write the file
       server_version = server_info.content["version"]
-      if server_version > "4.3.z"
+      if server_version > "04.03.0z"
         File.write(tree_file, tree['export'])
       else
         xml_doc = REXML::Document.new(tree["export"])
@@ -241,7 +241,7 @@ module KineticSdk
 
         # write the file
         server_version = server_info.content["version"]
-        if server_version > "4.3.z"
+        if server_version > "04.03.0z"
           File.write(tree_file, tree['export'])
         else
           xml_doc = REXML::Document.new(tree["export"])
