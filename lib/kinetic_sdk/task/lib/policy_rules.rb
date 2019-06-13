@@ -106,7 +106,7 @@ module KineticSdk
     #
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return nil
-    def import_policy_rules(headers=header_basic_auth)
+    def import_policy_rules(headers=default_headers)
       raise StandardError.new "An export directory must be defined to import policy rules from." if @options[:export_directory].nil?
       info("Importing all Policy Rules in Export Directory")
       Dir["#{@options[:export_directory]}/policyRules/*.json"].sort.each do |file|

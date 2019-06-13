@@ -70,7 +70,7 @@ module KineticSdk
     #
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return nil
-    def import_access_keys(headers=header_basic_auth)
+    def import_access_keys(headers=default_headers)
       raise StandardError.new "An export directory must be defined to import access keys from." if @options[:export_directory].nil?
       info("Importing all Access Keys in Export Directory")
       Dir["#{@options[:export_directory]}/access-keys/*.json"].sort.each do |file|

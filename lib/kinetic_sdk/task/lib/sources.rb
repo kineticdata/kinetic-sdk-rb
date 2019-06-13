@@ -60,7 +60,7 @@ module KineticSdk
     # @return nil
     def export_sources(headers=header_basic_auth)
       raise StandardError.new "An export directory must be defined to export sources." if @options[:export_directory].nil?
-      response = find_sources
+      response = find_sources({"include" => "policyRules"})
       (response.content["sourceRoots"] || []).each do |source|
         # determine which directory to write the file to
         if source['name'] != "-"
@@ -76,7 +76,7 @@ module KineticSdk
     #
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return nil
-    def import_sources(headers=header_basic_auth)
+    def import_sources(headers=default_headers)
       raise StandardError.new "An export directory must be defined to import sources." if @options[:export_directory].nil?
       info("Importing all Sources in Export Directory")
       Dir["#{@options[:export_directory]}/sources/*.json"].sort.each do |file|
