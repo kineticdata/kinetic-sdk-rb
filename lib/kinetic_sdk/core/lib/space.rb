@@ -100,6 +100,7 @@ module KineticSdk
 
     # Imports a full space definition from the export_directory
     #
+    # @param slug [String] the slug of the space that is being imported
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return nil
     def import_space(slug, headers=default_headers)
