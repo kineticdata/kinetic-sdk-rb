@@ -72,6 +72,19 @@ module KineticSdk
       end
     end
 
+    # Import all sources from :source-slug.json file in export_directory/sources
+    #
+    # @param headers [Hash] hash of headers to send, default is basic authentication
+    # @return nil
+    def import_sources(headers=header_basic_auth)
+      raise StandardError.new "An export directory must be defined to import sources." if @options[:export_directory].nil?
+      info("Importing all Sources in Export Directory")
+      Dir["#{@options[:export_directory]}/sources/*.json"].sort.each do |file|
+        source = JSON.parse(File.read(file))
+        add_source(source, headers)
+      end
+    end
+
     # Find all sources
     #
     # @param params [Hash] Query parameters that are added to the URL, such as +include+

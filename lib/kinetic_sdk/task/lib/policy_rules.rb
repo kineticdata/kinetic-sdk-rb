@@ -6,7 +6,7 @@ module KineticSdk
     # @param policy [Hash] hash of properties for the new policy rule
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
-    # 
+    #
     # Example
     #
     #     add_policy_rule({
@@ -99,6 +99,19 @@ module KineticSdk
       response = find_policy_rules({"include" => "consolePolicyRules"}, headers)
       (response.content["policyRules"] || []).each do |policy_rule|
         export_policy_rule(policy_rule, headers)
+      end
+    end
+
+    # Import Policy Rules
+    #
+    # @param headers [Hash] hash of headers to send, default is basic authentication
+    # @return nil
+    def import_policy_rules(headers=header_basic_auth)
+      raise StandardError.new "An export directory must be defined to import policy rules from." if @options[:export_directory].nil?
+      info("Importing all Policy Rules in Export Directory")
+      Dir["#{@options[:export_directory]}/policyRules/*.json"].sort.each do |file|
+        policy_rule = JSON.parse(File.read(file))
+        add_policy_rule(policy_rule, headers)
       end
     end
 

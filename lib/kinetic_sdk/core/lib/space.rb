@@ -72,6 +72,7 @@ module KineticSdk
         "space.kapps.{slug}.formsTypes",
         "space.kapps.{slug}.kappAttributeDefinitions",
         "space.kapps.{slug}.securityPolicyDefinitions",
+        "space.kapps.{slug}.webhooks",
         "space.models.{name}",
         "space.teams.{name}",
         "space.datastoreFormAttributeDefinitions",
@@ -95,6 +96,56 @@ module KineticSdk
     def find_space(params={}, headers=default_headers)
       info("Finding Space \"#{@space_slug}\"")
       get("#{@api_url}/space", params, headers)
+    end
+
+    # Imports a full space definition from the export_directory
+    #
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
+    # @return nil
+    def import_space(slug, headers=default_headers)
+      raise StandardError.new "An export directory must be defined to import space." if @options[:export_directory].nil?
+
+      info("Cleaning up existing Kapps")
+      (find_kapps.content['kapps'] || []).each do |item|
+        delete_kapp(item['slug'])
+      end
+
+      info("Cleaning up existing Security Policy Definitions")
+      delete_space_security_policy_definitions
+
+      info("Importing space definition from #{@options[:export_directory]}.")
+
+      # Loop over all provided files sorting files before folders
+      Dir["#{@options[:export_directory]}/**/*.json"].map { |file| [file.count("/"), file] }.sort.map { |file| file[1] }.each do |file|
+        rel_path = file.gsub("#{@options[:export_directory]}/", '')
+        body = JSON.parse(File.read(file))
+        if rel_path == "space.json"
+          api_path = "/space"
+          info("Importing to #{api_path}.")
+          body['slug'] = slug
+          resp = put("#{@api_url}#{api_path}", body, headers)
+        elsif body.is_a?(Array)
+          api_path = "/#{rel_path.sub(/^space\//,'').sub(/\.json$/,'')}"
+          body.each do |part|
+            info("Importing to #{api_path}.")
+            resp = post("#{@api_url}#{api_path}", part, headers)
+          end
+        else
+          api_path = "/#{rel_path.sub(/^space\//,'').sub(/\/[^\/]+$/,'')}"
+          # TODO: Remove this block when core API is updated to not export Key
+          if api_path == "/bridges" && body.has_key?("key")
+            body.delete("key")
+          end
+          info("Importing to #{api_path}.")
+          resp = post("#{@api_url}#{api_path}", body, headers)
+          # TODO: Remove this block when core API is updated to not pre-create SPDs
+          if api_path == "/kapps"
+            kapp_slug = resp.content["kapp"]["slug"]
+            delete_security_policy_definitions(kapp_slug)
+          end
+        end
+      end
+      info("Finished importing space definition to #{@options[:export_directory]}.")
     end
 
     # Checks if the space exists

@@ -64,6 +64,19 @@ module KineticSdk
       end
     end
 
+    # Import Groups
+    #
+    # @param headers [Hash] hash of headers to send, default is basic authentication
+    # @return nil
+    def import_groups(headers=header_basic_auth)
+      raise StandardError.new "An export directory must be defined to import groups from." if @options[:export_directory].nil?
+      info("Importing all Groups in Export Directory")
+      Dir["#{@options[:export_directory]}/groups/*.json"].sort.each do |file|
+        group = JSON.parse(File.read(file))
+        add_group(group["name"], headers)
+      end
+    end
+
     # Find all groups
     #
     # @param params [Hash] Query parameters that are added to the URL, such as +include+

@@ -131,6 +131,26 @@ module KineticSdk
       post_multipart("#{@api_url}/trees?force=#{force_overwrite}", body, headers)
     end
 
+    # Import trees
+    #
+    # If the trees already exists on the server, this will fail unless forced
+    # to overwrite.
+    #
+    # The source named in the trees content must also exist on the server, or
+    # the import will fail.
+    #
+    # @param force_overwrite [Boolean] whether to overwrite a tree if it exists, default is false
+    # @param headers [Hash] hash of headers to send, default is basic authentication
+    # @return nil
+    def import_trees(force_overwrite=false, headers=header_basic_auth)
+      raise StandardError.new "An export directory must be defined to import trees from." if @options[:export_directory].nil?
+      info("Importing all Trees from Export Directory")
+      Dir["#{@options[:export_directory]}/sources/**/*.xml"].sort.each do |file|
+        tree_file = File.new(file, "rb")
+        import_tree(tree_file, force_overwrite, headers)
+      end
+    end
+
     # Import a routine
     #
     # If the routine already exists on the server, this will fail unless
@@ -144,6 +164,23 @@ module KineticSdk
       body = { "content" => routine }
       info("Importing Routine #{File.basename(routine)}")
       post_multipart("#{@api_url}/trees?force=#{force_overwrite}", body, headers)
+    end
+
+    # Import routines
+    #
+    # If the routines already exists on the server, this will fail unless forced
+    # to overwrite.
+    #
+    # @param force_overwrite [Boolean] whether to overwrite routines if they exist, default is false
+    # @param headers [Hash] hash of headers to send, default is basic authentication
+    # @return nil
+    def import_routines(force_overwrite=false, headers=header_basic_auth)
+      raise StandardError.new "An export directory must be defined to import trees from." if @options[:export_directory].nil?
+      info("Importing all Routines from Export Directory")
+      Dir["#{@options[:export_directory]}/routines/*.xml"].sort.each do |file|
+        routine_file = File.new(file, "rb")
+        import_routine(routine_file, force_overwrite, headers)
+      end
     end
 
     # Find a single tree by title (Source Name :: Group Name :: Tree Name)
@@ -186,8 +223,8 @@ module KineticSdk
         tree_file = File.join(routine_dir, "#{tree['name'].slugify}.xml")
       else
         # Create the directory if it doesn't yet exist
-        tree_dir = FileUtils::mkdir_p(File.join(@options[:export_directory], "trees", tree['sourceName'].slugify))
-        tree_file = File.join(tree_dir, "#{tree['sourceName'].slugify}.#{tree['sourceGroup'].slugify}.#{tree['name'].slugify}.xml")
+        tree_dir = FileUtils::mkdir_p(File.join(@options[:export_directory],"sources", tree['sourceName'].slugify , "trees"))
+        tree_file = File.join(tree_dir, "#{tree['sourceGroup'].slugify}.#{tree['name'].slugify}.xml")
       end
 
       # write the file

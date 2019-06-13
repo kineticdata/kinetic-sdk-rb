@@ -77,6 +77,19 @@ module KineticSdk
       end
     end
 
+    # Import Categories
+    #
+    # @param headers [Hash] hash of headers to send, default is basic authentication
+    # @return nil
+    def import_categories(headers=header_basic_auth)
+      raise StandardError.new "An export directory must be defined to import categories from." if @options[:export_directory].nil?
+      info("Importing all Categories in Export Directory")
+      Dir["#{@options[:export_directory]}/categories/*.json"].sort.each do |file|
+        category = JSON.parse(File.read(file))
+        add_category(category, headers)
+      end
+    end
+
     # Find all categories
     #
     # @param params [Hash] Query parameters that are added to the URL, such as +include+
@@ -104,7 +117,7 @@ module KineticSdk
     # @param body [Hash] the updated property values
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
-    # 
+    #
     # Example
     #
     #     update_category("Foo", { "name" => "Bar" })

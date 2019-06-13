@@ -27,6 +27,7 @@ module KineticSdk
     #
     def add_access_key(access_key={}, headers=default_headers)
       info("Adding access key " + (access_key.has_key?('identifier') ? access_key['identifier'] : ""))
+      access_key["secret"] = "SETME" if access_key["secret"].nil?
       post("#{@api_url}/access-keys", access_key, headers)
     end
 
@@ -62,6 +63,19 @@ module KineticSdk
       (response.content["accessKeys"] || []).each do |access_key|
         access_key_file = File.join(access_keys_dir, "#{access_key['identifier'].slugify}.json")
         write_object_to_file(access_key_file, access_key)
+      end
+    end
+
+    # Import all access keys from :identifier.json file in export_directory/access-keys
+    #
+    # @param headers [Hash] hash of headers to send, default is basic authentication
+    # @return nil
+    def import_access_keys(headers=header_basic_auth)
+      raise StandardError.new "An export directory must be defined to import access keys from." if @options[:export_directory].nil?
+      info("Importing all Access Keys in Export Directory")
+      Dir["#{@options[:export_directory]}/access-keys/*.json"].sort.each do |file|
+        access_key = JSON.parse(File.read(file))
+        add_access_key(access_key, headers)
       end
     end
 

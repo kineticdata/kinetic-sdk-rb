@@ -57,6 +57,22 @@ module KineticSdk
       post_multipart("#{@api_url}/handlers?force=#{force_overwrite}", body, headers)
     end
 
+    # Import handlers from export directory
+    #
+    # If the handlers already exists on the server, this will fail unless forced to overwrite.
+    #
+    # @param force_overwrite [Boolean] whether to overwrite handlers if they exist, default is false
+    # @param headers [Hash] hash of headers to send, default is basic authentication
+    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    def import_handlers(force_overwrite=false, headers=header_basic_auth)
+      raise StandardError.new "An export directory must be defined to import handlers from." if @options[:export_directory].nil?
+      info("Importing all Handlers from Export Directory")
+      Dir["#{@options[:export_directory]}/handlers/*.zip"].sort.each do |file|
+        handler_file = File.new(file, "rb")
+        import_handler(handler_file, force_overwrite, headers)
+      end
+    end
+
     # Modifies the properties and info values for a handler
     #
     # @param definition_id [String] the definition id of the handler

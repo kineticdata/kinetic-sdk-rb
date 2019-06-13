@@ -60,7 +60,7 @@ module KineticSdk
       end
 
       # Fetches the variable property of a given path (ie slug, name, etc)
-      # 
+      #
       # @param export_shape [Hash] the directory and file structure of how the data should be written
       # @param object_path [String] the path in which to get the variable property from
       # @return [String] the value of the variable property, or nil if it doesn't exist
@@ -108,34 +108,38 @@ module KineticSdk
         # Prepare metadata
         child_objects = {}
         file_contents = {}
-        # For each of the object properties
-        object.each do |key, value|
-          # Build child object path
-          child_object_path = object_path.empty? ? key : "#{object_path}.#{key}"
+        if object.kind_of?(Array)
+          file_contents = object
+        else
+          # For each of the object properties
+          object.each do |key, value|
+            # Build child object path
+            child_object_path = object_path.empty? ? key : "#{object_path}.#{key}"
 
-          # If the property should be extracted into its own folder/file
-          if should_extract(child_object_path, export_shape)
-            if value.kind_of?(Array)
-              variable = get_variable_property(export_shape, child_object_path)
-              if variable.nil?
-                child_objects[child_object_path] = value
-              else
-                value.each do |item|
-                  child_objects["#{child_object_path}.#{item[variable]}"] = item
+            # If the property should be extracted into its own folder/file
+            if should_extract(child_object_path, export_shape)
+              if value.kind_of?(Array)
+                variable = get_variable_property(export_shape, child_object_path)
+                if variable.nil?
+                  child_objects[child_object_path] = value
+                else
+                  value.each do |item|
+                    child_objects["#{child_object_path}.#{item[variable]}"] = item
+                  end
                 end
+              else
+                child_objects[child_object_path] = value
               end
+            # If the property does not need to be extracted
             else
-              child_objects[child_object_path] = value
+              # Add the property to the file contents
+              file_contents[key] = value
             end
-          # If the property does not need to be extracted
-          else
-            # Add the property to the file contents
-            file_contents[key] = value
           end
         end
 
         # If this is not the "root" object
-        if object_path != ''
+        if object_path != '' && !file_contents.empty?
           # Write the file_contents based upon the
           filename = "#{core_path}/#{object_path.gsub('.', '/')}.json"
           write_object_to_file(filename, file_contents)
