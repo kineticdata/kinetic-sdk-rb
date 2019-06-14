@@ -105,15 +105,6 @@ module KineticSdk
     # @return nil
     def import_space(slug, headers=default_headers)
       raise StandardError.new "An export directory must be defined to import space." if @options[:export_directory].nil?
-
-      info("Cleaning up existing Kapps")
-      (find_kapps.content['kapps'] || []).each do |item|
-        delete_kapp(item['slug'])
-      end
-
-      info("Cleaning up existing Security Policy Definitions")
-      delete_space_security_policy_definitions
-
       info("Importing space definition from #{@options[:export_directory]}.")
 
       # Loop over all provided files sorting files before folders

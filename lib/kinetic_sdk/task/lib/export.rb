@@ -19,15 +19,14 @@ module KineticSdk
     # @return nil
     def export(headers=header_basic_auth)
       export_sources(headers)
-      export_trees(nil,headers)
-      export_routines(headers)
+      export_trees(nil,headers) # Includes routines when nil passed
       export_handlers(headers)
       export_groups(headers)
       export_policy_rules(headers)
       export_categories(headers)
       export_access_keys(headers)
     end
-    
+
 
   end
 end
