@@ -72,7 +72,7 @@ module KineticSdk
         "space.kapps.{slug}.formsTypes",
         "space.kapps.{slug}.kappAttributeDefinitions",
         "space.kapps.{slug}.securityPolicyDefinitions",
-        "space.kapps.{slug}.webhooks",
+        "space.kapps.{slug}.webhooks.{name}",
         "space.models.{name}",
         "space.teams.{name}",
         "space.datastoreFormAttributeDefinitions",
@@ -81,7 +81,7 @@ module KineticSdk
         "space.teamAttributeDefinitions",
         "space.userAttributeDefinitions",
         "space.userProfileAttributeDefinitions",
-        "space.webhooks",
+        "space.webhooks.{name}",
       )
       core_data = get("#{@api_url}/space", { 'export' => true}, headers).content
       process_export(@options[:export_directory], export_shape, core_data)
