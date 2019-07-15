@@ -18,18 +18,15 @@ If you do not have git and don't want to install it, you can download a zip file
 
 Prepare your Ruby program/script to use the Kinetic SDK.
 
-```bash
+```sh
 # create the project directory
-
 mkdir my_project
 
 # clone the kinetic-sdk-rb repository from GitHub
 # see above to download the zip file if you don't have the git client
-
 git clone https://github.com/kineticdata/kinetic-sdk-rb.git my_project/vendor/kinetic-sdk-rb
 
 # copy the sample driver to your project's root directory
-
 cp my_project/vendor/kinetic-sdk-rb/samples/driver/driver.rb my_project/driver.rb
 ```
 
@@ -37,13 +34,11 @@ cp my_project/vendor/kinetic-sdk-rb/samples/driver/driver.rb my_project/driver.r
 
 Modify the sample driver program with your Kinetic Core (or other Kinetic Application) information, and try it out.
 
-```bash
+```sh
 # make sure to change back to the project root directory
-
 cd my_project
 
 # run the driver file
-
 ruby driver.rb
 ```
 
@@ -51,14 +46,13 @@ ruby driver.rb
 
 If you would like to generate the inline documentation for this SDK, perform the following steps.
 
-```bash
+```sh
 # install the bundler gem, and then then necessary documentation gems
 cd my_project/vendor/kinetic-sdk-rb
 gem install bundler
 bundle install
 
 # generate and open the inline Ruby documentation for the SDK
-
-bundle exec rake doc
-open rdoc/index.html
+bundle exec rake rdoc
+open doc/index.html
 ```

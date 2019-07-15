@@ -12,11 +12,15 @@ gem 'kinetic_sdk'
 
 And then execute:
 
-    $ bundle
+```sh
+bundle
+```
 
 Or install it yourself as:
 
-    $ gem install kinetic_sdk
+```sh
+gem install kinetic_sdk
+```
 
 Then in your application, include the SDK with the following code:
 

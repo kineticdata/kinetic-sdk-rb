@@ -9,4 +9,5 @@ end
 
 # Generate Yard documentation
 task :doc => [:yard]
+task :rdoc => [:yard]
 task :default => [:doc]

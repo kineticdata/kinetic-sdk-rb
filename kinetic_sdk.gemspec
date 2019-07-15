@@ -28,4 +28,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 1.16"
   spec.add_development_dependency "rake", "~> 12.3.0"
   spec.add_development_dependency "yard", "~> 0.9.12"
+
+  spec.metadata["yard.run"] = "yri"
 end
