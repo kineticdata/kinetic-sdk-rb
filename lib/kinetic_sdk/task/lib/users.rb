@@ -37,7 +37,7 @@ module KineticSdk
     def delete_users(headers=header_basic_auth)
       info("Deleting all users")
       (find_users(headers).content["users"] || []).each do |user|
-        delete("#{@api_url}/users/#{encode(user['login_id'])}", headers)
+        delete_user(user['loginId'], headers)
       end
     end
 
