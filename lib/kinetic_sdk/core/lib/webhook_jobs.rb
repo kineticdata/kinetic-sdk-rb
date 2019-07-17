@@ -7,7 +7,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_space_webhook_jobs(params={}, headers=default_headers)
-      info("Finding webhook jobs in the Space")
+      @logger.info("Finding webhook jobs in the Space")
       get("#{@api_url}/webhookJobs", params, headers)
     end
 
@@ -49,7 +49,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_kapp_webhook_jobs(kapp_slug, params={}, headers=default_headers)
-      info("Finding webhook jobs in the \"#{kapp_slug}\" Kapp")
+      @logger.info("Finding webhook jobs in the \"#{kapp_slug}\" Kapp")
       get("#{@api_url}/kapps/#{kapp_slug}/webhookJobs", params, headers)
     end
 
@@ -106,7 +106,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_space_webhook_job(job_id, job_properties={}, headers=default_headers)
-      info("Updating the webhook job #{job_id} in Space")
+      @logger.info("Updating the webhook job #{job_id} in Space")
       put("#{@api_url}/webhookJobs/#{job_id}", job_properties, headers)
     end
 
@@ -134,7 +134,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_kapp_webhook_job(kapp_slug, job_id, job_properties={}, headers=default_headers)
-      info("Updating the webhook job #{job_id} in the \"#{kapp_slug}\" Kapp")
+      @logger.info("Updating the webhook job #{job_id} in the \"#{kapp_slug}\" Kapp")
       put("#{@api_url}/kapps/#{kapp_slug}/webhookJobs/#{job_id}", job_properties, headers)
     end
 

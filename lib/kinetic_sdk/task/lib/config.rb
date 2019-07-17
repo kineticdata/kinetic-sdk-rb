@@ -7,7 +7,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_db(params={}, headers=header_basic_auth)
-      info("Finding the database configuration")
+      @logger.info("Finding the database configuration")
       get("#{@api_url}/config/db", params, headers)
     end
 
@@ -18,7 +18,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_session_configuration(params={}, headers=header_basic_auth)
-      info("Finding the session timeout")
+      @logger.info("Finding the session timeout")
       get("#{@api_url}/config/session", params, headers)
     end
 
@@ -42,7 +42,7 @@ module KineticSdk
     #     })
     #
     def update_authentication(settings, headers=default_headers)
-      info("Updating the authentication properties")
+      @logger.info("Updating the authentication properties")
       put("#{@api_url}/config/auth", settings, headers)
     end
 
@@ -66,7 +66,7 @@ module KineticSdk
     #     })
     #
     def update_db(settings, headers=default_headers)
-      info("Updating the database properties")
+      @logger.info("Updating the database properties")
       put("#{@api_url}/config/db", settings, headers)
     end
 
@@ -86,12 +86,12 @@ module KineticSdk
     #     })
     #
     def update_engine(settings, headers=default_headers)
-      info("Updating the engine properties")
+      @logger.info("Updating the engine properties")
       put("#{@api_url}/config/engine", settings, headers)
 
       # start the task engine?
       if !settings['Sleep Delay'].nil? && settings['Sleep Delay'].to_i > 0
-        info("Starting the engine")
+        @logger.info("Starting the engine")
         start_engine
       end
     end
@@ -116,7 +116,7 @@ module KineticSdk
     #     })
     #
     def update_identity_store(settings, headers=default_headers)
-      info("Updating the identity store properties")
+      @logger.info("Updating the identity store properties")
       put("#{@api_url}/config/identityStore", settings, headers)
     end
 
@@ -144,7 +144,7 @@ module KineticSdk
     #     })
     #
     def update_properties(settings, headers=default_headers)
-      info("Updating the web server properties")
+      @logger.info("Updating the web server properties")
       put("#{@api_url}/config/server", settings, headers)
 
       # reset the configuration user
@@ -168,7 +168,7 @@ module KineticSdk
     #     })
     #
     def update_session_configuration(settings, headers=default_headers)
-      info("Updating the session configuration settings")
+      @logger.info("Updating the session configuration settings")
       put("#{@api_url}/config/session", settings, headers)
     end
 
@@ -178,7 +178,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_system_policy_rule(params={}, headers=header_basic_auth)
-      info("Finding the system policy rule")
+      @logger.info("Finding the system policy rule")
       get("#{@api_url}/config/systemPolicyRule", params, headers)
     end
 
@@ -193,7 +193,7 @@ module KineticSdk
     #     update_system_policy_rule("Allow All")
     #
     def update_system_policy_rule(policy_rule_name, headers=default_headers)
-      info("Updating the system policy rule")
+      @logger.info("Updating the system policy rule")
       payload = { "name" => policy_rule_name }
       put("#{@api_url}/config/systemPolicyRule", payload, headers)
     end

@@ -14,7 +14,7 @@ module KineticSdk
         "description" => description,
         "name" => name
       }
-      info("Adding User attribute definition \"#{name}\" to the \"#{space_slug}\" space.")
+      @logger.info("Adding User attribute definition \"#{name}\" to the \"#{space_slug}\" space.")
       # Create the user attribute definition
       post("#{@api_url}/userAttributeDefinitions", body, headers)
     end
@@ -32,7 +32,7 @@ module KineticSdk
         "description" => description,
         "name" => name
       }
-      info("Adding User attribute definition \"#{name}\" to the \"#{space_slug}\" space.")
+      @logger.info("Adding User attribute definition \"#{name}\" to the \"#{space_slug}\" space.")
       # Create the user attribute definition
       post("#{@api_url}/userProfileAttributeDefinitions", body, headers)
     end
@@ -50,7 +50,7 @@ module KineticSdk
         "description" => description,
         "name" => name
       }
-      info("Adding Space attribute definition \"#{name}\" to the \"#{space_slug}\" space.")
+      @logger.info("Adding Space attribute definition \"#{name}\" to the \"#{space_slug}\" space.")
       # Create the attribute definition
       post("#{@api_url}/spaceAttributeDefinitions", body, headers)
     end
@@ -68,7 +68,7 @@ module KineticSdk
         "description" => description,
         "name" => name
       }
-      info("Adding Datastore Form attribute definition \"#{name}\" to the \"#{space_slug}\" space.")
+      @logger.info("Adding Datastore Form attribute definition \"#{name}\" to the \"#{space_slug}\" space.")
       # Create the attribute definition
       post("#{@api_url}/datastoreFormAttributeDefinitions", body, headers)
     end
@@ -87,7 +87,7 @@ module KineticSdk
         "description" => description,
         "name" => name
       }
-      info("Adding Category attribute definition \"#{name}\" to the \"#{kapp_slug}\" kapp.")
+      @logger.info("Adding Category attribute definition \"#{name}\" to the \"#{kapp_slug}\" kapp.")
       # Create the attribute definition
       post("#{@api_url}/kapps/#{kapp_slug}/categoryAttributeDefinitions", body, headers)
     end
@@ -106,7 +106,7 @@ module KineticSdk
         "description" => description,
         "name" => name
       }
-      info("Adding Form attribute definition \"#{name}\" to the \"#{kapp_slug}\" kapp.")
+      @logger.info("Adding Form attribute definition \"#{name}\" to the \"#{kapp_slug}\" kapp.")
       # Create the attribute definition
       post("#{@api_url}/kapps/#{kapp_slug}/formAttributeDefinitions", body, headers)
     end
@@ -125,7 +125,7 @@ module KineticSdk
         "description" => description,
         "name" => name
       }
-      info("Adding Kapp attribute definition \"#{name}\" to the \"#{kapp_slug}\" kapp.")
+      @logger.info("Adding Kapp attribute definition \"#{name}\" to the \"#{kapp_slug}\" kapp.")
       # Create the attribute definition
       post("#{@api_url}/kapps/#{kapp_slug}/kappAttributeDefinitions", body, headers)
     end
@@ -143,7 +143,7 @@ module KineticSdk
         "description" => description,
         "name" => name
       }
-      info("Adding Team attribute definition \"#{name}\" to the \"#{space_slug}\" space.")
+      @logger.info("Adding Team attribute definition \"#{name}\" to the \"#{space_slug}\" space.")
       # Create the team attribute definition
       post("#{@api_url}/teamAttributeDefinitions", body, headers)
     end

@@ -18,7 +18,7 @@ module KineticSdk
       # set parent hash if parent was passed as a string
       payload["parent"] = { "id" => payload["parent"] } if payload["parent"].is_a? String
       # Create the submission
-      info("Adding a submission in the \"#{form_slug}\" Datastore Form.")
+      @logger.info("Adding a submission in the \"#{form_slug}\" Datastore Form.")
       post("#{@api_url}/datastore/forms/#{form_slug}/submissions", payload, headers)
     end
 
@@ -40,7 +40,7 @@ module KineticSdk
       # set parent hash if parent was passed as a string
       payload["parent"] = { "id" => payload["parent"] } if payload["parent"].is_a? String
       # Create the submission
-      info("Adding a submission page in the \"#{form_slug}\" Datastore Form.")
+      @logger.info("Adding a submission page in the \"#{form_slug}\" Datastore Form.")
       post("#{@api_url}/datastore/forms/#{form_slug}/submissions?page=#{encode(page_name)}", payload, headers)
     end
 
@@ -63,7 +63,7 @@ module KineticSdk
       # set parent hash if parent was passed as a string
       payload["parent"] = { "id" => payload["parent"] } if payload["parent"].is_a? String
       # Create the submission
-      info("Patching a submission in the \"#{form_slug}\" Form.")
+      @logger.info("Patching a submission in the \"#{form_slug}\" Form.")
       patch("#{@api_url}/datastore/forms/#{form_slug}/submissions", payload, headers)
     end
 
@@ -80,7 +80,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_all_form_datastore_submissions(form_slug, params={}, headers=default_headers)
-      info("Finding submissions for the \"#{form_slug}\" Datastore Form.")
+      @logger.info("Finding submissions for the \"#{form_slug}\" Datastore Form.")
       # Make the initial request of pages submissions
       response = find_form_datastore_submissions(form_slug, params, headers)
       # Build the Messages Array
@@ -119,9 +119,9 @@ module KineticSdk
       # Get next page token
       token = params["pageToken"]
       if token.nil?
-        info("Finding first page of submissions for the \"#{form_slug}\" Datastore.")
+        @logger.info("Finding first page of submissions for the \"#{form_slug}\" Datastore.")
       else
-        info("Finding page of submissions starting with token \"#{token}\" for the \"#{form_slug}\" Form.")
+        @logger.info("Finding page of submissions starting with token \"#{token}\" for the \"#{form_slug}\" Form.")
       end
 
       # Build Submission URL
@@ -137,7 +137,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_datastore_submission(submission_id, params={}, headers=default_headers)
-      info("Finding Datastore Submission \"#{submission_id}\"")
+      @logger.info("Finding Datastore Submission \"#{submission_id}\"")
       get("#{@api_url}/datastore/submissions/#{encode(submission_id)}", params, headers)
     end
 
@@ -149,7 +149,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_datastore_submission(submission_id, body={}, headers=default_headers)
-      info("Updating Datastore Submission \"#{submission_id}\"")
+      @logger.info("Updating Datastore Submission \"#{submission_id}\"")
       put("#{@api_url}/datastore/submissions/#{encode(submission_id)}", body, headers)
     end
 
@@ -160,7 +160,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_datastore_submission(submission_id, headers=default_headers)
-      info("Deleting Datastore Submission \"#{submission_id}\"")
+      @logger.info("Deleting Datastore Submission \"#{submission_id}\"")
       delete("#{@api_url}/datastore/submissions/#{encode(submission_id)}", headers)
     end
 

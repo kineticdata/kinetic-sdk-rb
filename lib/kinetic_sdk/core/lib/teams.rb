@@ -18,7 +18,7 @@ module KineticSdk
       # either add or update the attribute value
       exists = false
       attributes.each do |attribute|
-        info("Attribute: #{attribute.inspect}")
+        @logger.info("Attribute: #{attribute.inspect}")
         # if the attribute already exists, update it
         if attribute["name"] == attribute_name
           attribute["values"] = [ attribute_value ]
@@ -34,9 +34,9 @@ module KineticSdk
       # set the updated attributes list
       body = { "attributes" => attributes }
       if exists
-        info("Updating attribute \"#{attribute_name}\" = \"#{attribute_value}\" in the \"#{team_name}\" team.")
+        @logger.info("Updating attribute \"#{attribute_name}\" = \"#{attribute_value}\" in the \"#{team_name}\" team.")
       else
-        info("Adding attribute \"#{attribute_name}\" = \"#{attribute_value}\" to the \"#{team_name}\" team.")
+        @logger.info("Adding attribute \"#{attribute_name}\" = \"#{attribute_value}\" to the \"#{team_name}\" team.")
       end
       # Update the space
       put("#{@api_url}/teams/#{team['slug']}", body, headers)
@@ -51,7 +51,7 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_team(team_properties, headers=default_headers)
       raise StandardError.new "Team properties is not valid, must be a Hash." unless team_properties.is_a? Hash
-      info("Adding Team \"#{team_properties['name']}\"")
+      @logger.info("Adding Team \"#{team_properties['name']}\"")
       post("#{@api_url}/teams", team_properties, headers)
     end
 
@@ -70,7 +70,7 @@ module KineticSdk
           "username" => username
         }
       }
-      info("Adding user: \"#{username}\" to \"#{team_name}\" team")
+      @logger.info("Adding user: \"#{username}\" to \"#{team_name}\" team")
       post("#{@api_url}/memberships/", body, headers)
     end
 
@@ -80,7 +80,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_teams(params={}, headers=default_headers)
-      info("Finding Teams")
+      @logger.info("Finding Teams")
       get("#{@api_url}/teams", params, headers)
     end
 
@@ -91,7 +91,7 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def export_team(team_name, headers=default_headers)
       team_slug = Digest::MD5.hexdigest(team_name)
-      info("Exporting the \"#{team_name}\" (#{team_slug}) Team.")
+      @logger.info("Exporting the \"#{team_name}\" (#{team_slug}) Team.")
       get("#{@api_url}/teams/#{team_slug}", { 'export' => true}, headers)
     end
 
@@ -105,7 +105,7 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_team(team_name, params={}, headers=default_headers)
       team_slug = Digest::MD5.hexdigest(team_name)
-      info("Finding the \"#{team_name}\" (#{team_slug}) Team.")
+      @logger.info("Finding the \"#{team_name}\" (#{team_slug}) Team.")
       get("#{@api_url}/teams/#{team_slug}", params, headers)
     end
 

@@ -20,7 +20,7 @@ module KineticSdk
       # either add or update the attribute value
       exists = false
       attributes.each do |attribute|
-        info("Attribute: #{attribute.inspect}")
+        @logger.info("Attribute: #{attribute.inspect}")
         # if the attribute already exists, update it
         if attribute["name"] == attribute_name
           attribute["values"] = [ attribute_value ]
@@ -36,9 +36,9 @@ module KineticSdk
       # set the updated attributes list
       body = { "attributes" => attributes }
       if exists
-        info("Updating attribute \"#{attribute_name}\" = \"#{attribute_value}\" in the \"#{space_slug}\" space.")
+        @logger.info("Updating attribute \"#{attribute_name}\" = \"#{attribute_value}\" in the \"#{space_slug}\" space.")
       else
-        info("Adding attribute \"#{attribute_name}\" = \"#{attribute_value}\" to the \"#{space_slug}\" space.")
+        @logger.info("Adding attribute \"#{attribute_name}\" = \"#{attribute_value}\" to the \"#{space_slug}\" space.")
       end
       # Update the space
       put("#{@api_url}/space", body, headers)
@@ -50,7 +50,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_space(body={}, headers=default_headers)
-      info("Updating Space \"#{@space_slug}\"")
+      @logger.info("Updating Space \"#{@space_slug}\"")
       put("#{@api_url}/space", body, headers)
     end
 
@@ -60,7 +60,7 @@ module KineticSdk
     # @return nil
     def export_space(headers=default_headers)
       raise StandardError.new "An export directory must be defined to export space." if @options[:export_directory].nil?
-      info("Exporting space definition to #{@options[:export_directory]}.")
+      @logger.info("Exporting space definition to #{@options[:export_directory]}.")
       # Build up the tree of how files should be written
       export_shape = prepare_shape(
         "space.bridges.{name}",
@@ -85,7 +85,7 @@ module KineticSdk
       )
       core_data = get("#{@api_url}/space", { 'export' => true}, headers).content
       process_export(@options[:export_directory], export_shape, core_data)
-      info("Finished exporting space definition to #{@options[:export_directory]}.")
+      @logger.info("Finished exporting space definition to #{@options[:export_directory]}.")
     end
 
     # Find the space
@@ -94,7 +94,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_space(params={}, headers=default_headers)
-      info("Finding Space \"#{@space_slug}\"")
+      @logger.info("Finding Space \"#{@space_slug}\"")
       get("#{@api_url}/space", params, headers)
     end
 
@@ -105,7 +105,7 @@ module KineticSdk
     # @return nil
     def import_space(slug, headers=default_headers)
       raise StandardError.new "An export directory must be defined to import space." if @options[:export_directory].nil?
-      info("Importing space definition from #{@options[:export_directory]}.")
+      @logger.info("Importing space definition from #{@options[:export_directory]}.")
 
       # Loop over all provided files sorting files before folders
       Dir["#{@options[:export_directory]}/**/*.json"].map { |file| [file.count("/"), file] }.sort.map { |file| file[1] }.each do |file|
@@ -113,13 +113,13 @@ module KineticSdk
         body = JSON.parse(File.read(file))
         if rel_path == "space.json"
           api_path = "/space"
-          info("Importing to #{api_path}.")
+          @logger.info("Importing #{rel_path} to #{api_path}.")
           body['slug'] = slug
           resp = put("#{@api_url}#{api_path}", body, headers)
         elsif body.is_a?(Array)
           api_path = "/#{rel_path.sub(/^space\//,'').sub(/\.json$/,'')}"
           body.each do |part|
-            info("Importing to #{api_path}.")
+            @logger.info("Importing #{rel_path} to #{api_path}.")
             resp = post("#{@api_url}#{api_path}", part, headers)
           end
         else
@@ -128,7 +128,7 @@ module KineticSdk
           if api_path == "/bridges" && body.has_key?("key")
             body.delete("key")
           end
-          info("Importing to #{api_path}.")
+          @logger.info("Importing #{rel_path} to #{api_path}.")
           resp = post("#{@api_url}#{api_path}", body, headers)
           # TODO: Remove this block when core API is updated to not pre-create SPDs
           if api_path == "/kapps"
@@ -137,7 +137,7 @@ module KineticSdk
           end
         end
       end
-      info("Finished importing space definition to #{@options[:export_directory]}.")
+      @logger.info("Finished importing space definition to #{@options[:export_directory]}.")
     end
 
     # Checks if the space exists
@@ -147,7 +147,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def space_exists?(slug, params={}, headers=default_headers)
-      info("Checking if the \"#{slug}\" space exists")
+      @logger.info("Checking if the \"#{slug}\" space exists")
       response = get("#{@api_url}/spaces/#{slug}", params, headers)
       response.status == 200
     end

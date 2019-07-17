@@ -9,7 +9,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def complete_deferred_task(source_name, body, headers=default_headers)
-      info("Completing deferred task for the \"#{source_name}\" Source.")
+      @logger.info("Completing deferred task for the \"#{source_name}\" Source.")
       post("#{@api_v1_url}/complete-deferred-task/#{encode(source_name)}", body, headers)
     end
 

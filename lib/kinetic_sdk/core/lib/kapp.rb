@@ -22,7 +22,7 @@ module KineticSdk
         "name" => kapp_name,
         "slug" => kapp_slug
       })
-      info("Adding the \"#{kapp_name}\" Kapp.")
+      @logger.info("Adding the \"#{kapp_name}\" Kapp.")
       post("#{@api_url}/kapps", properties, headers)
     end
 
@@ -32,7 +32,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_kapp(kapp_slug, headers=default_headers)
-      info("Deleting the \"#{kapp_slug}\" Kapp.")
+      @logger.info("Deleting the \"#{kapp_slug}\" Kapp.")
       delete("#{@api_url}/kapps/#{kapp_slug}", headers)
     end
 
@@ -42,7 +42,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def export_kapp(kapp_slug, headers=default_headers)
-      info("Exporting the \"#{kapp_slug}\" Kapp.")
+      @logger.info("Exporting the \"#{kapp_slug}\" Kapp.")
       get("#{@api_url}/kapps/#{kapp_slug}", { 'export' => true }, headers)
     end
 
@@ -52,7 +52,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_kapps(params={}, headers=default_headers)
-      info("Finding Kapps.")
+      @logger.info("Finding Kapps.")
       get("#{@api_url}/kapps", params, headers)
     end
 
@@ -63,7 +63,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_kapp(kapp_slug, params={}, headers=default_headers)
-      info("Finding Kapp \"#{kapp_slug}\"")
+      @logger.info("Finding Kapp \"#{kapp_slug}\"")
       get("#{@api_url}/kapps/#{kapp_slug}", params, headers)
     end
 
@@ -85,7 +85,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_kapp(kapp_slug, properties={}, headers=default_headers)
-      info("Updating the \"#{kapp_slug}\" Kapp.")
+      @logger.info("Updating the \"#{kapp_slug}\" Kapp.")
       put("#{@api_url}/kapps/#{kapp_slug}", properties, headers)
     end
 

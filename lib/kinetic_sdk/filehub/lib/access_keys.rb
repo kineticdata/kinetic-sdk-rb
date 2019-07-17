@@ -11,7 +11,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_access_key(slug, payload, headers=default_headers)
-      info("Adding Access Key for Filestore \"#{slug}\"")
+      @logger.info("Adding Access Key for Filestore \"#{slug}\"")
       post("#{@api_url}/filestores/#{slug}/access-keys", payload, headers)
     end
 
@@ -22,7 +22,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_access_key(slug, id, headers=default_headers)
-      info("Deleting Access Key #{id} for Filestore \"#{slug}\"")
+      @logger.info("Deleting Access Key #{id} for Filestore \"#{slug}\"")
       delete("#{@api_url}/filestores/#{slug}/access-keys/#{id}", headers)
     end
 
@@ -33,7 +33,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_access_keys(slug, params={}, headers=default_headers)
-      info("Finding Access Keys for Filestore \"#{slug}\"")
+      @logger.info("Finding Access Keys for Filestore \"#{slug}\"")
       get("#{@api_url}/filestores/#{slug}/access-keys", params, headers)
     end
 
@@ -45,7 +45,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_access_key(slug, id, params={}, headers=default_headers)
-      info("Finding Access Key \"#{id}\" for Filestore \"#{slug}\"")
+      @logger.info("Finding Access Key \"#{id}\" for Filestore \"#{slug}\"")
       get("#{@api_url}/filestores/#{slug}/access-keys/#{id}", params, headers)
     end
 
@@ -59,7 +59,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_access_key(slug, id, payload, headers=default_headers)
-      info("Updating Access Key \"#{id}\" for Filestore \"#{slug}\"")
+      @logger.info("Updating Access Key \"#{id}\" for Filestore \"#{slug}\"")
       put("#{@api_url}/filestores/#{slug}/access-keys/#{id}", payload, headers)
     end
 

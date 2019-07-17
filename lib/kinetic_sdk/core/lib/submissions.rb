@@ -25,7 +25,7 @@ module KineticSdk
       uri = URI.parse("#{@api_url}/kapps/#{kapp_slug}/forms/#{form_slug}/submissions")
       uri.query = URI.encode_www_form(parameters) unless parameters.empty?
       # Create the submission
-      info("Adding a submission in the \"#{form_slug}\" Form.")
+      @logger.info("Adding a submission in the \"#{form_slug}\" Form.")
       post(uri.to_s, payload, headers)
     end
 
@@ -57,7 +57,7 @@ module KineticSdk
       uri = URI.parse("#{@api_url}/kapps/#{kapp_slug}/forms/#{form_slug}/submissions")
       uri.query = URI.encode_www_form(parameters)
       # Create the submission
-      info("Adding a submission page in the \"#{form_slug}\" Form.")
+      @logger.info("Adding a submission page in the \"#{form_slug}\" Form.")
       post(uri.to_s, payload, headers)
     end
 
@@ -81,7 +81,7 @@ module KineticSdk
       # set parent hash if parent was passed as a string
       payload["parent"] = { "id" => payload["parent"] } if payload["parent"].is_a? String
       # Create the submission
-      info("Patching a submission in the \"#{form_slug}\" Form.")
+      @logger.info("Patching a submission in the \"#{form_slug}\" Form.")
       patch("#{@api_url}/kapps/#{kapp_slug}/forms/#{form_slug}/submissions", payload, headers)
     end
 
@@ -104,7 +104,7 @@ module KineticSdk
       # set parent hash if parent was passed as a string
       payload["parent"] = { "id" => payload["parent"] } if payload["parent"].is_a? String
       # Create the submission
-      info("Patching a submission with id \"#{submission_id}\"")
+      @logger.info("Patching a submission with id \"#{submission_id}\"")
       patch("#{@api_url}/submissions/#{submission_id}", payload, headers)
     end
 
@@ -122,7 +122,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_all_form_submissions(kapp_slug, form_slug, params={}, headers=default_headers)
-      info("Finding submissions for the \"#{form_slug}\" Form.")
+      @logger.info("Finding submissions for the \"#{form_slug}\" Form.")
       # Make the initial request of pages submissions
       response = find_form_submissions(kapp_slug, form_slug, params, headers)
       # Build the Messages Array
@@ -162,9 +162,9 @@ module KineticSdk
       # Get next page token
       token = params["pageToken"]
       if token.nil?
-        info("Finding first page of submissions for the \"#{form_slug}\" Form.")
+        @logger.info("Finding first page of submissions for the \"#{form_slug}\" Form.")
       else
-        info("Finding page of submissions starting with token \"#{token}\" for the \"#{form_slug}\" Form.")
+        @logger.info("Finding page of submissions starting with token \"#{token}\" for the \"#{form_slug}\" Form.")
       end
 
       # Build Submission URL
@@ -189,9 +189,9 @@ module KineticSdk
       # Get next page token
       token = params["pageToken"]
       if token.nil?
-        info("Finding first page of submissions for the \"#{kapp_slug}\" Kapp.")
+        @logger.info("Finding first page of submissions for the \"#{kapp_slug}\" Kapp.")
       else
-        info("Finding page of submissions starting with token \"#{token}\" for the \"#{kapp_slug}\" Kapp.")
+        @logger.info("Finding page of submissions starting with token \"#{token}\" for the \"#{kapp_slug}\" Kapp.")
       end
 
       # Build Submission URL
@@ -207,7 +207,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_submission(submission_id, body={}, headers=default_headers)
-      info("Updating Submission \"#{submission_id}\"")
+      @logger.info("Updating Submission \"#{submission_id}\"")
       put("#{@api_url}/submissions/#{encode(submission_id)}", body, headers)
     end
 

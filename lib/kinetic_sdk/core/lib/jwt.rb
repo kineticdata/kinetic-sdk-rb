@@ -11,7 +11,7 @@ module KineticSdk
       # retrieve the jwt code
       jwt_code = jwt_code(client_id, headers)
       # retrieve the jwt token
-      info("Retrieving JWT authorization token")
+      @logger.info("Retrieving JWT authorization token")
       url = "#{@server}/app/oauth/token?grant_type=authorization_code&response_type=token&client_id=#{client_id}&code=#{jwt_code}"
       token_headers = header_accept_json.merge(header_basic_auth(client_id, client_secret))
       response = post(url, {}, token_headers, 0)
@@ -33,7 +33,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def jwt_code(client_id, headers=default_headers)
-      info("Retrieving JWT authorization code")
+      @logger.info("Retrieving JWT authorization code")
       url = "#{@server}/app/oauth/authorize?grant_type=authorization_code&response_type=code&client_id=#{client_id}"
       response = post(url, {}, headers, -1)
 

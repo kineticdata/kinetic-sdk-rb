@@ -21,7 +21,7 @@ module KineticSdk
     #     }
     #
     def test_db_connection(db={}, headers=default_headers)
-      info("Testing database connection")
+      @logger.info("Testing database connection")
       response = post("#{@api_url}/setup/db/test", db, headers)
       response.content
     end
@@ -47,7 +47,7 @@ module KineticSdk
     #     }
     #
     def migrate_db(db={}, headers=default_headers)
-      info("Running database migrations")
+      @logger.info("Running database migrations")
       response = post("#{@api_url}/setup/db/migrate", db, headers)
       response.content
     end

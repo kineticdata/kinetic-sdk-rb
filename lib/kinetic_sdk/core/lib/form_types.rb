@@ -10,7 +10,7 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_form_type_on_kapp(kapp_slug, body, headers=default_headers)
       raise StandardError.new "Form Type properties is not valid, must be a Hash." unless body.is_a? Hash
-      info("Adding Form Type \"#{body['name']}\" for \"#{kapp_slug}\" kapp")
+      @logger.info("Adding Form Type \"#{body['name']}\" for \"#{kapp_slug}\" kapp")
       post("#{@api_url}/kapps/#{kapp_slug}/formTypes", body, headers)
     end
 
@@ -21,7 +21,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_form_type(kapp_slug, name, headers=default_headers)
-      info("Deleting form type \"#{name}\" from \"#{kapp_slug}\" kapp")
+      @logger.info("Deleting form type \"#{name}\" from \"#{kapp_slug}\" kapp")
       delete("#{@api_url}/kapps/#{kapp_slug}/formTypes/#{encode(name)}", headers)
     end
 
@@ -43,7 +43,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_form_types_on_kapp(kapp_slug, params={}, headers=default_headers)
-      info("Finding Form Types for \"#{kapp_slug}\" kapp")
+      @logger.info("Finding Form Types for \"#{kapp_slug}\" kapp")
       get("#{@api_url}/kapps/#{kapp_slug}/formTypes", params, headers)
     end
 

@@ -20,7 +20,7 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_message(discussion_id, message, headers=default_jwt_headers)
       payload = message_content(message)
-      info("Adding a message to the #{discussion_id} Discussion")
+      @logger.info("Adding a message to the #{discussion_id} Discussion")
       post("#{@api_url}/discussions/#{discussion_id}/messages", payload, headers)
     end
 
@@ -46,7 +46,7 @@ module KineticSdk
     def add_message_with_attachments(discussion_id, properties={}, headers=default_jwt_headers)
       payload = message_content(properties['message'])
       payload["attachments"] = properties['attachments']
-      info("Adding a message to the #{discussion_id} Discussion")
+      @logger.info("Adding a message to the #{discussion_id} Discussion")
       post_multipart("#{@api_url}/discussions/#{discussion_id}/messages", payload, headers)
     end
 
@@ -57,7 +57,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is bearer authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_messages(discussion_id, params={}, headers=default_jwt_headers)
-      info("Finding messages in the #{discussion_id} Discussion")
+      @logger.info("Finding messages in the #{discussion_id} Discussion")
       get("#{@api_url}/discussions/#{discussion_id}/messages", params, headers)
     end
 
@@ -69,7 +69,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is bearer authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_message(discussion_id, message_id, params={}, headers=default_jwt_headers)
-      info("Finding the #{message_id} message in the #{discussion_id} Discussion")
+      @logger.info("Finding the #{message_id} message in the #{discussion_id} Discussion")
       get("#{@api_url}/discussions/#{discussion_id}/messages/#{message_id}", params, headers)
     end
 
@@ -93,7 +93,7 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_message(discussion_id, message_id, message, headers=default_jwt_headers)
       payload = message_content(message)
-      info("Updating the #{message_id} message in the #{discussion_id} Discussion")
+      @logger.info("Updating the #{message_id} message in the #{discussion_id} Discussion")
       put("#{@api_url}/discussions/#{discussion_id}/messages/#{message_id}", payload, headers)
     end
 
@@ -118,7 +118,7 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_message_with_attachments(discussion_id, message_id, message, attachments=[], headers=header_bearer_auth)
       payload = { "message" => message_content(message).to_json, "attachments" => attachments }
-      info("Updating the #{message_id} message in the #{discussion_id} Discussion")
+      @logger.info("Updating the #{message_id} message in the #{discussion_id} Discussion")
       post_multipart("#{@api_url}/discussions/#{discussion_id}/messages/#{message_id}", payload, headers)
     end
 
@@ -137,7 +137,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is bearer authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def download_message_attachment(discussion_id, message_id, document_id, filename, params={}, headers=header_bearer_auth)
-      info("Downloading the #{filename} file attachment in the #{discussion_id} Discussion")
+      @logger.info("Downloading the #{filename} file attachment in the #{discussion_id} Discussion")
       get("#{@api_url}/discussions/#{discussion_id}/messages/#{message_id}/files/#{document_id}/#{filename}", params, headers)
     end
 
@@ -164,7 +164,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is bearer authentication
     def export_message_attachment(discussion_id, message_id, document_id, filename, params={}, headers=header_bearer_auth)
       raise StandardError.new "An export directory must be defined to export a file attachment." if @options[:export_directory].nil?
-      info("Exporting the #{filename} file attachment in the #{discussion_id} Discussion")
+      @logger.info("Exporting the #{filename} file attachment in the #{discussion_id} Discussion")
       # Create the export directory if it doesn't yet exist
       export_dir = FileUtils::mkdir_p(File.join(@options[:export_directory], discussion_id, "files", message_id))
       export_file = File.join(export_dir, filename)

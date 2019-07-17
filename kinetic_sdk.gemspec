@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.summary       = %q{Ruby SDK for Kinetic Data application APIs}
   spec.homepage      = "https://github.com/kineticdata/kinetic-sdk-rb"
 
-  spec.files         = Dir.glob("{bin,lib,gems}/**/*") + %w(README.md GettingStarted.md)
+  spec.files         = Dir.glob("{bin,lib,gems,.yardoc-includes}/**/*") + %w(kinetic_sdk.gemspec .yardopts CHANGELOG.md GettingStarted.md README.md Rakefile)
   spec.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   spec.require_paths = ["lib"]
 

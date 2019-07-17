@@ -6,7 +6,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_license(headers=header_basic_auth)
-      info("Deleting the license")
+      @logger.info("Deleting the license")
       delete("#{@api_url}/config/license", {}, headers)
     end
 
@@ -16,7 +16,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_license(params={}, headers=header_basic_auth)
-      info("Finding the license")
+      @logger.info("Finding the license")
       get("#{@api_url}/config/license", params, headers)
     end
 
@@ -27,7 +27,7 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_license(license_content, headers=default_headers)
       body = { "licenseContent" => license_content }
-      info("Updating license")
+      @logger.info("Updating license")
       post("#{@api_url}/config/license", body, headers)
     end
 
@@ -43,7 +43,7 @@ module KineticSdk
         if File.exists? license
           update_license(File.read(license), headers)
         else
-          info("  * License file \"#{license}\" does not exist.")
+          @logger.info("  * License file \"#{license}\" does not exist.")
         end
       end
     end

@@ -31,9 +31,12 @@ module KineticSdk
     # @option opts [String] :password the password for the user
     # @option opts [Hash<Symbol, Object>] :options ({}) optional settings
     #
-    #   * :export_directory (String) (_example: /opt/exports/kinetic-task) directory to write files when exporting,
-    #   * :log_level (String) (_defaults to: off_) level of logging - off | info | debug | trace
-    #   * :max_redirects (Fixnum) (_defaults to: 10_) maximum number of redirects to follow
+    #   * :export_directory (String) (_example: /opt/exports/kinetic-task_) directory to write files when exporting,
+    #   * :gateway_retry_limit (FixNum) (_defaults to: 5_) max number of times to retry a bad gateway
+    #   * :gateway_retry_delay (Float) (_defaults to: 1.0_) number of seconds to delay before retrying a bad gateway
+    #   * :log_level (String) (_defaults to: off_) level of logging - off | error | warn | info | debug
+    #   * :log_output (String) (_defaults to: STDOUT_) where to send output - STDOUT | STDERR
+    #   * :max_redirects (Fixnum) (_defaults to: 5_) maximum number of redirects to follow
     #   * :ssl_ca_file (String) full path to PEM certificate used to verify the server
     #   * :ssl_verify_mode (String) (_defaults to: none_) - none | peer
     #
@@ -76,6 +79,12 @@ module KineticSdk
 
       # process any individual options
       @options = options.delete(:options) || {}
+      # setup logging
+      log_level = (@options["log_level"] || @options[:log_level]).to_s.downcase
+      log_output = (@options["log_output"] || @options[:log_output]).to_s.downcase
+      log_output = log_output == "stderr" ? STDERR : STDOUT
+      @logger = KineticSdk::Utils::KLogger.new(log_level, log_output)
+
       @config_user[:username] = options[:username]
       @config_user[:password] = options[:password]
       @server = options[:app_server_url].chomp('/')

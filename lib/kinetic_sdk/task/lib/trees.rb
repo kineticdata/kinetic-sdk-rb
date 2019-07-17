@@ -25,7 +25,7 @@ module KineticSdk
       else
         title = "#{tree.to_s}"
       end
-      info("Deleting Tree \"#{title}\"")
+      @logger.info("Deleting Tree \"#{title}\"")
       delete("#{@api_url}/trees/#{encode(title)}", headers)
     end
 
@@ -44,15 +44,15 @@ module KineticSdk
     #
     def delete_trees(source_name=nil, headers=header_basic_auth)
       if source_name.nil?
-        info("Deleting all trees")
+        @logger.info("Deleting all trees")
         params = {}
       else
-        info("Deleting trees for Source \"#{source_name}\"")
+        @logger.info("Deleting trees for Source \"#{source_name}\"")
         params = { "source" => source_name }
       end
 
       (find_trees(params, headers).content['trees'] || []).each do |tree|
-        info("Deleting tree \"#{tree['title']}\"")
+        @logger.info("Deleting tree \"#{tree['title']}\"")
         delete("#{@api_url}/trees/#{encode(tree['title'])}", headers)
       end
     end
@@ -77,7 +77,7 @@ module KineticSdk
     #     find_trees({ "source" => "Kinetic Request CE", "include" => "details" })
     #
     def find_trees(params={}, headers=header_basic_auth)
-      info("Finding Trees")
+      @logger.info("Finding Trees")
       get("#{@api_url}/trees", params, headers)
     end
 
@@ -100,7 +100,7 @@ module KineticSdk
     #     find_routines({ "source" => "Kinetic Request CE", "include" => "details" })
     #
     def find_routines(params={}, headers=header_basic_auth)
-      info("Finding Routines")
+      @logger.info("Finding Routines")
       response = get("#{@api_url}/trees", params, headers)
 
       routines = []
@@ -127,7 +127,7 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def import_tree(tree, force_overwrite=false, headers=header_basic_auth)
       body = { "content" => tree }
-      info("Importing Tree #{File.basename(tree)}")
+      @logger.info("Importing Tree #{File.basename(tree)}")
       post_multipart("#{@api_url}/trees?force=#{force_overwrite}", body, headers)
     end
 
@@ -144,7 +144,7 @@ module KineticSdk
     # @return nil
     def import_trees(force_overwrite=false, headers=header_basic_auth)
       raise StandardError.new "An export directory must be defined to import trees from." if @options[:export_directory].nil?
-      info("Importing all Trees from Export Directory")
+      @logger.info("Importing all Trees from Export Directory")
       Dir["#{@options[:export_directory]}/sources/**/*.xml"].sort.each do |file|
         tree_file = File.new(file, "rb")
         import_tree(tree_file, force_overwrite, headers)
@@ -162,7 +162,7 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def import_routine(routine, force_overwrite=false, headers=header_basic_auth)
       body = { "content" => routine }
-      info("Importing Routine #{File.basename(routine)}")
+      @logger.info("Importing Routine #{File.basename(routine)}")
       post_multipart("#{@api_url}/trees?force=#{force_overwrite}", body, headers)
     end
 
@@ -176,7 +176,7 @@ module KineticSdk
     # @return nil
     def import_routines(force_overwrite=false, headers=header_basic_auth)
       raise StandardError.new "An export directory must be defined to import trees from." if @options[:export_directory].nil?
-      info("Importing all Routines from Export Directory")
+      @logger.info("Importing all Routines from Export Directory")
       Dir["#{@options[:export_directory]}/routines/*.xml"].sort.each do |file|
         routine_file = File.new(file, "rb")
         import_routine(routine_file, force_overwrite, headers)
@@ -198,7 +198,7 @@ module KineticSdk
     #     )
     #
     def find_tree(title, params={}, headers=header_basic_auth)
-      info("Finding the \"#{title}\" Tree")
+      @logger.info("Finding the \"#{title}\" Tree")
       get("#{@api_url}/trees/#{encode(title)}", params, headers)
     end
 
@@ -210,7 +210,7 @@ module KineticSdk
     #
     def export_tree(title, headers=header_basic_auth)
       raise StandardError.new "An export directory must be defined to export a tree." if @options[:export_directory].nil?
-      info("Exporting tree \"#{title}\" to #{@options[:export_directory]}.")
+      @logger.info("Exporting tree \"#{title}\" to #{@options[:export_directory]}.")
       # Get the tree
       response = find_tree(title, { "include" => "export" })
       # Parse the response and export the tree
@@ -237,7 +237,7 @@ module KineticSdk
         xml_formatter = Prettier.new
         xml_formatter.write(xml_doc, File.open(tree_file, "w"))
       end
-      info("Exported #{tree['type']}: #{tree['title']} to #{tree_file}")
+      @logger.info("Exported #{tree['type']}: #{tree['title']} to #{tree_file}")
     end
 
     # Export all trees and local routines for a source, and global routines
@@ -250,15 +250,15 @@ module KineticSdk
     def export_trees(source_name=nil, headers=header_basic_auth)
       raise StandardError.new "An export directory must be defined to export trees." if @options[:export_directory].nil?
       if source_name.nil?
-        info("Exporting all trees and routines to #{@options[:export_directory]}.")
+        @logger.info("Exporting all trees and routines to #{@options[:export_directory]}.")
         (find_sources.content["sourceRoots"] || []).each do |sourceRoot|
           export_trees(sourceRoot['name'])
         end
         return
       elsif source_name == "-"
-        info("Exporting global routines to #{@options[:export_directory]}.")
+        @logger.info("Exporting global routines to #{@options[:export_directory]}.")
       else
-        info("Exporting trees and routines for source \"#{source_name}\" to #{@options[:export_directory]}.")
+        @logger.info("Exporting trees and routines for source \"#{source_name}\" to #{@options[:export_directory]}.")
       end
 
       # Get all the trees and routines for the source
@@ -286,7 +286,7 @@ module KineticSdk
           xml_formatter = Prettier.new
           xml_formatter.write(xml_doc, File.open(tree_file, "w"))
         end
-        info("Exported #{tree['type']}: #{tree['title']} to #{tree_file}")
+        @logger.info("Exported #{tree['type']}: #{tree['title']} to #{tree_file}")
       end
     end
 
@@ -307,7 +307,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def run_tree(title, body={}, headers=default_headers)
-      info("Running tree #{title}")
+      @logger.info("Running tree #{title}")
       parts = title.split(" :: ")
       raise StandardError.new "Title is invalid: #{title}" if parts.size != 3
       url = "#{@api_v1_url}/run-tree/#{encode(parts[0])}/#{encode(parts[1])}/#{encode(parts[2])}"
@@ -321,7 +321,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_tree(title, body={}, headers=default_headers)
-      info("Updating the \"#{title}\" Tree")
+      @logger.info("Updating the \"#{title}\" Tree")
       put("#{@api_url}/trees/#{encode(title)}", body, headers)
     end
 

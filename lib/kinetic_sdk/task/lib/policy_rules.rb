@@ -17,7 +17,7 @@ module KineticSdk
     #     })
     #
     def add_policy_rule(policy, headers=default_headers)
-      info("Adding policy rule \"#{policy['type']} - #{policy['name']}\"")
+      @logger.info("Adding policy rule \"#{policy['type']} - #{policy['name']}\"")
       post("#{@api_url}/policyRules/#{encode(policy['type'])}", policy, headers)
     end
 
@@ -37,7 +37,7 @@ module KineticSdk
     #     })
     #
     def delete_policy_rule(policy, headers=header_basic_auth)
-      info("Deleting policy rule \"#{policy['type']} - #{policy['name']}\"")
+      @logger.info("Deleting policy rule \"#{policy['type']} - #{policy['name']}\"")
       delete("#{@api_url}/policyRules/#{encode(policy['type'])}/#{encode(policy['name'])}", headers)
     end
 
@@ -46,7 +46,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_policy_rules(headers=header_basic_auth)
-      info("Deleting all policy rules")
+      @logger.info("Deleting all policy rules")
       (find_policy_rules(headers).content["policyRules"] || []).each do |policy_rule|
         delete_policy_rule({
           "type" => policy_rule['type'],
@@ -64,7 +64,7 @@ module KineticSdk
     # @return nil
     def export_policy_rule(policy_rule, headers=header_basic_auth)
       raise StandardError.new "An export directory must be defined to export a policy rule." if @options[:export_directory].nil?
-      info("Exporting policy rule \"policy_rule['type']\" : \"#{policy_rule['name']}\" to #{@options[:export_directory]}.")
+      @logger.info("Exporting policy rule \"policy_rule['type']\" : \"#{policy_rule['name']}\" to #{@options[:export_directory]}.")
       # Create the policy rules directory if it doesn't yet exist
       dir = FileUtils::mkdir_p(File.join(@options[:export_directory], "policyRules"))
       file = File.join(dir, "#{policy_rule['type'].slugify}-#{policy_rule['name'].slugify}.json")
@@ -76,7 +76,7 @@ module KineticSdk
           headers
         )
         if response.status != 200
-          info("Failed to export policy rule: #{policy_rule['type']} - #{policy_rule['name']}: #{response.inspect}")
+          @logger.info("Failed to export policy rule: #{policy_rule['type']} - #{policy_rule['name']}: #{response.inspect}")
           policy_rule = nil
         else
           policy_rule = response.content
@@ -86,7 +86,7 @@ module KineticSdk
       unless policy_rule.nil?
         # write the file
         File.write(file, JSON.pretty_generate(policy_rule))
-        info("Exported policy rule: #{policy_rule['type']} - #{policy_rule['name']} to #{file}")
+        @logger.info("Exported policy rule: #{policy_rule['type']} - #{policy_rule['name']} to #{file}")
       end
     end
 
@@ -108,7 +108,7 @@ module KineticSdk
     # @return nil
     def import_policy_rules(headers=default_headers)
       raise StandardError.new "An export directory must be defined to import policy rules from." if @options[:export_directory].nil?
-      info("Importing all Policy Rules in Export Directory")
+      @logger.info("Importing all Policy Rules in Export Directory")
       Dir["#{@options[:export_directory]}/policyRules/*.json"].sort.each do |file|
         policy_rule = JSON.parse(File.read(file))
         add_policy_rule(policy_rule, headers)
@@ -121,7 +121,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_policy_rules(params={}, headers=header_basic_auth)
-      info("Finding Policy Rules")
+      @logger.info("Finding Policy Rules")
       policy_rules = []
       response = nil
       ["API Access", "Category Access", "Console Access", "System Default"].each do |type|
@@ -149,7 +149,7 @@ module KineticSdk
     #     find_policy_rule({ "type" => "API Access", "name" => "Allow All"})
     #
     def find_policy_rule(policy_rule, params={}, headers=header_basic_auth)
-      info("Finding the \"#{policy_rule['type']} - #{policy_rule['name']}\" Policy Rule")
+      @logger.info("Finding the \"#{policy_rule['type']} - #{policy_rule['name']}\" Policy Rule")
       get("#{@api_url}/policyRules/#{encode(policy_rule['type'])}/#{encode(policy_rule['name'])}", params, headers)
     end
 
@@ -171,7 +171,7 @@ module KineticSdk
     #     )
     #
     def update_policy_rule(policy_rule, body={}, headers=default_headers)
-      info("Updating the \"#{policy_rule['type']} - #{policy_rule['name']}\" Policy Rule")
+      @logger.info("Updating the \"#{policy_rule['type']} - #{policy_rule['name']}\" Policy Rule")
       put("#{@api_url}/policyRules/#{encode(policy_rule['type'])}/#{encode(policy_rule['name'])}", body, headers)
     end
 

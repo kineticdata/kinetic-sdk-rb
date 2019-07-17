@@ -11,7 +11,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_space_security_policy_definition(body, headers=default_headers)
-      info("Adding Space Security Policy Definition \"#{body['name']}\".")
+      @logger.info("Adding Space Security Policy Definition \"#{body['name']}\".")
       # Create the space security policy definition
       post("#{@api_url}/securityPolicyDefinitions", body, headers)
     end
@@ -22,7 +22,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_space_security_policy_definition(name, headers=default_headers)
-      info("Deleting Space Security Policy Definition \"#{name}\".")
+      @logger.info("Deleting Space Security Policy Definition \"#{name}\".")
       # Delete the space security policy definition
       delete("#{@api_url}/securityPolicyDefinitions/#{encode(name)}", headers)
     end
@@ -43,7 +43,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_space_security_policy_definitions(params={}, headers=default_headers)
-      info("Finding Space Security Policy Definitions.")
+      @logger.info("Finding Space Security Policy Definitions.")
       get("#{@api_url}/securityPolicyDefinitions", params, headers)
     end
 
@@ -54,7 +54,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_space_security_policy_definition(name, params={}, headers=default_headers)
-      info("Finding Space Security Policy Definition \"#{name}\"")
+      @logger.info("Finding Space Security Policy Definition \"#{name}\"")
       get("#{@api_url}/securityPolicyDefinitions/#{encode(name)}", params, headers)
     end
   
@@ -69,7 +69,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_space_security_policy_definition(name, body, headers=default_headers)
-      info("Updating Space Security Policy Definition \"#{name}\"")
+      @logger.info("Updating Space Security Policy Definition \"#{name}\"")
       put("#{@api_url}/securityPolicyDefinitions/#{encode(name)}", body, headers)
     end
 
@@ -86,7 +86,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_security_policy_definition(kapp_slug, body, headers=default_headers)
-      info("Adding Security Policy Definition \"#{body['name']}\" to the \"#{kapp_slug}\" kapp.")
+      @logger.info("Adding Security Policy Definition \"#{body['name']}\" to the \"#{kapp_slug}\" kapp.")
       # Create the kapp security policy definition
       post("#{@api_url}/kapps/#{kapp_slug}/securityPolicyDefinitions", body, headers)
     end
@@ -98,7 +98,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_security_policy_definition(kapp_slug, name, headers=default_headers)
-      info("Deleting Security Policy Definition \"#{name}\" from the \"#{kapp_slug}\" kapp.")
+      @logger.info("Deleting Security Policy Definition \"#{name}\" from the \"#{kapp_slug}\" kapp.")
       # Delete the kapp security policy definition
       delete("#{@api_url}/kapps/#{kapp_slug}/securityPolicyDefinitions/#{encode(name)}", headers)
     end
@@ -121,7 +121,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_security_policy_definitions(kapp_slug, params={}, headers=default_headers)
-      info("Listing Security Policy Definitions on the \"#{kapp_slug}\" kapp.")
+      @logger.info("Listing Security Policy Definitions on the \"#{kapp_slug}\" kapp.")
       get("#{@api_url}/kapps/#{kapp_slug}/securityPolicyDefinitions", params, headers)
     end
 
@@ -133,7 +133,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_security_policy_definition(kapp_slug, name, params={}, headers=default_headers)
-      info("Finding Security Policy Definition \"#{name}\" on the \"#{kapp_slug}\" kapp.")
+      @logger.info("Finding Security Policy Definition \"#{name}\" on the \"#{kapp_slug}\" kapp.")
       get("#{@api_url}/kapps/#{kapp_slug}/securityPolicyDefinitions/#{encode(name)}", params, headers)
     end
 
@@ -149,7 +149,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_security_policy_definition(kapp_slug, name, body, headers=default_headers)
-      info("Updating Security Policy Definition \"#{name}\" on the \"#{kapp_slug}\" kapp.")
+      @logger.info("Updating Security Policy Definition \"#{name}\" on the \"#{kapp_slug}\" kapp.")
       put("#{@api_url}/kapps/#{kapp_slug}/securityPolicyDefinitions/#{encode(name)}", body, headers)
     end
 

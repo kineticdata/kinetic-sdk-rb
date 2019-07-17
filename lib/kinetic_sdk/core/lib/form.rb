@@ -21,7 +21,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_form(kapp_slug, form_properties={}, headers=default_headers)
-      info("Adding the \"#{form_properties['name']}\" Form.")
+      @logger.info("Adding the \"#{form_properties['name']}\" Form.")
       post("#{@api_url}/kapps/#{kapp_slug}/forms", form_properties, headers)
     end
 
@@ -32,7 +32,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_form(kapp_slug, form_slug, headers=default_headers)
-      info("Deleting the \"#{form_slug}\" Form in the \"#{kapp_slug}\" Kapp.")
+      @logger.info("Deleting the \"#{form_slug}\" Form in the \"#{kapp_slug}\" Kapp.")
       delete("#{@api_url}/kapps/#{kapp_slug}/forms/#{form_slug}", headers)
     end
 
@@ -43,7 +43,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def export_form(kapp_slug, form_slug, headers=default_headers)
-      info("Exporting the \"#{form_slug}\" Form in the \"#{kapp_slug}\" Kapp.")
+      @logger.info("Exporting the \"#{form_slug}\" Form in the \"#{kapp_slug}\" Kapp.")
       get("#{@api_url}/kapps/#{kapp_slug}/forms/#{form_slug}", { 'export' => true }, headers)
     end
 
@@ -54,7 +54,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_forms(kapp_slug, params={}, headers=default_headers)
-      info("Finding Forms.")
+      @logger.info("Finding Forms.")
       get("#{@api_url}/kapps/#{kapp_slug}/forms", params, headers)
     end
 
@@ -66,7 +66,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_form(kapp_slug, form_slug, params={}, headers=default_headers)
-      info("Finding the \"#{form_slug}\" Form in the \"#{kapp_slug}\" Kapp.")
+      @logger.info("Finding the \"#{form_slug}\" Form in the \"#{kapp_slug}\" Kapp.")
       get("#{@api_url}/kapps/#{kapp_slug}/forms/#{form_slug}", params, headers)
     end
 
@@ -91,7 +91,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_form(kapp_slug, form_slug, properties={}, headers=default_headers)
-      info("Updating the \"#{form_slug}\" Form in the \"#{kapp_slug}\" Kapp.")
+      @logger.info("Updating the \"#{form_slug}\" Form in the \"#{kapp_slug}\" Kapp.")
       put("#{@api_url}/kapps/#{kapp_slug}/forms/#{form_slug}", properties, headers)
     end
 

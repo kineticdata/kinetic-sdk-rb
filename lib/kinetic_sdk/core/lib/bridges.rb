@@ -10,7 +10,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_bridge(body={}, headers=default_headers)
-      info("Adding the \"#{body['name']}\" Bridge.")
+      @logger.info("Adding the \"#{body['name']}\" Bridge.")
       post("#{@api_url}/bridges", body, headers)
     end
 
@@ -26,7 +26,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_bridge_model(body={}, headers=default_headers)
-      info("Adding the \"#{body['name']}\" Bridge Model and Mappings.")
+      @logger.info("Adding the \"#{body['name']}\" Bridge Model and Mappings.")
       post("#{@api_url}/models", body, headers)
     end
 
@@ -36,7 +36,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_bridges(params={}, headers=default_headers)
-      info("Find Bridges.")
+      @logger.info("Find Bridges.")
       get("#{@api_url}/bridges", params, headers)
     end
 
@@ -47,7 +47,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_bridge(name, params={}, headers=default_headers)
-      info("Finding the \"#{name}\" Bridge.")
+      @logger.info("Finding the \"#{name}\" Bridge.")
       get("#{@api_url}/bridges/#{encode{name}}", params, headers)
     end
 
@@ -58,7 +58,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_bridge(name, body={}, headers=default_headers)
-      info("Updating the \"#{name}\" Bridge.")
+      @logger.info("Updating the \"#{name}\" Bridge.")
       put("#{@api_url}/bridges/#{encode(name)}", body, headers)
     end
 

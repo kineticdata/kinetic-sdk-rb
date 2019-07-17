@@ -12,7 +12,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_filestore(payload, headers=default_headers)
-      info("Adding Filestore \"#{payload['name']}\" with slug \"#{payload['slug']}\"")
+      @logger.info("Adding Filestore \"#{payload['name']}\" with slug \"#{payload['slug']}\"")
       post("#{@api_url}/filestores", payload, headers)
     end
 
@@ -22,7 +22,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_filestore(slug, headers=default_headers)
-      info("Deleting Filestore \"#{slug}\"")
+      @logger.info("Deleting Filestore \"#{slug}\"")
       delete("#{@api_url}/filestores/#{slug}", headers)
     end
 
@@ -32,7 +32,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_filestores(params={}, headers=default_headers)
-      info("Find Filestores")
+      @logger.info("Find Filestores")
       get("#{@api_url}/filestores", params, headers)
     end
 
@@ -43,7 +43,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_filestore(slug, params={}, headers=default_headers)
-      info("Finding Filestore \"#{slug}\"")
+      @logger.info("Finding Filestore \"#{slug}\"")
       get("#{@api_url}/filestores/#{slug}", params, headers)
     end
 
@@ -59,7 +59,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_filestore(slug, payload, headers=default_headers)
-      info("Updating Filestore \"#{slug}\"")
+      @logger.info("Updating Filestore \"#{slug}\"")
       put("#{@api_url}/filestores/#{slug}", payload, headers)
     end
 

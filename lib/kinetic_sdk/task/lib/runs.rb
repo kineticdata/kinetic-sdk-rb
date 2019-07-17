@@ -12,7 +12,7 @@ module KineticSdk
     #     delete_run(24548)
     #
     def delete_run(id, headers=header_basic_auth)
-      info("Deleting run \"#{id}\"")
+      @logger.info("Deleting run \"#{id}\"")
       delete("#{@api_url}/runs/#{id}", headers)
     end
 
@@ -35,7 +35,7 @@ module KineticSdk
     #     find_runs({ "source" => "Kinetic Request CE", "include" => "details" })
     #
     def find_runs(params={}, headers=header_basic_auth)
-      info("Finding Runs")
+      @logger.info("Finding Runs")
       get("#{@api_url}/runs", params, headers)
     end
 
