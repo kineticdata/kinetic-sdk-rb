@@ -1,7 +1,7 @@
 module KineticSdk
   class Core
 
-    # Gets an authentication code
+    # Gets an authentication token
     #
     # @param client_id [String] the oauth client id
     # @param client_secret [String] the oauth client secret

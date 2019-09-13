@@ -13,7 +13,8 @@ module KineticSdk
     # Include the KineticExportUtils module
     include KineticSdk::Utils::KineticExportUtils
 
-    attr_reader :api_url, :api_v1_url, :config_user, :options, :server, :version, :username, :password
+    attr_reader :api_url, :api_v1_url, :config_user, :options, :server,
+                :version, :username, :password, :logger
 
     # Initalize the Task SDK with the web server URL and user credentials,
     # along with any custom option values.
@@ -80,9 +81,8 @@ module KineticSdk
       # process any individual options
       @options = options.delete(:options) || {}
       # setup logging
-      log_level = (@options["log_level"] || @options[:log_level]).to_s.downcase
-      log_output = (@options["log_output"] || @options[:log_output]).to_s.downcase
-      log_output = log_output == "stderr" ? STDERR : STDOUT
+      log_level = @options[:log_level] || @options["log_level"]
+      log_output = @options[:log_output] || @options["log_output"]
       @logger = KineticSdk::Utils::KLogger.new(log_level, log_output)
 
       @config_user[:username] = options[:username]

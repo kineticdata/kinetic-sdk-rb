@@ -15,9 +15,16 @@ module KineticSdk
     # Available Outputs: `STDOUT`, `STDERR`
     #
     class KLogger
-      def initialize(log_level, output=STDOUT)
-        output ||= STDOUT
-        @logger = Logger.new(output)
+
+      # Constructor
+      #
+      # @param level [String] log level (off): `debug`, `info`, `warn`, `error`, `off`
+      # @param output [String] log output (stdout): `stdout`, `stderr`
+      def initialize(level, output="stdout")
+        log_level = level.to_s.downcase
+        log_output = output.to_s.downcase == "stderr" ? STDERR : STDOUT
+
+        @logger = Logger.new(log_output)
 
         case log_level
         when "error"
@@ -89,6 +96,10 @@ module KineticSdk
       # @return [Boolean] true if level is warn or lower
       def warn?; @logger.warn?; end
       
+      # Get the logger level
+      #
+      # @return [Integer]
+      def level; @logger.level; end;
     end
 
   end

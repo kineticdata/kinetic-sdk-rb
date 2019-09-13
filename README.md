@@ -313,14 +313,32 @@ space_sdk = KineticSdk::Core.new({
 
 If you need to make a custom HTTP call for some reason, there is a class that allows you to do that. Simply make sure the KineticSdk is required in your program. See the [Getting Started Guide](GettingStarted.md) for details.
 
-Then you need to instantiate a new instance of the {KineticSdk::Utils::KineticHttp} class, and call the desired HTTP method with the appropriate information. Each response will be returned as a {KineticSdk::Utils::KineticHttpResponse} object.
+Then you need to instantiate a new instance of the {KineticSdk::CustomHttp} class, and call the desired HTTP method with the appropriate information. Each response will be returned as a {KineticSdk::Utils::KineticHttpResponse} object.
 
 ```ruby
-# instantiate the KineticHttp class without authentication
-http = KineticSdk::Utils::KineticHttp.new
+# instantiate the CustomHttp class without authentication
+http = KineticSdk::CustomHttp.new
 
-# instantiate the KineticHttp class with Basic authentication
-http = KineticSdk::Utils::KineticHttp.new("john.doe@company.com", "s3cretP@ssw0rd")
+# instantiate the CustomHttp class with Basic authentication
+http = KineticSdk::CustomHttp.new({
+  username: "john.doe@company.com",
+  password: "s3cretP@ssw0rd"
+})
+
+# instantiate the CustomHttp class with Basic authentication, and custom options
+http = KineticSdk::CustomHttp.new({
+  username: "john.doe@company.com",
+  password: "s3cretP@ssw0rd",
+  options: {
+    log_level: "debug",
+    log_output: "stderr",
+    max_redirects: 3,
+    gateway_retry_delay: 1.0,
+    gateway_retry_limit: 5,
+    ssl_verify_mode: "peer",
+    ssl_ca_file: "/path/to/self-signing-ca.pem"
+  }
+})
 
 # call the appropriate method
 

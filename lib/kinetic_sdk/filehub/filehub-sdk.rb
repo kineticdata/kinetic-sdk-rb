@@ -10,7 +10,7 @@ module KineticSdk
     # Include the KineticHttpUtils module
     include KineticSdk::Utils::KineticHttpUtils
 
-    attr_reader :api_url, :username, :options, :password, :server, :version
+    attr_reader :api_url, :username, :options, :password, :server, :version, :logger
 
     # Initalize the FileHub SDK with the web server URL and configuration user
     # credentials, along with any custom option values.
@@ -73,9 +73,8 @@ module KineticSdk
       # process any individual options
       @options = options.delete(:options) || {}
       # setup logging
-      log_level = (@options["log_level"] || @options[:log_level]).to_s.downcase
-      log_output = (@options["log_output"] || @options[:log_output]).to_s.downcase
-      log_output = log_output == "stderr" ? STDERR : STDOUT
+      log_level = @options[:log_level] || @options["log_level"]
+      log_output = @options[:log_output] || @options["log_output"]
       @logger = KineticSdk::Utils::KLogger.new(log_level, log_output)
 
       @username = options[:username]

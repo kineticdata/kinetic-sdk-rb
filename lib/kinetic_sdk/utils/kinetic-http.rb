@@ -774,7 +774,7 @@ module KineticSdk
         http
       end
 
-    end
+    end # KineticSdk::Utils::KineticHttpUtils module
 
 
     # The KineticHttp class provides functionality to make generic HTTP requests.
@@ -804,8 +804,39 @@ module KineticSdk
         @options = http_options
       end
 
+    end # KineticSdk::Utils::KineticHttp class
+
+  end # KineticSdk::Utils module
+
+  # The CustomHttp class provides functionality to make generic HTTP requests
+  # utilizing the functionality of the KineticSdk.
+  class CustomHttp
+    include KineticSdk::Utils::KineticHttpUtils
+    attr_accessor :username, :password, :options, :logger
+
+    # Constructor
+    #
+    # @param opts [Hash] options for HTTP requests
+    # @option opts [String] :username (nil) for Basic Authentication
+    # @option opts [String] :password (nil) for Basic Authentication
+    # @option opts [Hash] :options ({}) http options
+    # @option options [String] :log_level (off) log_level
+    # @option options [String] :log_output (STDOUT) log_output
+    # @option options [Fixnum] :max_redirects (5) max number of times to redirect
+    # @option options [Fixnum] :gateway_retry_limit (-1) max number of times to retry a bad gateway
+    # @option options [Float] :gateway_retry_delay (1.0) number of seconds to delay before retrying a bad gateway
+    # @option options [String] :ssl_ca_file (/etc/ca.crt certificate) location of the ca certificate
+    # @option options [String] :ssl_verify_mode (none) use `peer` to enable verification
+    def initialize(opts={})
+      @username = opts[:username]
+      @password = opts[:password]
+      @options = opts.delete(:options) || {}
+      log_level = @options[:log_level] || @options["log_level"]
+      log_output = @options[:log_output] || @options["log_output"]
+      @logger = KineticSdk::Utils::KLogger.new(log_level, log_output)
     end
-    
 
   end
-end
+
+
+end # KineticSdk module

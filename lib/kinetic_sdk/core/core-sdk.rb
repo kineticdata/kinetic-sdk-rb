@@ -13,7 +13,8 @@ module KineticSdk
     # Include the KineticExportUtils module
     include KineticSdk::Utils::KineticExportUtils
 
-    attr_reader :api_url, :username, :options, :password, :space_slug, :server, :version
+    attr_reader :api_url, :username, :options, :password, :proxy_url,
+                :space_slug, :server, :version, :logger
 
     # Initalize the Core SDK with the web server URL, the space user
     # username and password, along with any custom option values.
@@ -142,9 +143,8 @@ module KineticSdk
       # process any individual options
       @options = options.delete(:options) || {}
       # setup logging
-      log_level = (@options["log_level"] || @options[:log_level]).to_s.downcase
-      log_output = (@options["log_output"] || @options[:log_output]).to_s.downcase
-      log_output = log_output == "stderr" ? STDERR : STDOUT
+      log_level = @options[:log_level] || @options["log_level"]
+      log_output = @options[:log_output] || @options["log_output"]
       @logger = KineticSdk::Utils::KLogger.new(log_level, log_output)
 
       @username = options[:username]
@@ -153,10 +153,12 @@ module KineticSdk
       if options[:app_server_url]
         @server = options[:app_server_url].chomp('/')
         @api_url = @server + (@space_slug.nil? ? "/app/api/v1" : "/#{@space_slug}/app/api/v1")
+        @proxy_url = @space_slug.nil? ? nil : "#{@server}/#{@space_slug}/app/serviceEndpoints"
       else
         raise StandardError.new "The :space_slug option is required when using the :space_server_url option" if @space_slug.nil?
         @server = options[:space_server_url].chomp('/')
         @api_url = "#{@server}/app/api/v1"
+        @proxy_url = "#{@server}/app/serviceEndpoints"
       end
       @version = 1
     end
