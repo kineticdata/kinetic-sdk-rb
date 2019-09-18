@@ -153,12 +153,12 @@ module KineticSdk
       if options[:app_server_url]
         @server = options[:app_server_url].chomp('/')
         @api_url = @server + (@space_slug.nil? ? "/app/api/v1" : "/#{@space_slug}/app/api/v1")
-        @proxy_url = @space_slug.nil? ? nil : "#{@server}/#{@space_slug}/app/serviceEndpoints"
+        @proxy_url = @space_slug.nil? ? nil : "#{@server}/#{@space_slug}/app/components"
       else
         raise StandardError.new "The :space_slug option is required when using the :space_server_url option" if @space_slug.nil?
         @server = options[:space_server_url].chomp('/')
         @api_url = "#{@server}/app/api/v1"
-        @proxy_url = "#{@server}/app/serviceEndpoints"
+        @proxy_url = "#{@server}/app/components"
       end
       @version = 1
     end
