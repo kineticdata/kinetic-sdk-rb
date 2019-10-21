@@ -188,5 +188,17 @@ module KineticSdk
       put("#{@api_url}/webhooks/#{encode(name)}", webhook_properties, headers)
     end
 
+    # Delete a webhook for a Space
+    #
+    # @param params [String] name of the webhook
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
+    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    def delete_webhooks_on_space(name, headers=default_headers)
+      info("Deleting the #{encode(name)} webhook on the Space")
+      delete("#{@api_url}/webhooks/#{encode(name)}", headers)
+    end
+
+
+
   end
 end
