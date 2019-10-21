@@ -26,11 +26,11 @@ module KineticSdk
 
     # Delete a Bridge Model
     #
-    # @param name [String] name of the Bridge
+    # @param name [String] name of the Bridge Model
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_bridge_model(name, headers=default_headers)
-      info("Deleting the \"#{encode(name)}\" Bridge.")
+      info("Deleting the \"#{encode(name)}\" Bridge Model.")
       delete("#{@api_url}/models/#{encode(name)}", headers)
     end
 
