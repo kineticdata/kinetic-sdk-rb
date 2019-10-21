@@ -56,7 +56,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_bridges(params={}, headers=default_headers)
-      info("Bridges.")
+      info("Find Bridges.")
       get("#{@api_url}/bridges", params, headers)
     end
 
@@ -77,7 +77,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_bridge_models(params={}, headers=default_headers)
-      info("Models.")
+      info("Find Bridge Models.")
       get("#{@api_url}/models", params, headers)
     end
     
