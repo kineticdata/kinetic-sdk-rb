@@ -48,7 +48,7 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_bridge(name, params={}, headers=default_headers)
       info("Finding the \"#{name}\" Bridge.")
-      get("#{@api_url}/bridges/#{encode{name}}", params, headers)
+      get("#{@api_url}/bridges/#{encode(name)}", params, headers)
     end
 
     # Update a bridge
