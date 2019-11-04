@@ -35,9 +35,9 @@ module KineticSdk
     #       "authenticator" => "com.kineticdata.core.v1.authenticators.ProxyAuthenticator",
     #       "authenticationJsp" => "/WEB-INF/app/login.jsp",
     #       "properties" => {
-    #         "Authenticator[Authentication Strategy]" => "Http Header",
-    #         "Authenticator[Header Name]" => "X-Login",
-    #         "Authenticator[Guest Access Enabled]" => "No"
+    #         "Authentication Strategy" => "Http Header",
+    #         "Header Name" => "X-Login",
+    #         "Guest Access Enabled" => "No"
     #       }
     #     })
     #
