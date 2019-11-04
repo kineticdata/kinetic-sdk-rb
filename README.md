@@ -11,10 +11,11 @@ The Kinetic Ruby SDK is a library that consists of and SDK for each supported Ki
 The following Kinetic Data applications are supported in this SDK library:
 
 * Kinetic Core 1.0.4+
-* Kinetic Task 4.0+
+* Kinetic Agent 1.0.0+
 * Kinetic Bridgehub 1.0+
-* Kinetic Filehub 1.0+
 * Kinetic Discussions 1.0+
+* Kinetic Filehub 1.0+
+* Kinetic Task 4.0+
 
 ## Getting Started
 
@@ -72,6 +73,27 @@ the SDK with the following code.
 ```ruby
 # Assumes the SDK is installed to vendor/kinetic-sdk-rb
 require File.join(File.expand_path(File.dirname(__FILE__)), 'vendor', 'kinetic-sdk-rb', 'kinetic-sdk')
+```
+
+### Kinetic Agent SDK example
+
+```ruby
+agent_sdk = KineticSdk::Agent.new({
+  app_server_url: "http://localhost:8080/kinetic-agent",
+  username: "configuration-user",
+  password: "password",
+  options: {
+    log_level: "info",
+    max_redirects: 3
+  }
+})
+response = agent_sdk.find_all_bridges()
+bridges = response.content['bridges']
+
+puts response.code            # String value of HTTP response code ("200", "400", "500", etc...)
+puts response.status          # Ruby Fixnum value of response.code (200, 400, 500, etc...)
+puts response.content         # Ruby Hash
+puts response.content_string  # JSON formatted response body
 ```
 
 ### Kinetic BridgeHub SDK example

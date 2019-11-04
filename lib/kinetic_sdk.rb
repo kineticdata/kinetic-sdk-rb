@@ -52,6 +52,7 @@ require File.join(pwd, "kinetic_sdk/utils/kinetic-http")
 require File.join(pwd, "kinetic_sdk/utils/prettier-xml-formatter")
 require File.join(pwd, "kinetic_sdk/utils/random")
 
+require File.join(pwd, "kinetic_sdk/agent/agent-sdk")
 require File.join(pwd, "kinetic_sdk/bridgehub/bridgehub-sdk")
 require File.join(pwd, "kinetic_sdk/core/core-sdk")
 require File.join(pwd, "kinetic_sdk/discussions/discussions-sdk")

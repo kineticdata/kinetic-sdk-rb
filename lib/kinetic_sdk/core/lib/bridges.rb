@@ -11,8 +11,8 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_bridge(body, headers=default_headers)
-      @logger.info("Adding the \"#{body['name']}\" bridge through proxy to the bridgehub platform component.")
-      post("#{@proxy_url}/bridgehub/app/api/v1/bridges", body, headers)
+      @logger.info("Adding the \"#{body['name']}\" bridge through proxy to the agent platform component.")
+      post("#{@proxy_url}/agent/app/api/v1/bridges", body, headers)
     end
 
     # Delete a Bridge
@@ -21,8 +21,8 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_bridge(slug, headers=default_headers)
-      @logger.info("Deleting the \"#{slug}\" bridge through proxy to the bridgehub platform component.")
-      delete("#{@proxy_url}/bridgehub/app/api/v1/bridges/#{slug}", headers)
+      @logger.info("Deleting the \"#{slug}\" bridge through proxy to the agent platform component.")
+      delete("#{@proxy_url}/agent/app/api/v1/bridges/#{slug}", headers)
     end
 
     # Find a list of bridges
@@ -31,8 +31,8 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_bridges(params={}, headers=default_headers)
-      @logger.info("Find bridges through proxy to the bridgehub platform component.")
-      get("#{@proxy_url}/bridgehub/app/api/v1/bridges", params, headers)
+      @logger.info("Find bridges through proxy to the agent platform component.")
+      get("#{@proxy_url}/agent/app/api/v1/bridges", params, headers)
     end
 
     # Find a bridge
@@ -42,8 +42,8 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_bridge(slug, params={}, headers=default_headers)
-      @logger.info("Finding the \"#{slug}\" bridge through proxy to the bridgehub platform component.")
-      get("#{@proxy_url}/bridgehub/app/api/v1/bridges/#{slug}", params, headers)
+      @logger.info("Finding the \"#{slug}\" bridge through proxy to the agent platform component.")
+      get("#{@proxy_url}/agent/app/api/v1/bridges/#{slug}", params, headers)
     end
 
     # Update a bridge
@@ -53,8 +53,8 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_bridge(slug, body={}, headers=default_headers)
-      @logger.info("Updating the \"#{slug}\" bridge through proxy to the bridgehub platform component.")
-      put("#{@proxy_url}/bridgehub/app/api/v1/bridges/#{slug}", body, headers)
+      @logger.info("Updating the \"#{slug}\" bridge through proxy to the agent platform component.")
+      put("#{@proxy_url}/agent/app/api/v1/bridges/#{slug}", body, headers)
     end
 
     # Add a Bridge Model
