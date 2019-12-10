@@ -228,7 +228,7 @@ module KineticSdk
       end
 
       # write the file
-      server_version = server_info.content["version"]
+      server_version = server_info(headers).content["version"]
       if server_version > "04.03.0z"
         File.write(tree_file, tree['export'])
       else
@@ -251,7 +251,8 @@ module KineticSdk
       raise StandardError.new "An export directory must be defined to export trees." if @options[:export_directory].nil?
       if source_name.nil?
         @logger.info("Exporting all trees and routines to #{@options[:export_directory]}.")
-        (find_sources.content["sourceRoots"] || []).each do |sourceRoot|
+        export_routines(headers)
+        (find_sources({}, headers).content["sourceRoots"] || []).each do |sourceRoot|
           export_trees(sourceRoot['name'])
         end
         return
@@ -277,7 +278,7 @@ module KineticSdk
         end
 
         # write the file
-        server_version = server_info.content["version"]
+        server_version = server_info(headers).content["version"]
         if server_version > "04.03.0z"
           File.write(tree_file, tree['export'])
         else
