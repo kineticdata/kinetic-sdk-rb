@@ -18,7 +18,9 @@ module KineticSdk
     #
     def add_policy_rule(policy, headers=default_headers)
       @logger.info("Adding policy rule \"#{policy['type']} - #{policy['name']}\"")
-      post("#{@api_url}/policyRules/#{encode(policy['type'])}", policy, headers)
+      payload = policy
+      payload["consolePolicyRules"] = consoleNames(payload) if payload.has_key?("consolePolicyRules")
+      post("#{@api_url}/policyRules/#{encode(policy['type'])}", payload, headers)
     end
 
     # Delete a Policy Rule.
@@ -111,7 +113,11 @@ module KineticSdk
       @logger.info("Importing all Policy Rules in Export Directory")
       Dir["#{@options[:export_directory]}/policyRules/*.json"].sort.each do |file|
         policy_rule = JSON.parse(File.read(file))
-        add_policy_rule(policy_rule, headers)
+        if find_policy_rule({ "type" => policy_rule["type"], "name" => policy_rule["name"] }).status == 200
+          update_policy_rule({ "type" => policy_rule["type"], "name" => policy_rule["name"] }, policy_rule, headers)
+        else
+          add_policy_rule(policy_rule, headers)
+        end
       end
     end
 
@@ -172,7 +178,40 @@ module KineticSdk
     #
     def update_policy_rule(policy_rule, body={}, headers=default_headers)
       @logger.info("Updating the \"#{policy_rule['type']} - #{policy_rule['name']}\" Policy Rule")
-      put("#{@api_url}/policyRules/#{encode(policy_rule['type'])}/#{encode(policy_rule['name'])}", body, headers)
+      payload = body
+      payload["consolePolicyRules"] = consoleNames(payload) if payload.has_key?("consolePolicyRules")
+
+      @logger.info("UPDATE: #{payload}")
+      put("#{@api_url}/policyRules/#{encode(policy_rule['type'])}/#{encode(policy_rule['name'])}", payload, headers)
+    end
+
+    private
+
+    # Returns a list of console names from a list of consolePolicyRules hash
+    # objects.
+    #
+    # This is used to convert a console policy hash to a simple string containing
+    # the console name:
+    #
+    # {
+    #   "name" => "Foo",
+    #   "type" => "Console Access"
+    # }
+    #
+    def consoleNames(policyRule)
+      consoles = nil
+      # if consolePolicyRules are to be applied, change to a list of console names
+      if policyRule.has_key?("consolePolicyRules")
+        consoles = []
+        (policyRule['consolePolicyRules'] || []).each { |console_policy_rule|
+          if console_policy_rule.is_a? Hash
+            consoles << console_policy_rule["name"]
+          else
+            consoles << console_policy_rule
+          end
+        }
+      end
+      consoles
     end
 
   end
