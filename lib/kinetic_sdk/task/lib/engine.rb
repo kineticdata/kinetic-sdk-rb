@@ -33,7 +33,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def engine_status(headers=header_basic_auth)
-      response = engine_@logger.info({}, headers)
+      response = @logger.info({}, headers)
       data = response.content
       data.nil? ? "Unknown" : data['status']
     end
