@@ -1,4 +1,4 @@
-Dir[File.join(File.dirname(File.expand_path(__FILE__)), "lib", "**", "*.rb")].each {|file| require file }
+Dir[File.join(File.dirname(File.expand_path(__FILE__)), "lib", "**", "*.rb")].each { |file| require file }
 
 module KineticSdk
 
@@ -116,27 +116,27 @@ module KineticSdk
       @space_slug = options[:space_slug]
 
       if options[:topics_server_url]
-        @topics_ws_server = "#{options[:topics_server_url].gsub('http', 'ws')}/#{@space_slug}/socket"
+        @topics_ws_server = "#{options[:topics_server_url].gsub("http", "ws")}/#{@space_slug}/socket"
       end
 
       if options[:discussions_server_url]
-        @server = options[:discussions_server_url].chomp('/')
+        @server = options[:discussions_server_url].chomp("/")
         @api_url = "#{@server}/#{@space_slug}/app/api/v1"
         if @topics_ws_server.nil?
-          @topics_ws_server = "#{@server.gsub('http', 'ws')}/app/topics/socket"
+          @topics_ws_server = "#{@server.gsub("http", "ws")}/app/topics/socket"
         end
       elsif options[:app_server_url]
-        @server = options[:app_server_url].chomp('/')
+        @server = options[:app_server_url].chomp("/")
         @api_url = "#{@server}/#{@space_slug}/app/api/v1"
         if @topics_ws_server.nil?
-          @topics_ws_server = "#{@server.gsub('http', 'ws')}/#{@space_slug}/app/topics/socket"
+          @topics_ws_server = "#{@server.gsub("http", "ws")}/#{@space_slug}/app/topics/socket"
         end
       else
         raise StandardError.new "The :space_slug option is required when using the :space_server_url option" if @space_slug.nil?
-        @server = options[:space_server_url].chomp('/')
+        @server = options[:space_server_url].chomp("/")
         @api_url = "#{@server}/app/discussions/api/v1"
         if @topics_ws_server.nil?
-          @topics_ws_server = "#{@server.gsub('http', 'ws')}/app/topics/socket"
+          @topics_ws_server = "#{@server.gsub("http", "ws")}/app/topics/socket"
         end
       end
       @jwt = @space_slug.nil? ? nil : generate_jwt(options)
@@ -145,12 +145,12 @@ module KineticSdk
 
     # Generate a JWT for bearer authentication based on the user credentials,
     # and oauth client configuration.
-    def generate_jwt(options={})
+    def generate_jwt(options = {})
       oauth_client_id = options[:options][:oauth_client_id]
       oauth_client_secret = options[:options][:oauth_client_secret]
 
       jwt_response = kinetic_core_sdk(options).jwt_token(oauth_client_id, oauth_client_secret)
-      jwt_response.content['access_token']
+      jwt_response.content["access_token"]
     end
 
     # Creates a reference to the Kinetic Request CE SDK
@@ -159,15 +159,14 @@ module KineticSdk
         space_slug: options[:space_slug],
         username: options[:username],
         password: options[:password],
-        options: options[:options] || {}
+        options: options[:options] || {},
       }
       if options[:app_server_url]
         kinetic_core_options[:app_server_url] = options[:app_server_url]
       else
         kinetic_core_options[:space_server_url] = options[:space_server_url]
       end
-      KineticSdk::RequestCe.new(kinetic_core_options)
+      KineticSdk::Core.new(kinetic_core_options)
     end
-    
   end
 end

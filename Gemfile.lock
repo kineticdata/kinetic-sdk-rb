@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    kinetic_sdk (5.0.0)
+    kinetic_sdk (5.0.1)
       mime-types (= 3.1)
       multipart-post (= 2.0.0)
       parallel (= 1.12.1)
@@ -43,4 +43,4 @@ RUBY VERSION
    ruby 2.3.3p0 (jruby 9.1.9.0)
 
 BUNDLED WITH
-   1.16.2
+   1.17.2
