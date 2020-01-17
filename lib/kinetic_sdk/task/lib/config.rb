@@ -23,6 +23,17 @@ module KineticSdk
     end
 
 
+    # Find the engine configuration properties
+    #
+    # @param params [Hash] Query parameters that are added to the URL, such as +include+
+    # @param headers [Hash] hash of headers to send, default is basic authentication
+    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    def find_engine_configuration(params={}, headers=header_basic_auth)
+      @logger.info("Finding the engine configuration")
+      get("#{@api_url}/config/engine", params, headers)
+    end
+
+
     # Update the authentication settings
     #
     # @param settings [Hash] Settings for the authenticator
