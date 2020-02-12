@@ -111,10 +111,10 @@ space_slug = options.space_slug
 kapp_slug = options.kapp_slug
 is_datastore = kapp_slug.nil? ? true : false
 
-ce_server = env["ce"]["server"]
+ce_server = env["core"]["server"]
 ce_credentials_space_admin = {
-  "username" => env["ce"]["space_admin_credentials"]["username"],
-  "password" => env["ce"]["space_admin_credentials"]["password"]
+  "username" => env["core"]["space_admin_credentials"]["username"],
+  "password" => env["core"]["space_admin_credentials"]["password"]
 }
 
 # Set Script Variables and Constants
@@ -124,7 +124,7 @@ COMMON_DELIMITERS = ['","',"\"\t\"",'"|"',]
 @forms = []
 
 # Log into the Space with the Space Admin user
-requestce_sdk_space = KineticSdk::RequestCe.new({
+requestce_sdk_space = KineticSdk::Core.new({
   app_server_url: ce_server,
   space_slug: space_slug,
   username: ce_credentials_space_admin["username"],

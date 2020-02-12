@@ -1,11 +1,9 @@
 module KineticSdk
-  class RequestCe
+  class Core
 
-    # Add a Form
+    # Add a Datastore Form
     #
-    # @param kapp_slug [String] slug of the Kapp the form belongs to
     # @param form_properties [Hash] form properties
-    #   - +anonymous+
     #   - +customHeadContent+
     #   - +description+
     #   - +name+
@@ -13,69 +11,64 @@ module KineticSdk
     #   - +slug+
     #   - +status+
     #   - +submissionLabelExpression+
-    #   - +type+
     #   - +attributes+
+    #   - +attributesMap+
     #   - +bridgedResources+
     #   - +pages+
     #   - +securityPolicies+
+    #   - +indexDefinitions+
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
-    def add_form(kapp_slug, form_properties={}, headers=default_headers)
-      info("Adding the \"#{form_properties['name']}\" Form.")
-      post("#{@api_url}/kapps/#{kapp_slug}/forms", form_properties, headers)
+    def add_datastore_form(form_properties={}, headers=default_headers)
+      @logger.info("Adding the \"#{form_properties['name']}\" Form.")
+      post("#{@api_url}/datastore/forms", form_properties, headers)
     end
 
-    # Delete a Form
+    # Delete a Datastore Form
     #
-    # @param kapp_slug [String] slug of the Kapp the form belongs to
     # @param form_slug [String] slug of the form
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
-    def delete_form(kapp_slug, form_slug, headers=default_headers)
-      info("Deleting the \"#{form_slug}\" Form in the \"#{kapp_slug}\" Kapp.")
-      delete("#{@api_url}/kapps/#{kapp_slug}/forms/#{form_slug}", headers)
+    def delete_datastore_form(form_slug, headers=default_headers)
+      @logger.info("Deleting the \"#{form_slug}\" Datastore Form")
+      delete("#{@api_url}/datastore/forms/#{form_slug}", headers)
     end
 
-    # Export a Form
+    # Export a Datastore Form
     #
-    # @param kapp_slug [String] slug of the Kapp the form belongs to
     # @param form_slug [String] slug of the form
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
-    def export_form(kapp_slug, form_slug, headers=default_headers)
-      info("Exporting the \"#{form_slug}\" Form in the \"#{kapp_slug}\" Kapp.")
-      get("#{@api_url}/kapps/#{kapp_slug}/forms/#{form_slug}", { 'export' => true }, headers)
+    def export_datastore_form(form_slug, headers=default_headers)
+      @logger.info("Exporting the \"#{form_slug}\" Datastore Form.")
+      get("#{@api_url}/datastore/forms/#{form_slug}", { 'export' => true }, headers)
     end
 
-    # Find Forms
+    # Find Datastore Forms
     #
-    # @param kapp_slug [String] slug of the Kapp the forms belongs to
     # @param params [Hash] Query parameters that are added to the URL, such as +include+
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
-    def find_forms(kapp_slug, params={}, headers=default_headers)
-      info("Finding Forms.")
-      get("#{@api_url}/kapps/#{kapp_slug}/forms", params, headers)
+    def find_datastore_forms(params={}, headers=default_headers)
+      @logger.info("Finding Forms.")
+      get("#{@api_url}/datastore/forms", params, headers)
     end
 
-    # Find a Form
+    # Find a Datastore Form
     #
-    # @param kapp_slug [String] slug of the Kapp the form belongs to
     # @param form_slug [String] slug of the form
     # @param params [Hash] Query parameters that are added to the URL, such as +include+
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
-    def find_form(kapp_slug, form_slug, params={}, headers=default_headers)
-      info("Finding the \"#{form_slug}\" Form in the \"#{kapp_slug}\" Kapp.")
-      get("#{@api_url}/kapps/#{kapp_slug}/forms/#{form_slug}", params, headers)
+    def find_datastore_form(form_slug, params={}, headers=default_headers)
+      @logger.info("Finding the \"#{form_slug}\" Datastore Form")
+      get("#{@api_url}/datastore/forms/#{form_slug}", params, headers)
     end
 
-    # Update a Form
+    # Update a Datastore Form
     #
-    # @param kapp_slug [String] slug of the Kapp the form belongs to
     # @param form_slug [String] slug of the form
     # @param properties [Hash] form properties to update
-    #   - +anonymous+
     #   - +customHeadContent+
     #   - +description+
     #   - +name+
@@ -83,16 +76,34 @@ module KineticSdk
     #   - +slug+
     #   - +status+
     #   - +submissionLabelExpression+
-    #   - +type+
     #   - +attributes+
+    #   - +attributesMap+
     #   - +bridgedResources+
     #   - +pages+
     #   - +securityPolicies+
+    #   - +indexDefinitions+
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
-    def update_form(kapp_slug, form_slug, properties={}, headers=default_headers)
-      info("Updating the \"#{form_slug}\" Form in the \"#{kapp_slug}\" Kapp.")
-      put("#{@api_url}/kapps/#{kapp_slug}/forms/#{form_slug}", properties, headers)
+    def update_datastore_form(form_slug, properties={}, headers=default_headers)
+      @logger.info("Updating the \"#{form_slug}\" Datastore Form.")
+      put("#{@api_url}/datastore/forms/#{form_slug}", properties, headers)
+    end
+
+    # Build Datastore Indexes
+    # 
+    # @param form_slug [String] slug of the form
+    # @param indexes [Array] array of index names to build indexes
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
+    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    def build_datastore_form_indexes(form_slug, indexes, headers=default_headers)
+      payload = {
+        "type" => "Datastore Indexing",
+        "content" => {
+          "indexes" => indexes
+        }
+      }
+      @logger.info("Building indexes for the \"#{form_slug}\" Datastore Form.")
+      post("#{@api_url}/datastore/forms/#{form_slug}/backgroundJobs", payload, headers)
     end
 
   end

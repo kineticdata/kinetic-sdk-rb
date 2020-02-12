@@ -1,5 +1,5 @@
 module KineticSdk
-  class RequestCe
+  class Core
 
     # Add form webhook
     #
@@ -79,7 +79,7 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_webhook_on_kapp(kapp_slug, webhook_properties, headers=default_headers)
       raise StandardError.new "Webhook properties is not valid, must be a Hash." unless webhook_properties.is_a? Hash
-      info("Adding a \"#{webhook_properties['event']}\" \"#{webhook_properties['type']}\" webhook for #{kapp_slug}")
+      @logger.info("Adding a \"#{webhook_properties['event']}\" \"#{webhook_properties['type']}\" webhook for #{kapp_slug}")
       post("#{@api_url}/kapps/#{kapp_slug}/webhooks", webhook_properties, headers)
     end
 
@@ -98,7 +98,7 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_webhook_on_space(webhook_properties, headers=default_headers)
       raise StandardError.new "Webhook properties is not valid, must be a Hash." unless webhook_properties.is_a? Hash
-      info("Adding a \"#{webhook_properties['event']}\" \"#{webhook_properties['type']}\" webhook")
+      @logger.info("Adding a \"#{webhook_properties['event']}\" \"#{webhook_properties['type']}\" webhook")
       post("#{@api_url}/webhooks", webhook_properties, headers)
     end
 
@@ -109,7 +109,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_webhooks_on_kapp(kapp_slug, params={}, headers=default_headers)
-      info("Finding all webhooks on the \"#{kapp_slug}\" Kapp")
+      @logger.info("Finding all webhooks on the \"#{kapp_slug}\" Kapp")
       get("#{@api_url}/kapps/#{kapp_slug}/webhooks", params, headers)
     end
 
@@ -119,7 +119,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_webhooks_on_space(params={}, headers=default_headers)
-      info("Finding all webhooks on the Space")
+      @logger.info("Finding all webhooks on the Space")
       get("#{@api_url}/webhooks", params, headers)
     end
 
@@ -131,7 +131,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_webhook_on_kapp(kapp_slug, name, params={}, headers=default_headers)
-      info("Finding the \"#{name}\" webhook on the \"#{kapp_slug}\" Kapp")
+      @logger.info("Finding the \"#{name}\" webhook on the \"#{kapp_slug}\" Kapp")
       get("#{@api_url}/kapps/#{kapp_slug}/webhooks/#{encode(name)}", params, headers)
     end
 
@@ -142,7 +142,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def finding_webhook_on_space(name, params={}, headers=default_headers)
-      info("Finding the \"#{name}\" webhook on the Space")
+      @logger.info("Finding the \"#{name}\" webhook on the Space")
       get("#{@api_url}/webhooks/#{encode(name)}", params, headers)
     end
 
@@ -163,7 +163,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_webhook_on_kapp(kapp_slug, name, webhook_properties, headers=default_headers)
-      info("Updating the \"#{name}\" webhook on the \"#{kapp_slug}\" Kapp")
+      @logger.info("Updating the \"#{name}\" webhook on the \"#{kapp_slug}\" Kapp")
       put("#{@api_url}/kapps/#{kapp_slug}/webhooks/#{encode(name)}", webhook_properties, headers)
     end
 
@@ -184,7 +184,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_webhook_on_space(name, webhook_properties, headers=default_headers)
-      info("Updating the \"#{name}\" webhook on the Space")
+      @logger.info("Updating the \"#{name}\" webhook on the Space")
       put("#{@api_url}/webhooks/#{encode(name)}", webhook_properties, headers)
     end
 

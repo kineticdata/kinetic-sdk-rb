@@ -1,8 +1,8 @@
 # SDK log level (off | info | debug | trace)
 sdk_log_level: "info"
 
-# Properties for the Kinetic Request CE
-ce:
+# Properties for the Kinetic Core
+core:
   server: "http://localhost:8080/kinetic"
   space_admin_credentials:
     username: "kdadmin"

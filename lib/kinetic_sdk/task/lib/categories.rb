@@ -11,7 +11,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_category(category, headers=default_headers)
-      info("Add category \"#{category['name']}\"")
+      @logger.info("Add category \"#{category['name']}\"")
       post("#{@api_url}/categories", category, headers)
     end
 
@@ -21,7 +21,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_category(name, headers=header_basic_auth)
-      info("Deleting Category \"#{name}\"")
+      @logger.info("Deleting Category \"#{name}\"")
       delete("#{@api_url}/categories/#{encode(name)}", headers)
     end
 
@@ -30,7 +30,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_categories(headers=header_basic_auth)
-      info("Deleting all categories")
+      @logger.info("Deleting all categories")
       (find_categories(headers).content["categories"] || []).each do |category|
         delete_category(category['name'], headers)
       end
@@ -44,14 +44,14 @@ module KineticSdk
     #   - +policyRules+ - array of policy rule names associated to the category
     #   - +trees+ - array of tree (routine) definitionIds associated to the category
     # @param headers [Hash] hash of headers to send, default is basic authentication
-    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    # @return nil
     def export_category(category, headers=header_basic_auth)
       raise StandardError.new "An export directory must be defined to export a category." if @options[:export_directory].nil?
       if category.is_a? String
         response = find_category(category, { "include" => "handlers,trees,policyRules" }, headers)
         category = response.content
       end
-      info("Exporting category \"#{category['name']}\" to #{@options[:export_directory]}.")
+      @logger.info("Exporting category \"#{category['name']}\" to #{@options[:export_directory]}.")
       # Create the category directory if it doesn't yet exist
       category_dir = FileUtils::mkdir_p(File.join(@options[:export_directory], "categories"))
       category_file = File.join(category_dir, "#{category['name'].slugify}.json")
@@ -63,17 +63,30 @@ module KineticSdk
 
       # write the file
       File.write(category_file, JSON.pretty_generate(category))
-      info("Exported category: #{category['name']} to #{category_file}")
+      @logger.info("Exported category: #{category['name']} to #{category_file}")
     end
 
     # Export Categories
     #
     # @param headers [Hash] hash of headers to send, default is basic authentication
-    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    # @return nil
     def export_categories(headers=header_basic_auth)
       raise StandardError.new "An export directory must be defined to export categories." if @options[:export_directory].nil?
       (find_categories({ "include" => "handlers,trees,policyRules" }).content["categories"] || []).each do |category|
         export_category(category)
+      end
+    end
+
+    # Import Categories
+    #
+    # @param headers [Hash] hash of headers to send, default is basic authentication
+    # @return nil
+    def import_categories(headers=default_headers)
+      raise StandardError.new "An export directory must be defined to import categories from." if @options[:export_directory].nil?
+      @logger.info("Importing all Categories in Export Directory")
+      Dir["#{@options[:export_directory]}/categories/*.json"].sort.each do |file|
+        category = JSON.parse(File.read(file))
+        add_category(category, headers)
       end
     end
 
@@ -83,7 +96,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_categories(params={}, headers=header_basic_auth)
-      info("Finding all categories")
+      @logger.info("Finding all categories")
       get("#{@api_url}/categories", params, headers)
     end
 
@@ -94,7 +107,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_category(name, params={}, headers=header_basic_auth)
-      info("Finding Category \"#{name}\"")
+      @logger.info("Finding Category \"#{name}\"")
       get("#{@api_url}/categories/#{encode(name)}", params, headers)
     end
 
@@ -104,13 +117,13 @@ module KineticSdk
     # @param body [Hash] the updated property values
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
-    # 
+    #
     # Example
     #
     #     update_category("Foo", { "name" => "Bar" })
     #
     def update_category(original_name, body={}, headers=default_headers)
-      info("Updating Category \"#{original_name}\"")
+      @logger.info("Updating Category \"#{original_name}\"")
       put("#{@api_url}/categories/#{encode(original_name)}", body, headers)
     end
 
@@ -123,7 +136,7 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_handler_to_category(handler_id, category_name, headers=default_headers)
       body = { "definitionId" => handler_id }
-      info("Adding handler \"#{handler_id}\" to category \"#{category_name}\"")
+      @logger.info("Adding handler \"#{handler_id}\" to category \"#{category_name}\"")
       post("#{@api_url}/categories/#{encode(category_name)}/handlers", body, headers)
     end
 
@@ -134,7 +147,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def remove_handler_from_category(handler_id, category_name, headers=default_headers)
-      info("Removing handler \"#{handler_id}\" from category \"#{category_name}\"")
+      @logger.info("Removing handler \"#{handler_id}\" from category \"#{category_name}\"")
       delete("#{@api_url}/categories/#{encode(category_name)}/handlers/#{encode(handler_id)}", headers)
     end
 
@@ -146,7 +159,7 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_routine_to_category(routine_id, category_name, headers=default_headers)
       body = { "definitionId" => routine_id }
-      info("Adding routine \"#{routine_id}\" to category \"#{category_name}\"")
+      @logger.info("Adding routine \"#{routine_id}\" to category \"#{category_name}\"")
       post("#{@api_url}/categories/#{encode(category_name)}/routines", body, headers)
     end
 
@@ -157,7 +170,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def remove_routine_from_category(routine_id, category_name, headers=default_headers)
-      info("Removing routine \"#{routine_id}\" from category \"#{category_name}\"")
+      @logger.info("Removing routine \"#{routine_id}\" from category \"#{category_name}\"")
       delete("#{@api_url}/categories/#{encode(category_name)}/routines/#{encode(routine_id)}", headers)
     end
 
@@ -170,7 +183,7 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_policy_rule_to_category(policy_rule_type, policy_rule_name, category_name, headers=default_headers)
       body = { "type" => policy_rule_type, "name" => policy_rule_name }
-      info("Adding policy rule \"#{policy_rule_type} - #{policy_rule_name}\" to category \"#{category_name}\"")
+      @logger.info("Adding policy rule \"#{policy_rule_type} - #{policy_rule_name}\" to category \"#{category_name}\"")
       post("#{@api_url}/categories/#{encode(category_name)}/policyRules", body, headers)
     end
 
@@ -182,7 +195,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def remove_policy_rule_from_category(policy_rule_type, policy_rule_name, category_name, headers=default_headers)
-      info("Removing policy rule \"#{policy_rule_type} - #{policy_rule_name}\" from category \"#{category_name}\"")
+      @logger.info("Removing policy rule \"#{policy_rule_type} - #{policy_rule_name}\" from category \"#{category_name}\"")
       delete("#{@api_url}/categories/#{encode(category_name)}/policyRules/#{encode(policy_rule_type)}/#{encode(policy_rule_name)}", headers)
     end
 

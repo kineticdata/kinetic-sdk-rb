@@ -21,20 +21,25 @@ module KineticSdk
     # {KineticSdk::Utils::KineticHttpResponse#response} method.
     module KineticHttpUtils
 
-      # Include the Logger module
-      include KineticSdk::Utils::Logger
-
       # Send an HTTP DELETE request
       # 
       # @param url [String] url to send the request to
       # @param headers [Hash] hash of headers to send
-      # @param redirect_limit [Fixnum] max number of times to redirect
+      # @param http_options [Hash] hash of http options
+      # @option http_options [Fixnum] :max_redirects optional - max number of times to redirect
+      # @option http_options [Fixnum] :gateway_retry_limit optional - max number of times to retry a bad gateway
+      # @option http_options [Float] :gateway_retry_delay optional - number of seconds to delay before retrying a bad gateway
       # @return [KineticSdk::Utils::KineticHttpResponse] response
-      def delete(url, headers={}, redirect_limit=max_redirects)
+      def delete(url, headers={}, http_options=@options)
+        # determine the http options
+        redirect_limit = http_options[:max_redirects] || max_redirects
+        gateway_retries = http_options[:gateway_retry_limit] || gateway_retry_limit
+        gateway_delay = http_options[:gateway_retry_delay] || gateway_retry_delay
+
         # parse the URL
         uri = URI.parse(url)
 
-        debug("DELETE #{uri}  #{headers.inspect}")
+        @logger.debug("DELETE #{uri}  #{headers.inspect}")
 
         # build the http object
         http = build_http(uri)
@@ -46,24 +51,45 @@ module KineticSdk
           response = http.request(request)
           # handle the response
           case response
+          # handle 302
           when Net::HTTPRedirection then
             if redirect_limit == -1
-              info("HTTP response code: #{response.code}") unless trace?
+              @logger.info("HTTP response code: #{response.code}") unless @logger.debug?
               KineticHttpResponse.new(response)
             elsif redirect_limit == 0
               raise Net::HTTPFatalError.new("Too many redirects", response)
             else
-              delete_raw(response['location'], headers, redirect_limit - 1)
+              delete(response['location'], headers, http_options.merge({
+                :max_redirects => redirect_limit - 1
+              }))
             end
-          when NilClass then
-            info("HTTP response code: 0") unless trace?
-            raise Net::HTTPFatalError.new("No response from server", response)
+          # handle 502, 503, 504
+          when Net::HTTPBadGateway, Net::HTTPServiceUnavailable, Net::HTTPGatewayTimeOut then
+            if gateway_retries == -1
+              KineticHttpResponse.new(response)
+            elsif gateway_retries == 0
+              @logger.info("HTTP response: #{response.code} #{response.message}") unless @logger.debug?
+              raise Net::HTTPFatalError.new("#{response.code} #{response.message}", response)
+            else
+              @logger.info("#{response.code} #{response.message}, retrying in #{gateway_delay} seconds")
+              sleep(gateway_delay)
+              delete(url, headers, http_options.merge({
+                :gateway_retry_limit => gateway_retries - 1
+              }))
+            end
+          when Net::HTTPUnknownResponse, NilClass then
+            @logger.info("HTTP response code: 0") unless @logger.debug?
+            e = Net::HTTPFatalError.new("Unknown response from server", response)
+            KineticHttpResponse.new(e)
           else
-            info("HTTP response code: #{response.code}") unless trace?
+            @logger.info("HTTP response code: #{response.code}") unless @logger.debug?
             KineticHttpResponse.new(response)
           end
+        rescue Net::HTTPBadResponse => e
+          @logger.info("HTTP bad response: #{e.inspect}") unless @logger.debug?
+          KineticHttpResponse.new(e)
         rescue StandardError => e
-          info("HTTP response: #{response.inspect}") unless trace?
+          @logger.info("HTTP error: #{e.inspect}") unless @logger.debug?
           KineticHttpResponse.new(e)
         end
       end
@@ -73,15 +99,23 @@ module KineticSdk
       # @param url [String] url to send the request to
       # @param params [Hash] Query parameters that are added to the URL, such as +include+
       # @param headers [Hash] hash of headers to send
-      # @param redirect_limit [Fixnum] max number of times to redirect
+      # @param http_options [Hash] hash of http options
+      # @option http_options [Fixnum] :max_redirects optional - max number of times to redirect
+      # @option http_options [Fixnum] :gateway_retry_limit optional - max number of times to retry a bad gateway
+      # @option http_options [Float] :gateway_retry_delay optional - number of seconds to delay before retrying a bad gateway
       # @return [KineticSdk::Utils::KineticHttpResponse] response
-      def get(url, params={}, headers={}, redirect_limit=max_redirects)
+      def get(url, params={}, headers={}, http_options=@options)
+        # determine the http options
+        redirect_limit = http_options[:max_redirects] || max_redirects
+        gateway_retries = http_options[:gateway_retry_limit] || gateway_retry_limit
+        gateway_delay = http_options[:gateway_retry_delay] || gateway_retry_delay
+
         # parse the URL
         uri = URI.parse(url)
         # add URL parameters
         uri.query = URI.encode_www_form(params)
 
-        debug("GET #{uri}  #{headers.inspect}")
+        @logger.debug("GET #{uri}  #{headers.inspect}")
 
         # build the http object
         http = build_http(uri)
@@ -93,24 +127,45 @@ module KineticSdk
           response = http.request(request)
           # handle the response
           case response
+          # handle 302
           when Net::HTTPRedirection then
             if redirect_limit == -1
-              info("HTTP response code: #{response.code}") unless trace?
+              @logger.info("HTTP response code: #{response.code}") unless @logger.debug?
               KineticHttpResponse.new(response)
             elsif redirect_limit == 0
               raise Net::HTTPFatalError.new("Too many redirects", response)
             else
-              get_raw(response['location'], params, headers, redirect_limit - 1)
+              get(response['location'], params, headers, http_options.merge({
+                :max_redirects => redirect_limit - 1
+              }))
             end
-          when NilClass then
-            info("HTTP response code: 0") unless trace?
-            raise Net::HTTPFatalError.new("No response from server", response)
+          # handle 502, 503, 504
+          when Net::HTTPBadGateway, Net::HTTPServiceUnavailable, Net::HTTPGatewayTimeOut then
+            if gateway_retries == -1
+              KineticHttpResponse.new(response)
+            elsif gateway_retries == 0
+              @logger.info("HTTP response: #{response.code} #{response.message}") unless @logger.debug?
+              raise Net::HTTPFatalError.new("#{response.code} #{response.message}", response)
+            else
+              @logger.info("#{response.code} #{response.message}, retrying in #{gateway_delay} seconds")
+              sleep(gateway_delay)
+              get(url, params, headers, http_options.merge({
+                :gateway_retry_limit => gateway_retries - 1
+              }))
+            end
+          when Net::HTTPUnknownResponse, NilClass then
+            @logger.info("HTTP response code: 0") unless @logger.debug?
+            e = Net::HTTPFatalError.new("Unknown response from server", response)
+            KineticHttpResponse.new(e)
           else
-            info("HTTP response code: #{response.code}") unless trace?
+            @logger.info("HTTP response code: #{response.code}") unless @logger.debug?
             KineticHttpResponse.new(response)
           end
+        rescue Net::HTTPBadResponse => e
+          @logger.info("HTTP bad response: #{e.inspect}") unless @logger.debug?
+          KineticHttpResponse.new(e)
         rescue StandardError => e
-          info("HTTP response: #{response.inspect}") unless trace?
+          @logger.info("HTTP error: #{e.inspect}") unless @logger.debug?
           KineticHttpResponse.new(e)
         end
       end
@@ -120,15 +175,23 @@ module KineticSdk
       # @param url [String] url to send the request to
       # @param params [Hash] Query parameters that are added to the URL, such as +include+
       # @param headers [Hash] hash of headers to send
-      # @param redirect_limit [Fixnum] max number of times to redirect
+      # @param http_options [Hash] hash of http options
+      # @option http_options [Fixnum] :max_redirects optional - max number of times to redirect
+      # @option http_options [Fixnum] :gateway_retry_limit optional - max number of times to retry a bad gateway
+      # @option http_options [Float] :gateway_retry_delay optional - number of seconds to delay before retrying a bad gateway
       # @return [KineticSdk::Utils::KineticHttpResponse] response
-      def head(url, params={}, headers={}, redirect_limit=max_redirects)
+      def head(url, params={}, headers={}, http_options=@options)
+        # determine the http options
+        redirect_limit = http_options[:max_redirects] || max_redirects
+        gateway_retries = http_options[:gateway_retry_limit] || gateway_retry_limit
+        gateway_delay = http_options[:gateway_retry_delay] || gateway_retry_delay
+
         # parse the URL
         uri = URI.parse(url)
         # add URL parameters
         uri.query = URI.encode_www_form(params)
 
-        debug("HEAD #{uri}  #{headers.inspect}")
+        @logger.debug("HEAD #{uri}  #{headers.inspect}")
 
         # build the http object
         http = build_http(uri)
@@ -142,22 +205,42 @@ module KineticSdk
           case response
           when Net::HTTPRedirection then
             if redirect_limit == -1
-              info("HTTP response code: #{response.code}") unless trace?
+              @logger.info("HTTP response code: #{response.code}") unless @logger.debug?
               KineticHttpResponse.new(response)
             elsif redirect_limit == 0
               raise Net::HTTPFatalError.new("Too many redirects", response)
             else
-              head_raw(response['location'], params, headers, redirect_limit - 1)
+              head(response['location'], params, headers, http_options.merge({
+                :max_redirects => redirect_limit - 1
+              }))
             end
-          when NilClass then
-            info("HTTP response code: 0") unless trace?
-            raise Net::HTTPFatalError.new("No response from server", response)
+          # handle 502, 503, 504
+          when Net::HTTPBadGateway, Net::HTTPServiceUnavailable, Net::HTTPGatewayTimeOut then
+            if gateway_retries == -1
+              KineticHttpResponse.new(response)
+            elsif gateway_retries == 0
+              @logger.info("HTTP response: #{response.code} #{response.message}") unless @logger.debug?
+              raise Net::HTTPFatalError.new("#{response.code} #{response.message}", response)
+            else
+              @logger.info("#{response.code} #{response.message}, retrying in #{gateway_delay} seconds")
+              sleep(gateway_delay)
+              head(url, params, headers, http_options.merge({
+                :gateway_retry_limit => gateway_retries - 1
+              }))
+            end
+          when Net::HTTPUnknownResponse, NilClass then
+            @logger.info("HTTP response code: 0") unless @logger.debug?
+            e = Net::HTTPFatalError.new("Unknown response from server", response)
+            KineticHttpResponse.new(e)
           else
-            info("HTTP response code: #{response.code}") unless trace?
+            @logger.info("HTTP response code: #{response.code}") unless @logger.debug?
             KineticHttpResponse.new(response)
           end
+        rescue Net::HTTPBadResponse => e
+          @logger.info("HTTP bad response: #{e.inspect}") unless @logger.debug?
+          KineticHttpResponse.new(e)
         rescue StandardError => e
-          info("HTTP response: #{response.inspect}") unless trace?
+          @logger.info("HTTP error: #{e.inspect}") unless @logger.debug?
           KineticHttpResponse.new(e)
         end
       end
@@ -167,13 +250,21 @@ module KineticSdk
       # @param url [String] url to send the request to
       # @param data [Hash] the payload to send with the request
       # @param headers [Hash] hash of headers to send
-      # @param redirect_limit [Fixnum] max number of times to redirect
+      # @param http_options [Hash] hash of http options
+      # @option http_options [Fixnum] :max_redirects optional - max number of times to redirect
+      # @option http_options [Fixnum] :gateway_retry_limit optional - max number of times to retry a bad gateway
+      # @option http_options [Float] :gateway_retry_delay optional - number of seconds to delay before retrying a bad gateway
       # @return [KineticSdk::Utils::KineticHttpResponse] response
-      def patch(url, data={}, headers={}, redirect_limit=max_redirects)
+      def patch(url, data={}, headers={}, http_options=@options)
+        # determine the http options
+        redirect_limit = http_options[:max_redirects] || max_redirects
+        gateway_retries = http_options[:gateway_retry_limit] || gateway_retry_limit
+        gateway_delay = http_options[:gateway_retry_delay] || gateway_retry_delay
+
         # parse the URL
         uri = URI.parse(url)
 
-        debug("PATCH #{uri}  #{headers.inspect}")
+        @logger.debug("PATCH #{uri}  #{headers.inspect}")
 
         # unless the data is already a string, assume JSON and convert to string
         data = data.to_json unless data.is_a? String
@@ -190,22 +281,42 @@ module KineticSdk
           case response
           when Net::HTTPRedirection then
             if redirect_limit == -1
-              info("HTTP response code: #{response.code}") unless trace?
+              @logger.info("HTTP response code: #{response.code}") unless @logger.debug?
               KineticHttpResponse.new(response)
             elsif redirect_limit == 0
               raise Net::HTTPFatalError.new("Too many redirects", response)
             else
-              patch_raw(response['location'], data, headers, redirect_limit - 1)
+              patch(response['location'], data, headers, http_options.merge({
+                :max_redirects => redirect_limit - 1
+              }))
             end
-          when NilClass then
-            info("HTTP response code: 0") unless trace?
-            raise Net::HTTPFatalError.new("No response from server", response)
+          # handle 502, 503, 504
+          when Net::HTTPBadGateway, Net::HTTPServiceUnavailable, Net::HTTPGatewayTimeOut then
+            if gateway_retries == -1
+              KineticHttpResponse.new(response)
+            elsif gateway_retries == 0
+              @logger.info("HTTP response: #{response.code} #{response.message}") unless @logger.debug?
+              raise Net::HTTPFatalError.new("#{response.code} #{response.message}", response)
+            else
+              @logger.info("#{response.code} #{response.message}, retrying in #{gateway_delay} seconds")
+              sleep(gateway_delay)
+              patch(url, data, headers, http_options.merge({
+                :gateway_retry_limit => gateway_retries - 1
+              }))
+            end
+          when Net::HTTPUnknownResponse, NilClass then
+            @logger.info("HTTP response code: 0") unless @logger.debug?
+            e = Net::HTTPFatalError.new("Unknown response from server", response)
+            KineticHttpResponse.new(e)
           else
-            info("HTTP response code: #{response.code}") unless trace?
+            @logger.info("HTTP response code: #{response.code}") unless @logger.debug?
             KineticHttpResponse.new(response)
           end
+        rescue Net::HTTPBadResponse => e
+          @logger.info("HTTP bad response: #{e.inspect}") unless @logger.debug?
+          KineticHttpResponse.new(e)
         rescue StandardError => e
-          info("HTTP response: #{response.inspect}") unless trace?
+          @logger.info("HTTP error: #{e.inspect}") unless @logger.debug?
           KineticHttpResponse.new(e)
         end
       end
@@ -215,13 +326,21 @@ module KineticSdk
       # @param url [String] url to send the request to
       # @param data [Hash] the payload to send with the request
       # @param headers [Hash] hash of headers to send
-      # @param redirect_limit [Fixnum] max number of times to redirect
+      # @param http_options [Hash] hash of http options
+      # @option http_options [Fixnum] :max_redirects optional - max number of times to redirect
+      # @option http_options [Fixnum] :gateway_retry_limit optional - max number of times to retry a bad gateway
+      # @option http_options [Float] :gateway_retry_delay optional - number of seconds to delay before retrying a bad gateway
       # @return [KineticSdk::Utils::KineticHttpResponse] response
-      def post(url, data={}, headers={}, redirect_limit=max_redirects)
+      def post(url, data={}, headers={}, http_options=@options)
+        # determine the http options
+        redirect_limit = http_options[:max_redirects] || max_redirects
+        gateway_retries = http_options[:gateway_retry_limit] || gateway_retry_limit
+        gateway_delay = http_options[:gateway_retry_delay] || gateway_retry_delay
+
         # parse the URL
         uri = URI.parse(url)
 
-        debug("POST #{uri}  #{headers.inspect}")
+        @logger.debug("POST #{uri}  #{headers.inspect}")
 
         # unless the data is already a string, assume JSON and convert to string
         data = data.to_json unless data.is_a? String
@@ -238,22 +357,42 @@ module KineticSdk
           case response
           when Net::HTTPRedirection then
             if redirect_limit == -1
-              info("HTTP response code: #{response.code}") unless trace?
+              @logger.info("HTTP response code: #{response.code}") unless @logger.debug?
               KineticHttpResponse.new(response)
             elsif redirect_limit == 0
               raise Net::HTTPFatalError.new("Too many redirects", response)
             else
-              post_raw(response['location'], data, headers, redirect_limit - 1)
+              post(response['location'], data, headers, http_options.merge({
+                :max_redirects => redirect_limit - 1
+              }))
             end
-          when NilClass then
-            info("HTTP response code: 0") unless trace?
-            raise Net::HTTPFatalError.new("No response from server", response)
+          # handle 502, 503, 504
+          when Net::HTTPBadGateway, Net::HTTPServiceUnavailable, Net::HTTPGatewayTimeOut then
+            if gateway_retries == -1
+              KineticHttpResponse.new(response)
+            elsif gateway_retries == 0
+              @logger.info("HTTP response: #{response.code} #{response.message}") unless @logger.debug?
+              raise Net::HTTPFatalError.new("#{response.code} #{response.message}", response)
+            else
+              @logger.info("#{response.code} #{response.message}, retrying in #{gateway_delay} seconds")
+              sleep(gateway_delay)
+              post(url, data, headers, http_options.merge({
+                :gateway_retry_limit => gateway_retries - 1
+              }))
+            end
+          when Net::HTTPUnknownResponse, NilClass then
+            @logger.info("HTTP response code: 0") unless @logger.debug?
+            e = Net::HTTPFatalError.new("Unknown response from server", response)
+            KineticHttpResponse.new(e)
           else
-            info("HTTP response code: #{response.code}") unless trace?
+            @logger.info("HTTP response code: #{response.code}") unless @logger.debug?
             KineticHttpResponse.new(response)
           end
+        rescue Net::HTTPBadResponse => e
+          @logger.info("HTTP bad response: #{e.inspect}") unless @logger.debug?
+          KineticHttpResponse.new(e)
         rescue StandardError => e
-          info("HTTP response: #{response.inspect}") unless trace?
+          @logger.info("HTTP error: #{e.inspect}") unless @logger.debug?
           KineticHttpResponse.new(e)
         end
       end
@@ -263,13 +402,21 @@ module KineticSdk
       # @param url [String] url to send the request to
       # @param data [Hash] payload to send with the request
       # @param headers [Hash] hash of headers to send
-      # @param redirect_limit [Fixnum] max number of times to redirect
+      # @param http_options [Hash] hash of http options
+      # @option http_options [Fixnum] :max_redirects optional - max number of times to redirect
+      # @option http_options [Fixnum] :gateway_retry_limit optional - max number of times to retry a bad gateway
+      # @option http_options [Float] :gateway_retry_delay optional - number of seconds to delay before retrying a bad gateway
       # @return [KineticSdk::Utils::KineticHttpResponse] response
-      def post_multipart(url, data={}, headers={}, redirect_limit=max_redirects)
+      def post_multipart(url, data={}, headers={}, http_options=@options)
+        # determine the http options
+        redirect_limit = http_options[:max_redirects] || max_redirects
+        gateway_retries = http_options[:gateway_retry_limit] || gateway_retry_limit
+        gateway_delay = http_options[:gateway_retry_delay] || gateway_retry_delay
+
         # the Content-Type header is handled automoatically by Net::HTTP::Post::Multipart
         headers.delete_if { |k,v| k.to_s.downcase == "content-type" }
 
-        debug("POST #{url}  #{headers.inspect}  multi-part form content")
+        @logger.debug("POST #{url}  #{headers.inspect}  multi-part form content")
 
         # parse the URL
         uri = URI.parse(url)
@@ -304,22 +451,42 @@ module KineticSdk
           case response
           when Net::HTTPRedirection then
             if redirect_limit == -1
-              info("HTTP response code: #{response.code}") unless trace?
+              @logger.info("HTTP response code: #{response.code}") unless @logger.debug?
               KineticHttpResponse.new(response)
             elsif redirect_limit == 0
               raise Net::HTTPFatalError.new("Too many redirects", response)
             else
-              post_multipart_raw(response['location'], data, headers, redirect_limit - 1)
+              post_multipart(response['location'], data, headers, http_options.merge({
+                :max_redirects => redirect_limit - 1
+              }))
             end
-          when NilClass then
-            info("HTTP response code: 0") unless trace?
-            raise Net::HTTPFatalError.new("No response from server", response)
+          # handle 502, 503, 504
+          when Net::HTTPBadGateway, Net::HTTPServiceUnavailable, Net::HTTPGatewayTimeOut then
+            if gateway_retries == -1
+              KineticHttpResponse.new(response)
+            elsif gateway_retries == 0
+              @logger.info("HTTP response: #{response.code} #{response.message}") unless @logger.debug?
+              raise Net::HTTPFatalError.new("#{response.code} #{response.message}", response)
+            else
+              @logger.info("#{response.code} #{response.message}, retrying in #{gateway_delay} seconds")
+              sleep(gateway_delay)
+              post_multipart(url, data, headers, http_options.merge({
+                :gateway_retry_limit => gateway_retries - 1
+              }))
+            end
+          when Net::HTTPUnknownResponse, NilClass then
+            @logger.info("HTTP response code: 0") unless @logger.debug?
+            e = Net::HTTPFatalError.new("Unknown response from server", response)
+            KineticHttpResponse.new(e)
           else
-            info("HTTP response code: #{response.code}") unless trace?
+            @logger.info("HTTP response code: #{response.code}") unless @logger.debug?
             KineticHttpResponse.new(response)
           end
+        rescue Net::HTTPBadResponse => e
+          @logger.info("HTTP bad response: #{e.inspect}") unless @logger.debug?
+          KineticHttpResponse.new(e)
         rescue StandardError => e
-          info("HTTP response: #{response.inspect}") unless trace?
+          @logger.info("HTTP error: #{e.inspect}") unless @logger.debug?
           KineticHttpResponse.new(e)
         end
       end
@@ -329,13 +496,21 @@ module KineticSdk
       # @param url [String] url to send the request to
       # @param data [Hash] payload to send with the request
       # @param headers [Hash] hash of headers to send
-      # @param redirect_limit [Fixnum] max number of times to redirect
+      # @param http_options [Hash] hash of http options
+      # @option http_options [Fixnum] :max_redirects optional - max number of times to redirect
+      # @option http_options [Fixnum] :gateway_retry_limit optional - max number of times to retry a bad gateway
+      # @option http_options [Float] :gateway_retry_delay optional - number of seconds to delay before retrying a bad gateway
       # @return [KineticSdk::Utils::KineticHttpResponse] response
-      def put(url, data={}, headers={}, redirect_limit=max_redirects)
+      def put(url, data={}, headers={}, http_options=@options)
+        # determine the http options
+        redirect_limit = http_options[:max_redirects] || max_redirects
+        gateway_retries = http_options[:gateway_retry_limit] || gateway_retry_limit
+        gateway_delay = http_options[:gateway_retry_delay] || gateway_retry_delay
+
         # parse the URL
         uri = URI.parse(url)
 
-        debug("PUT #{uri}  #{headers.inspect}")
+        @logger.debug("PUT #{uri}  #{headers.inspect}")
 
         # unless the data is already a string, assume JSON and convert to string
         data = data.to_json unless data.is_a? String
@@ -352,22 +527,42 @@ module KineticSdk
           case response
           when Net::HTTPRedirection then
             if redirect_limit == -1
-              info("HTTP response code: #{response.code}") unless trace?
+              @logger.info("HTTP response code: #{response.code}") unless @logger.debug?
               KineticHttpResponse.new(response)
             elsif redirect_limit == 0
               raise Net::HTTPFatalError.new("Too many redirects", response)
             else
-              put_raw(response['location'], data, headers, redirect_limit - 1)
+              put(response['location'], data, headers, http_options.merge({
+                :max_redirects => redirect_limit - 1
+              }))
             end
-          when NilClass then
-            info("HTTP response code: 0") unless trace?
-            raise Net::HTTPFatalError.new("No response from server", response)
+          # handle 502, 503, 504
+          when Net::HTTPBadGateway, Net::HTTPServiceUnavailable, Net::HTTPGatewayTimeOut then
+            if gateway_retries == -1
+              KineticHttpResponse.new(response)
+            elsif gateway_retries == 0
+              @logger.info("HTTP response: #{response.code} #{response.message}") unless @logger.debug?
+              raise Net::HTTPFatalError.new("#{response.code} #{response.message}", response)
+            else
+              @logger.info("#{response.code} #{response.message}, retrying in #{gateway_delay} seconds")
+              sleep(gateway_delay)
+              put(url, data, headers, http_options.merge({
+                :gateway_retry_limit => gateway_retries - 1
+              }))
+            end
+          when Net::HTTPUnknownResponse, NilClass then
+            @logger.info("HTTP response code: 0") unless @logger.debug?
+            e = Net::HTTPFatalError.new("Unknown response from server", response)
+            KineticHttpResponse.new(e)
           else
-            info("HTTP response code: #{response.code}") unless trace?
+            @logger.info("HTTP response code: #{response.code}") unless @logger.debug?
             KineticHttpResponse.new(response)
           end
+        rescue Net::HTTPBadResponse => e
+          @logger.info("HTTP bad response: #{e.inspect}") unless @logger.debug?
+          KineticHttpResponse.new(e)
         rescue StandardError => e
-          info("HTTP response: #{response.inspect}") unless trace?
+          @logger.info("HTTP error: #{e.inspect}") unless @logger.debug?
           KineticHttpResponse.new(e)
         end
       end
@@ -377,9 +572,17 @@ module KineticSdk
       # @param url [String] url to send the request to
       # @param params [Hash] Query parameters that are added to the URL, such as +include+
       # @param headers [Hash] hash of headers to send
-      # @param redirect_limit [Fixnum] max number of times to redirect
+      # @param http_options [Hash] hash of http options
+      # @option http_options [Fixnum] :max_redirects optional - max number of times to redirect
+      # @option http_options [Fixnum] :gateway_retry_limit optional - max number of times to retry a bad gateway
+      # @option http_options [Float] :gateway_retry_delay optional - number of seconds to delay before retrying a bad gateway
       # @return [String] redirection url, or url if there is no redirection
-      def redirect_url(url, params={}, headers={}, redirect_limit=max_redirects)
+      def redirect_url(url, params={}, headers={}, http_options=@options)
+        # determine the http options
+        redirect_limit = http_options[:max_redirects] || max_redirects
+        gateway_retries = http_options[:gateway_retry_limit] || gateway_retry_limit
+        gateway_delay = http_options[:gateway_retry_delay] || gateway_retry_delay
+
         # parse the URL
         uri = URI.parse(url)
         # add URL parameters
@@ -397,7 +600,23 @@ module KineticSdk
         when Net::HTTPRedirection then
           if redirect_limit > 0
             url = response['location']
-            head_raw(response['location'], params, headers, redirect_limit - 1)
+            head(response['location'], params, headers, http_options.merge({
+              :max_redirects => redirect_limit - 1
+            }))
+          end
+        # handle 502, 503, 504
+        when Net::HTTPBadGateway, Net::HTTPServiceUnavailable, Net::HTTPGatewayTimeOut then
+          if gateway_retries == -1
+            KineticHttpResponse.new(response)
+          elsif gateway_retries == 0
+              @logger.info("HTTP response: #{response.code} #{response.message}") unless @logger.debug?
+            raise Net::HTTPFatalError.new("#{response.code} #{response.message}", response)
+          else
+            @logger.info("#{response.code} #{response.message}, retrying in #{gateway_delay} seconds")
+            sleep(gateway_delay)
+            redirect_url(url, params, headers, http_options.merge({
+              :gateway_retry_limit => gateway_retries - 1
+            }))
           end
         end
         url
@@ -411,14 +630,17 @@ module KineticSdk
       # @param url [String] url to send the request to
       # @param params [Hash] Query parameters that are added to the URL, such as +include+
       # @param headers [Hash] hash of headers to send
-      # @param redirect_limit [Fixnum] max number of times to redirect
-      def stream_download_to_file(file_path, url, params={}, headers={}, redirect_limit=max_redirects)
+      # @param http_options [Hash] hash of http options
+      # @option http_options [Fixnum] :max_redirects optional - max number of times to redirect
+      # @option http_options [Fixnum] :gateway_retry_limit optional - max number of times to retry a bad gateway
+      # @option http_options [Float] :gateway_retry_delay optional - number of seconds to delay before retrying a bad gateway
+      def stream_download_to_file(file_path, url, params={}, headers={}, http_options=@http_options)
         # Determine if redirection is involved
         url = redirect_url(url, params, headers, max_redirects)
         # parse the URL
         uri = URI.parse(url)
   
-        debug("Streaming Download #{uri}  #{headers.inspect}")
+        @logger.debug("Streaming Download #{uri}  #{headers.inspect}")
   
         # build the http object
         http = build_http(uri)
@@ -439,26 +661,16 @@ module KineticSdk
             end
           end
           if response_code == "200"
-            info("Exported file attachment: #{file_name} to #{file_path}")
+            @logger.info("Exported file attachment: #{file_name} to #{file_path}")
           else
-            warn("Failed to export file attachment \"#{file_name}\": #{message}")
+            @logger.error("Failed to export file attachment \"#{file_name}\": #{message}")
           end
         rescue StandardError => e
-          warn("Failed to export file attachment \"#{file_name}\": (#{e})")
+          @logger.error("Failed to export file attachment \"#{file_name}\": (#{e})")
         ensure
           file.close()
         end
       end
-  
-      # alias methods to allow wrapper modules to handle the
-      # response object.
-      alias_method :delete_raw, :delete
-      alias_method :get_raw, :get
-      alias_method :head_raw, :head
-      alias_method :patch_raw, :patch
-      alias_method :post_raw, :post
-      alias_method :post_multipart_raw, :post_multipart
-      alias_method :put_raw, :put
 
 
       # Encode URI components
@@ -499,6 +711,45 @@ module KineticSdk
         limit.nil? ? 5 : limit.to_i
       end
 
+      # The maximum number of times to retry on a bad gateway response.
+      #
+      # Can be passed in as an option when initializing the SDK
+      # with either the @options[:gateway_retry_limit] or 
+      # @options['gateway_retry_limit'] key.
+      #
+      # Expects an integer [Fixnum] value. Setting to -1 will disable retries on
+      # a bad gateway response.
+      #
+      # @return [Fixnum] default -1
+      def gateway_retry_limit
+        limit = @options &&
+        (
+          @options[:gateway_retry_limit] ||
+          @options['gateway_retry_limit']
+        )
+        limit.nil? ? -1 : limit.to_i
+      end
+
+      # The amount of time in seconds to delay before retrying the request when
+      # a bad gateway response is encountered.
+      #
+      # Can be passed in as an option when initializing the SDK
+      # with either the @options[:gateway_retry_delay] or 
+      # @options['gateway_retry_delay'] key.
+      #
+      # Expects a double [Float] value.
+      #
+      # @return [Float] default 1.0
+      def gateway_retry_delay
+        delay = @options &&
+        (
+          @options[:gateway_retry_delay] ||
+          @options['gateway_retry_delay']
+        )
+        delay.nil? ? 1.0 : delay.to_f
+      end
+
+
       private
 
       # Build the Net::HTTP object.
@@ -507,9 +758,10 @@ module KineticSdk
       # @return [Net::HTTP]
       def build_http(uri)
         http = Net::HTTP.new(uri.host, uri.port)
-        http.set_debug_output($stdout) if trace?
+        http.set_debug_output($stdout) if @logger.debug?
         if (uri.scheme == 'https')
           http.use_ssl = true
+          OpenSSL.debug = @logger.debug?
           if (@options[:ssl_verify_mode].to_s.strip.downcase == 'peer')
             http.verify_mode = OpenSSL::SSL::VERIFY_PEER
             http.ca_file = @options[:ssl_ca_file] if @options[:ssl_ca_file]
@@ -522,7 +774,7 @@ module KineticSdk
         http
       end
 
-    end
+    end # KineticSdk::Utils::KineticHttpUtils module
 
 
     # The KineticHttp class provides functionality to make generic HTTP requests.
@@ -539,14 +791,52 @@ module KineticSdk
       #
       # @param username [String] username for Basic Authentication
       # @param password [String] password for Basic Authentication
-      def initialize(username=nil, password=nil)
+      # @param http_options [Hash] hash of http options
+      # @option http_options [String] :log_level (off) log_level
+      # @option http_options [Fixnum] :max_redirects (5) max number of times to redirect
+      # @option http_options [Fixnum] :gateway_retry_limit (-1) max number of times to retry a bad gateway
+      # @option http_options [Float] :gateway_retry_delay (1.0) number of seconds to delay before retrying a bad gateway
+      # @option http_options [String] :ssl_ca_file (/etc/ca.crt certificate) location of the ca certificate
+      # @option http_options [String] :ssl_verify_mode (none) use `peer` to enable verification
+      def initialize(username=nil, password=nil, http_options={})
         @username = username
         @password = password
-        @options = {}
+        @options = http_options
       end
 
+    end # KineticSdk::Utils::KineticHttp class
+
+  end # KineticSdk::Utils module
+
+  # The CustomHttp class provides functionality to make generic HTTP requests
+  # utilizing the functionality of the KineticSdk.
+  class CustomHttp
+    include KineticSdk::Utils::KineticHttpUtils
+    attr_accessor :username, :password, :options, :logger
+
+    # Constructor
+    #
+    # @param opts [Hash] options for HTTP requests
+    # @option opts [String] :username (nil) for Basic Authentication
+    # @option opts [String] :password (nil) for Basic Authentication
+    # @option opts [Hash] :options ({}) http options
+    # @option options [String] :log_level (off) log_level
+    # @option options [String] :log_output (STDOUT) log_output
+    # @option options [Fixnum] :max_redirects (5) max number of times to redirect
+    # @option options [Fixnum] :gateway_retry_limit (-1) max number of times to retry a bad gateway
+    # @option options [Float] :gateway_retry_delay (1.0) number of seconds to delay before retrying a bad gateway
+    # @option options [String] :ssl_ca_file (/etc/ca.crt certificate) location of the ca certificate
+    # @option options [String] :ssl_verify_mode (none) use `peer` to enable verification
+    def initialize(opts={})
+      @username = opts[:username]
+      @password = opts[:password]
+      @options = opts.delete(:options) || {}
+      log_level = @options[:log_level] || @options["log_level"]
+      log_output = @options[:log_output] || @options["log_output"]
+      @logger = KineticSdk::Utils::KLogger.new(log_level, log_output)
     end
-    
 
   end
-end
+
+
+end # KineticSdk module

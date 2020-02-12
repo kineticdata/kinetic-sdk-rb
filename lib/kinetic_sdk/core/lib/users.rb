@@ -1,5 +1,5 @@
 module KineticSdk
-  class RequestCe
+  class Core
 
     # Add a user in a space.
     #
@@ -28,11 +28,11 @@ module KineticSdk
     #
     def add_user(user, headers=default_headers)
       if !@space_slug.nil?
-        info("Adding user \"#{user['username']}\" for Space \"#{@space_slug}\" as system user.")
+        @logger.info("Adding user \"#{user['username']}\" for Space \"#{@space_slug}\" as system user.")
         post("#{@api_url}/users", user, headers)
       elsif !user['space_slug'].nil?
         space_slug = user.delete('space_slug')
-        info("Adding user \"#{user['username']}\" for Space \"#{space_slug}\".")
+        @logger.info("Adding user \"#{user['username']}\" for Space \"#{space_slug}\".")
         post("#{@api_url}/spaces/#{space_slug}/users", user, headers)
       else
         raise StandardError.new "The space slug must be supplied to add the user."
@@ -68,11 +68,11 @@ module KineticSdk
     #
     def delete_user(user, headers=default_headers)
       if !@space_slug.nil?
-        info("Deleting user \"#{user['username']}\" for Space \"#{@space_slug}\" as system user.")
+        @logger.info("Deleting user \"#{user['username']}\" for Space \"#{@space_slug}\" as system user.")
         delete("#{@api_url}/users/#{encode(user['username'])}", headers)
       elsif !user['space_slug'].nil?
         space_slug = user.delete('space_slug')
-        info("Deleting user \"#{user['username']}\" for Space \"#{space_slug}\".")
+        @logger.info("Deleting user \"#{user['username']}\" for Space \"#{space_slug}\".")
         delete("#{@api_url}/spaces/#{space_slug}/users/#{encode(user['username'])}", headers)
       else
         raise StandardError.new "The space slug must be supplied to add the user."
@@ -109,9 +109,9 @@ module KineticSdk
       # set the updated attributes list
       body = { "attributes" => attributes }
       if exists
-        info("Updating attribute \"#{attribute_name}\" on user \"#{username}\".")
+        @logger.info("Updating attribute \"#{attribute_name}\" on user \"#{username}\".")
       else
-        info("Adding attribute \"#{attribute_name}\" to user \"#{username}\".")
+        @logger.info("Adding attribute \"#{attribute_name}\" to user \"#{username}\".")
       end
       # Update the user
       put("#{@api_url}/users/#{encode(username)}", body, headers)
@@ -152,9 +152,9 @@ module KineticSdk
       # set the updated attributes list
       body = { "attributes" => attributes }
       if exists
-        info("Updating attribute \"#{attribute_name}\" on user \"#{username}\".")
+        @logger.info("Updating attribute \"#{attribute_name}\" on user \"#{username}\".")
       else
-        info("Adding attribute \"#{attribute_name}\" to user \"#{username}\".")
+        @logger.info("Adding attribute \"#{attribute_name}\" to user \"#{username}\".")
       end
       # Update the user
       put("#{@api_url}/users/#{encode(username)}", body, headers)
@@ -166,7 +166,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_users(params={}, headers=default_headers)
-      info("Finding Users \"#{username}\"")
+      @logger.info("Finding Users \"#{username}\"")
       get("#{@api_url}/users", params, headers)
     end
 
@@ -177,7 +177,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_user(username, params={}, headers=default_headers)
-      info("Finding User \"#{username}\"")
+      @logger.info("Finding User \"#{username}\"")
       get("#{@api_url}/users/#{encode(username)}", params, headers)
     end
 
@@ -209,11 +209,11 @@ module KineticSdk
     #
     def update_user(username, user, headers=default_headers)
       if !@space_slug.nil?
-        info("Updating user \"#{username}\" for Space \"#{@space_slug}\" as system user.")
+        @logger.info("Updating user \"#{username}\" for Space \"#{@space_slug}\" as system user.")
         put("#{@api_url}/users/#{encode(username)}", user, headers)
       elsif !user['space_slug'].nil?
         space_slug = user.delete('space_slug')
-        info("Updating user \"#{username}\" for Space \"#{space_slug}\".")
+        @logger.info("Updating user \"#{username}\" for Space \"#{space_slug}\".")
         put("#{@api_url}/spaces/#{space_slug}/users/#{encode(username)}", user, headers)
       else
         raise StandardError.new "The space slug must be supplied to update the user."
@@ -227,7 +227,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def generate_password_token(username, body={}, headers=default_headers)
-      info("Generating PW Token for \"#{username}\"")
+      @logger.info("Generating PW Token for \"#{username}\"")
       post("#{@api_url}/users/#{encode(username)}/passwordResetToken", body, headers)
     end
 
@@ -237,7 +237,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def me(params={}, headers=default_headers)
-      info("Finding Me")
+      @logger.info("Finding Me")
       get("#{@api_url}/me", params, headers)
     end
 

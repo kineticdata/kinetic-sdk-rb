@@ -10,7 +10,7 @@ module KineticSdk
     # Include the KineticHttpUtils module
     include KineticSdk::Utils::KineticHttpUtils
 
-    attr_reader :api_url, :username, :options, :password, :server, :version
+    attr_reader :api_url, :username, :options, :password, :server, :version, :logger
 
     # Initalize the BridgeHub SDK with the web server URL and configuration user
     # credentials, along with any custom option values.
@@ -28,8 +28,11 @@ module KineticSdk
     # @option opts [String] :password the password for the user
     # @option opts [Hash<Symbol, Object>] :options ({}) optional settings
     #
-    #   * :log_level (String) (_defaults to: off_) level of logging - off | info | debug | trace
-    #   * :max_redirects (Fixnum) (_defaults to: 10_) maximum number of redirects to follow
+    #   * :gateway_retry_limit (FixNum) (_defaults to: 5_) max number of times to retry a bad gateway
+    #   * :gateway_retry_delay (Float) (_defaults to: 1.0_) number of seconds to delay before retrying a bad gateway
+    #   * :log_level (String) (_defaults to: off_) level of logging - off | error | warn | info | debug
+    #   * :log_output (String) (_defaults to: STDOUT_) where to send output - STDOUT | STDERR
+    #   * :max_redirects (Fixnum) (_defaults to: 5_) maximum number of redirects to follow
     #   * :ssl_ca_file (String) full path to PEM certificate used to verify the server
     #   * :ssl_verify_mode (String) (_defaults to: none_) - none | peer
     #
@@ -69,6 +72,11 @@ module KineticSdk
 
       # process any individual options
       @options = options.delete(:options) || {}
+      # setup logging
+      log_level = @options[:log_level] || @options["log_level"]
+      log_output = @options[:log_output] || @options["log_output"]
+      @logger = KineticSdk::Utils::KLogger.new(log_level, log_output)
+
       @username = options[:username]
       @password = options[:password]
       @server = options[:app_server_url].chomp('/')

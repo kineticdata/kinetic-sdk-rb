@@ -1,8 +1,8 @@
 # SDK log level (off | info | debug | trace)
 sdk_log_level: "info"
 
-# Properties for Connecting to CE
-ce:
+# Properties for Connecting to Core
+core:
   server: "http://locahost:8080/kinetic"
   space_admin_credentials:
     username: "admin"

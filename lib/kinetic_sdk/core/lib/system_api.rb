@@ -1,5 +1,5 @@
 module KineticSdk
-  class RequestCe
+  class Core
 
     # Add a new Space
     #
@@ -9,7 +9,7 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_space(name, slug, headers=default_headers)
       payload = { "name" => name, "slug" => slug }
-      info("Creating Space \"#{name}\" with slug \"#{slug}\"")
+      @logger.info("Creating Space \"#{name}\" with slug \"#{slug}\"")
       post("#{@api_url}/spaces", payload, headers)
     end
 
@@ -20,7 +20,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_space(slug, headers=default_headers)
-      info("Deleting Space \"#{slug}\"")
+      @logger.info("Deleting Space \"#{slug}\"")
       delete("#{@api_url}/spaces/#{slug}", headers)
     end
 
@@ -30,7 +30,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_spaces(params={}, headers=default_headers)
-      info("Finding Spaces")
+      @logger.info("Finding Spaces")
       get("#{@api_url}/spaces", params, headers)
     end
 
@@ -41,7 +41,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_space_in_system(slug, params={}, headers=default_headers)
-      info("Retrieving Space \"#{slug}\"")
+      @logger.info("Retrieving Space \"#{slug}\"")
       get("#{@api_url}/spaces/#{slug}", params, headers)
     end
 
@@ -52,7 +52,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_space_in_system(slug, body, headers=default_headers)
-      info("Updating Space \"#{slug}\"")
+      @logger.info("Updating Space \"#{slug}\"")
       put("#{@api_url}/spaces/#{slug}", body, headers)
     end
 
@@ -61,8 +61,20 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def reset_license_count(headers=default_headers)
-      info("Resetting License Count")
+      @logger.info("Resetting License Count")
       put("#{@api_url}/license/reset", {}, headers)
+    end
+
+    # Find a user in a space (System API)
+    #
+    # @param space_slug [String] slug of the space
+    # @param username [String] the username to find
+    # @param params [Hash] Query parameters that are added to the URL, such as +include+
+    # @param headers [Hash] hash of headers to send, default is basic authentication and JSON content type
+    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    def find_user_in_system(space_slug, username, params={}, headers=default_headers)
+      @logger.info("Finding User #{username} in Space #{space_slug}")
+      get("#{@api_url}/spaces/#{space_slug}/users/#{encode(username)}", params, headers)
     end
 
   end

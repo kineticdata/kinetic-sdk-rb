@@ -1,7 +1,7 @@
 --title Kinetic SDK
 --charset utf-8
 --markup markdown
---output-dir rdoc
+--output-dir doc
 --readme README.md
 --load .yardoc-includes/yard-helpers.rb
-'lib/**/*.rb' - GettingStarted.md README.md
+'lib/**/*.rb' - '*.md'

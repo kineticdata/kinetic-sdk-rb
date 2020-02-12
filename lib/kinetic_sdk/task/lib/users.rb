@@ -16,7 +16,7 @@ module KineticSdk
     #     })
     #
     def add_user(user, headers=default_headers)
-      info("Add user \"#{user['loginId']}\"")
+      @logger.info("Add user \"#{user['loginId']}\"")
       post("#{@api_url}/users", user, headers)
     end
 
@@ -26,7 +26,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_user(login_id, headers=header_basic_auth)
-      info("Deleting User \"#{login_id}\"")
+      @logger.info("Deleting User \"#{login_id}\"")
       delete("#{@api_url}/users/#{encode(login_id)}", headers)
     end
 
@@ -35,9 +35,9 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_users(headers=header_basic_auth)
-      info("Deleting all users")
+      @logger.info("Deleting all users")
       (find_users(headers).content["users"] || []).each do |user|
-        delete("#{@api_url}/users/#{encode(user['login_id'])}", headers)
+        delete_user(user['loginId'], headers)
       end
     end
 
@@ -47,7 +47,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_users(params={}, headers=header_basic_auth)
-      info("Finding all users")
+      @logger.info("Finding all users")
       get("#{@api_url}/users", params, headers)
     end
 
@@ -67,7 +67,7 @@ module KineticSdk
     #     })
     #
     def update_user(login_id, user, headers=default_headers)
-      info("Updating user \"#{login_id}\"")
+      @logger.info("Updating user \"#{login_id}\"")
       put("#{@api_url}/users/#{encode(login_id)}", user, headers)
     end
 

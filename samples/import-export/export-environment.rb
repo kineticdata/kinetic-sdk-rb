@@ -49,15 +49,15 @@ class ExportOptions
     opts.separator ""
 
     opts.on("-t EXPORT TYPE",
-            "The type of export to run (ce,task,all)") do |type|
-      if type.to_s.downcase == "ce"
-        options.exportCE = true
+            "The type of export to run (core,task,all)") do |type|
+      if type.to_s.downcase == "core"
+        options.exportCore = true
         options.exportTask = false
       elsif type.to_s.downcase == "task"
-        options.exportCE = false
+        options.exportCore = false
         options.exportTask = true
       else
-        options.exportCE = true
+        options.exportCore = true
         options.exportTask = true
       end
     end
@@ -124,36 +124,39 @@ FileUtils.mkdir_p(space_dir, :mode => 0700) unless Dir.exist?(space_dir)
 Dir.chdir(space_dir)
 
 # Build mapping of kapp/forms/datastores to export submissions for
-forms_to_export = env['ce']['export_form_data'] || {}
-datastore_forms_to_export = env['ce']['export_datastore_form_data'] || []
+forms_to_export = env["core"]['export_form_data'] || {}
+datastore_forms_to_export = env["core"]['export_datastore_form_data'] || []
 
 # Build an Array of All attributes to remove from JSON export
 # authStrategy is for webhooks / key is for bridges
-attrs_to_delete = env['ce']['remove_data_attributes'] || []
+attrs_to_delete = env["core"]['remove_data_attributes'] || []
 
-if options.exportCE
+# Array or kapps to export, leave empty for all kapps
+kapps_to_export = env["core"]['kapps'] || []
+
+if options.exportCore
   #--------------------------------------------------------------------------
-  # Request CE
+  # Core
   #--------------------------------------------------------------------------
 
   # CE
-  ce_server = env["ce"]["server"]
+  ce_server = env["core"]["server"]
   ce_space_server = (env["proxy_subdomains"] || false) ?
     ce_server.gsub("://", "://#{space_slug}.") :
     "#{ce_server}/#{space_slug}"
-  # Get the Request CE configurator user credentials from the config file
+  # Get the Core configurator user credentials from the config file
   ce_credentials = {
-    "username" => env["ce"]["system_credentials"]["username"],
-    "password" => env["ce"]["system_credentials"]["password"]
+    "username" => env["core"]["system_credentials"]["username"],
+    "password" => env["core"]["system_credentials"]["password"]
   }
-  # Get the Request CE space user credentials from the config file
+  # Get the Core space user credentials from the config file
   ce_credentials_space_admin = {
     "username" => "kinops-export@kinops.io",
     "password" => KineticSdk::Utils::Random.simple
   }
 
   # Connect to the CE System API
-  requestce_sdk = KineticSdk::RequestCe.new({
+  requestce_sdk = KineticSdk::Core.new({
     app_server_url: ce_server,
     username: ce_credentials["username"],
     password: ce_credentials["password"],
@@ -168,7 +171,7 @@ if options.exportCE
     puts "Exporting Space: #{space_slug}"
 
     # Create an export user
-    puts "Creating an export user in the \"#{space_slug}\" Request CE space."
+    puts "Creating an export user in the \"#{space_slug}\" Core space."
     requestce_sdk.add_user({
       "space_slug" => space_slug,
       "username" => ce_credentials_space_admin["username"],
@@ -179,7 +182,7 @@ if options.exportCE
     })
 
     # Log into the Space with the export user
-    requestce_sdk = KineticSdk::RequestCe.new({
+    requestce_sdk = KineticSdk::Core.new({
       space_server_url: ce_space_server,
       space_slug: space_slug,
       username: ce_credentials_space_admin["username"],
@@ -246,27 +249,29 @@ if options.exportCE
     puts "Building Kapp Directory Structure"
     # Loop over Each Kapp
     space["kapps"].each do |kapp|
-      # Create a Kapp Directory
-      kappDir = "#{ceDir}/kapp-#{kapp['slug']}"
-      Dir.mkdir(kappDir, 0700) unless Dir.exist?(kappDir)
-      Dir.chdir(kappDir)
+      if kapps_to_export.empty? || kapps_to_export.include?(kapp['slug'])
+        # Create a Kapp Directory
+        kappDir = "#{ceDir}/kapp-#{kapp['slug']}"
+        Dir.mkdir(kappDir, 0700) unless Dir.exist?(kappDir)
+        Dir.chdir(kappDir)
 
-      # Create kapp.json (All Arrays except attributes and security policies should be excluded)
-      includeWithKapp = ['attributes', 'securityPolicies'];
-      kappJson = JSON.pretty_generate(kapp.reject {|k,v| v.is_a?(Array) && !includeWithKapp.include?(k)})
-      File.open("#{kappDir}/kapp.json", 'w') { |file| file.write(kappJson) }
+        # Create kapp.json (All Arrays except attributes and security policies should be excluded)
+        includeWithKapp = ['attributes', 'securityPolicies'];
+        kappJson = JSON.pretty_generate(kapp.reject {|k,v| v.is_a?(Array) && !includeWithKapp.include?(k)})
+        File.open("#{kappDir}/kapp.json", 'w') { |file| file.write(kappJson) }
 
-      # Loop over the rest of the kapp objects and create files for them
-      propsToExlucde = ['categorizations', 'fields']
-      kappObjects = kapp.reject {|k,v| !v.is_a?(Array) || includeWithKapp.include?(k) || propsToExlucde.include?(k)}
-      kappObjects.each do | k, v |
-        if k == "forms"
-          Dir.mkdir("#{kappDir}/forms", 0700) unless Dir.exist?("#{kappDir}/forms")
-          v.each do |form|
-            File.open("#{kappDir}/forms/#{form['slug']}.json", 'w') { |file| file.write(JSON.pretty_generate(form)) }
+        # Loop over the rest of the kapp objects and create files for them
+        propsToExlucde = ['categorizations', 'fields']
+        kappObjects = kapp.reject {|k,v| !v.is_a?(Array) || includeWithKapp.include?(k) || propsToExlucde.include?(k)}
+        kappObjects.each do | k, v |
+          if k == "forms"
+            Dir.mkdir("#{kappDir}/forms", 0700) unless Dir.exist?("#{kappDir}/forms")
+            v.each do |form|
+              File.open("#{kappDir}/forms/#{form['slug']}.json", 'w') { |file| file.write(JSON.pretty_generate(form)) }
+            end
+          else
+            File.open("#{kappDir}/#{k}.json", 'w') { |file| file.write(JSON.pretty_generate(v)) }
           end
-        else
-          File.open("#{kappDir}/#{k}.json", 'w') { |file| file.write(JSON.pretty_generate(v)) }
         end
       end
     end
@@ -285,33 +290,35 @@ if options.exportCE
 
     # Loop over each Kapp in the forms to export map
     forms_to_export.keys.each do |kappSlug|
-      # Loop over each form slug in the forms_to_export map for the given kapp
-      forms_to_export[kappSlug].each do |formSlug|
-        # Build a data directory for the kapp
-        dataDir = "#{ceDir}/kapp-#{kappSlug}/data"
-        FileUtils.mkdir_p(dataDir, :mode => 0700)
-        # Build params to pass to the retrieve_form_submissions method
-        params = {"include" => "values", "limit" => 1000, "direction" => "ASC"}
-        # Open the submissions file in write mode
-        file = File.open("#{dataDir}/#{formSlug}.json", 'w');
-        # Ensure the file is empty
-        file.truncate(0)
-        response = nil
-        begin
-          # Get submissions
-          response = requestce_sdk.find_form_submissions(kappSlug, formSlug, params).content
-          if response.has_key?("submissions")
-            # Write each submission on its own line
-            (response["submissions"] || []).each do |submission|
-              # Append each submission (removing the submission unwanted attributes)
-              file.puts(JSON.generate(submission.delete_if { |key, value| attrs_to_delete.member?(key)}))
+      if kapps_to_export.empty? || kapps_to_export.include?(kappSlug)
+        # Loop over each form slug in the forms_to_export map for the given kapp
+        forms_to_export[kappSlug].each do |formSlug|
+          # Build a data directory for the kapp
+          dataDir = "#{ceDir}/kapp-#{kappSlug}/data"
+          FileUtils.mkdir_p(dataDir, :mode => 0700)
+          # Build params to pass to the retrieve_form_submissions method
+          params = {"include" => "values", "limit" => 1000, "direction" => "ASC"}
+          # Open the submissions file in write mode
+          file = File.open("#{dataDir}/#{formSlug}.json", 'w');
+          # Ensure the file is empty
+          file.truncate(0)
+          response = nil
+          begin
+            # Get submissions
+            response = requestce_sdk.find_form_submissions(kappSlug, formSlug, params).content
+            if response.has_key?("submissions")
+              # Write each submission on its own line
+              (response["submissions"] || []).each do |submission|
+                # Append each submission (removing the submission unwanted attributes)
+                file.puts(JSON.generate(submission.delete_if { |key, value| attrs_to_delete.member?(key)}))
+              end
             end
-          end
-          params['pageToken'] = response['nextPageToken']
-          # Get next page of submissions if there are more
-        end while !response.nil? && !response['nextPageToken'].nil?
-        # Close the submissions file
-        file.close()
+            params['pageToken'] = response['nextPageToken']
+            # Get next page of submissions if there are more
+          end while !response.nil? && !response['nextPageToken'].nil?
+          # Close the submissions file
+          file.close()
+        end
       end
     end
 

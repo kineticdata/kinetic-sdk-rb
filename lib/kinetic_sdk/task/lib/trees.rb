@@ -25,7 +25,7 @@ module KineticSdk
       else
         title = "#{tree.to_s}"
       end
-      info("Deleting Tree \"#{title}\"")
+      @logger.info("Deleting Tree \"#{title}\"")
       delete("#{@api_url}/trees/#{encode(title)}", headers)
     end
 
@@ -44,15 +44,15 @@ module KineticSdk
     #
     def delete_trees(source_name=nil, headers=header_basic_auth)
       if source_name.nil?
-        info("Deleting all trees")
+        @logger.info("Deleting all trees")
         params = {}
       else
-        info("Deleting trees for Source \"#{source_name}\"")
+        @logger.info("Deleting trees for Source \"#{source_name}\"")
         params = { "source" => source_name }
       end
 
       (find_trees(params, headers).content['trees'] || []).each do |tree|
-        info("Deleting tree \"#{tree['title']}\"")
+        @logger.info("Deleting tree \"#{tree['title']}\"")
         delete("#{@api_url}/trees/#{encode(tree['title'])}", headers)
       end
     end
@@ -69,7 +69,7 @@ module KineticSdk
     #     find_trees({ "source" => "Kinetic Request CE" })
     #
     # Example
-    # 
+    #
     #     find_trees({ "include" => "details" })
     #
     # Example
@@ -77,7 +77,7 @@ module KineticSdk
     #     find_trees({ "source" => "Kinetic Request CE", "include" => "details" })
     #
     def find_trees(params={}, headers=header_basic_auth)
-      info("Finding Trees")
+      @logger.info("Finding Trees")
       get("#{@api_url}/trees", params, headers)
     end
 
@@ -100,7 +100,7 @@ module KineticSdk
     #     find_routines({ "source" => "Kinetic Request CE", "include" => "details" })
     #
     def find_routines(params={}, headers=header_basic_auth)
-      info("Finding Routines")
+      @logger.info("Finding Routines")
       response = get("#{@api_url}/trees", params, headers)
 
       routines = []
@@ -127,8 +127,28 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def import_tree(tree, force_overwrite=false, headers=header_basic_auth)
       body = { "content" => tree }
-      info("Importing Tree #{File.basename(tree)}")
+      @logger.info("Importing Tree #{File.basename(tree)}")
       post_multipart("#{@api_url}/trees?force=#{force_overwrite}", body, headers)
+    end
+
+    # Import trees
+    #
+    # If the trees already exists on the server, this will fail unless forced
+    # to overwrite.
+    #
+    # The source named in the trees content must also exist on the server, or
+    # the import will fail.
+    #
+    # @param force_overwrite [Boolean] whether to overwrite a tree if it exists, default is false
+    # @param headers [Hash] hash of headers to send, default is basic authentication
+    # @return nil
+    def import_trees(force_overwrite=false, headers=header_basic_auth)
+      raise StandardError.new "An export directory must be defined to import trees from." if @options[:export_directory].nil?
+      @logger.info("Importing all Trees from Export Directory")
+      Dir["#{@options[:export_directory]}/sources/**/*.xml"].sort.each do |file|
+        tree_file = File.new(file, "rb")
+        import_tree(tree_file, force_overwrite, headers)
+      end
     end
 
     # Import a routine
@@ -142,8 +162,25 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def import_routine(routine, force_overwrite=false, headers=header_basic_auth)
       body = { "content" => routine }
-      info("Importing Routine #{File.basename(routine)}")
+      @logger.info("Importing Routine #{File.basename(routine)}")
       post_multipart("#{@api_url}/trees?force=#{force_overwrite}", body, headers)
+    end
+
+    # Import routines
+    #
+    # If the routines already exists on the server, this will fail unless forced
+    # to overwrite.
+    #
+    # @param force_overwrite [Boolean] whether to overwrite routines if they exist, default is false
+    # @param headers [Hash] hash of headers to send, default is basic authentication
+    # @return nil
+    def import_routines(force_overwrite=false, headers=header_basic_auth)
+      raise StandardError.new "An export directory must be defined to import trees from." if @options[:export_directory].nil?
+      @logger.info("Importing all Routines from Export Directory")
+      Dir["#{@options[:export_directory]}/routines/*.xml"].sort.each do |file|
+        routine_file = File.new(file, "rb")
+        import_routine(routine_file, force_overwrite, headers)
+      end
     end
 
     # Find a single tree by title (Source Name :: Group Name :: Tree Name)
@@ -161,7 +198,7 @@ module KineticSdk
     #     )
     #
     def find_tree(title, params={}, headers=header_basic_auth)
-      info("Finding the \"#{title}\" Tree")
+      @logger.info("Finding the \"#{title}\" Tree")
       get("#{@api_url}/trees/#{encode(title)}", params, headers)
     end
 
@@ -169,11 +206,11 @@ module KineticSdk
     #
     # @param title [String] the title of the tree or routine
     # @param headers [Hash] hash of headers to send, default is basic authentication
-    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    # @return nil
     #
     def export_tree(title, headers=header_basic_auth)
       raise StandardError.new "An export directory must be defined to export a tree." if @options[:export_directory].nil?
-      info("Exporting tree \"#{title}\" to #{@options[:export_directory]}.")
+      @logger.info("Exporting tree \"#{title}\" to #{@options[:export_directory]}.")
       # Get the tree
       response = find_tree(title, { "include" => "export" })
       # Parse the response and export the tree
@@ -186,12 +223,21 @@ module KineticSdk
         tree_file = File.join(routine_dir, "#{tree['name'].slugify}.xml")
       else
         # Create the directory if it doesn't yet exist
-        tree_dir = FileUtils::mkdir_p(File.join(@options[:export_directory], "trees", tree['sourceName'].slugify))
-        tree_file = File.join(tree_dir, "#{tree['sourceName'].slugify}.#{tree['sourceGroup'].slugify}.#{tree['name'].slugify}.xml")
+        tree_dir = FileUtils::mkdir_p(File.join(@options[:export_directory],"sources", tree['sourceName'].slugify , "trees"))
+        tree_file = File.join(tree_dir, "#{tree['sourceGroup'].slugify}.#{tree['name'].slugify}.xml")
       end
+
       # write the file
-      File.write(tree_file, tree['export'])
-      info("Exported #{tree['type']}: #{tree['title']} to #{tree_file}")
+      server_version = server_info(headers).content["version"]
+      if server_version > "04.03.0z"
+        File.write(tree_file, tree['export'])
+      else
+        xml_doc = REXML::Document.new(tree["export"])
+        xml_doc.context[:attribute_quote] = :quote
+        xml_formatter = Prettier.new
+        xml_formatter.write(xml_doc, File.open(tree_file, "w"))
+      end
+      @logger.info("Exported #{tree['type']}: #{tree['title']} to #{tree_file}")
     end
 
     # Export all trees and local routines for a source, and global routines
@@ -200,19 +246,20 @@ module KineticSdk
     #   - Leave blank or pass nil to export all trees and global routines
     #   - Pass "-" to export only global routines
     # @param headers [Hash] hash of headers to send, default is basic authentication
-    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    # @return nil
     def export_trees(source_name=nil, headers=header_basic_auth)
       raise StandardError.new "An export directory must be defined to export trees." if @options[:export_directory].nil?
       if source_name.nil?
-        info("Exporting all trees and routines to #{@options[:export_directory]}.")
-        (find_sources.content["sourceRoots"] || []).each do |sourceRoot|
+        @logger.info("Exporting all trees and routines to #{@options[:export_directory]}.")
+        export_routines(headers)
+        (find_sources({}, headers).content["sourceRoots"] || []).each do |sourceRoot|
           export_trees(sourceRoot['name'])
         end
         return
       elsif source_name == "-"
-        info("Exporting global routines to #{@options[:export_directory]}.")
+        @logger.info("Exporting global routines to #{@options[:export_directory]}.")
       else
-        info("Exporting trees and routines for source \"#{source_name}\" to #{@options[:export_directory]}.")
+        @logger.info("Exporting trees and routines for source \"#{source_name}\" to #{@options[:export_directory]}.")
       end
 
       # Get all the trees and routines for the source
@@ -226,12 +273,21 @@ module KineticSdk
           tree_file = File.join(routine_dir, "#{tree['name'].slugify}.xml")
         else
           # create the directory if it doesn't yet exist
-          tree_dir = FileUtils::mkdir_p(File.join(@options[:export_directory], "trees", source_name.slugify))
-          tree_file = File.join(tree_dir, "#{source_name.slugify}.#{tree['sourceGroup'].slugify}.#{tree['name'].slugify}.xml")
+          tree_dir = FileUtils::mkdir_p(File.join(@options[:export_directory], "sources", source_name.slugify ,"trees"))
+          tree_file = File.join(tree_dir, "#{tree['sourceGroup'].slugify}.#{tree['name'].slugify}.xml")
         end
+
         # write the file
-        File.write(tree_file, tree['export'])
-        info("Exported #{tree['type']}: #{tree['title']} to #{tree_file}")
+        server_version = server_info(headers).content["version"]
+        if server_version > "04.03.0z"
+          File.write(tree_file, tree['export'])
+        else
+          xml_doc = REXML::Document.new(tree["export"])
+          xml_doc.context[:attribute_quote] = :quote
+          xml_formatter = Prettier.new
+          xml_formatter.write(xml_doc, File.open(tree_file, "w"))
+        end
+        @logger.info("Exported #{tree['type']}: #{tree['title']} to #{tree_file}")
       end
     end
 
@@ -239,7 +295,7 @@ module KineticSdk
     # Export all global routines
     #
     # @param headers [Hash] hash of headers to send, default is basic authentication
-    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    # @return nil
     def export_routines(headers=header_basic_auth)
       export_trees("-", headers)
     end
@@ -252,7 +308,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def run_tree(title, body={}, headers=default_headers)
-      info("Running tree #{title}")
+      @logger.info("Running tree #{title}")
       parts = title.split(" :: ")
       raise StandardError.new "Title is invalid: #{title}" if parts.size != 3
       url = "#{@api_v1_url}/run-tree/#{encode(parts[0])}/#{encode(parts[1])}/#{encode(parts[2])}"
@@ -266,7 +322,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_tree(title, body={}, headers=default_headers)
-      info("Updating the \"#{title}\" Tree")
+      @logger.info("Updating the \"#{title}\" Tree")
       put("#{@api_url}/trees/#{encode(title)}", body, headers)
     end
 

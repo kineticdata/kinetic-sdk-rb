@@ -1,5 +1,5 @@
 module KineticSdk
-  class RequestCe
+  class Core
 
     # Add a category on a Kapp
     #
@@ -10,7 +10,7 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_category_on_kapp(kapp_slug, body, headers=default_headers)
       raise StandardError.new "Category properties is not valid, must be a Hash." unless body.is_a? Hash
-      info("Adding Category \"#{body['name']}\" for \"#{kapp_slug}\" kapp")
+      @logger.info("Adding Category \"#{body['name']}\" for \"#{kapp_slug}\" kapp")
       post("#{@api_url}/kapps/#{kapp_slug}/categories", body, headers)
     end
 
@@ -26,7 +26,7 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_categorization_on_form(kapp_slug, body, headers=default_headers)
       raise StandardError.new "Category properties is not valid, must be a Hash." unless body.is_a? Hash
-      info("Adding Categorization for \"#{kapp_slug}\" kapp")
+      @logger.info("Adding Categorization for \"#{kapp_slug}\" kapp")
       post("#{@api_url}/kapps/#{kapp_slug}/categorizations", body, headers)
     end
 

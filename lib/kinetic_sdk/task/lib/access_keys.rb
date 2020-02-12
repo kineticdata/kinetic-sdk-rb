@@ -26,7 +26,8 @@ module KineticSdk
     #     add_access_key()
     #
     def add_access_key(access_key={}, headers=default_headers)
-      info("Adding access key " + (access_key.has_key?('identifier') ? access_key['identifier'] : ""))
+      @logger.info("Adding access key " + (access_key.has_key?('identifier') ? access_key['identifier'] : ""))
+      access_key["secret"] = "SETME" if access_key["secret"].nil?
       post("#{@api_url}/access-keys", access_key, headers)
     end
 
@@ -36,7 +37,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_access_key(identifier, headers=header_basic_auth)
-      info("Deleting access key \"#{identifier}\"")
+      @logger.info("Deleting access key \"#{identifier}\"")
       delete("#{@api_url}/access-keys/#{encode(identifier)}", headers)
     end
 
@@ -45,9 +46,36 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_access_keys(headers=header_basic_auth)
-      info("Deleting all access keys")
+      @logger.info("Deleting all access keys")
       (find_access_keys(headers).content["accessKeys"] || []).each do |access_key|
         delete("#{@api_url}/access_keys/#{encode(access_key['identifier'])}", headers)
+      end
+    end
+
+    # Export all access keys to :identifier.json file in export_directory/access-keys
+    #
+    # @param headers [Hash] hash of headers to send, default is basic authentication
+    # @return nil
+    def export_access_keys(headers=header_basic_auth)
+      raise StandardError.new "An export directory must be defined to export access keys." if @options[:export_directory].nil?
+      response = find_access_keys
+      access_keys_dir = FileUtils::mkdir_p(File.join(@options[:export_directory], "access-keys"))
+      (response.content["accessKeys"] || []).each do |access_key|
+        access_key_file = File.join(access_keys_dir, "#{access_key['identifier'].slugify}.json")
+        write_object_to_file(access_key_file, access_key)
+      end
+    end
+
+    # Import all access keys from :identifier.json file in export_directory/access-keys
+    #
+    # @param headers [Hash] hash of headers to send, default is basic authentication
+    # @return nil
+    def import_access_keys(headers=default_headers)
+      raise StandardError.new "An export directory must be defined to import access keys from." if @options[:export_directory].nil?
+      @logger.info("Importing all Access Keys in Export Directory")
+      Dir["#{@options[:export_directory]}/access-keys/*.json"].sort.each do |file|
+        access_key = JSON.parse(File.read(file))
+        add_access_key(access_key, headers)
       end
     end
 
@@ -57,7 +85,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_access_keys(params={}, headers=header_basic_auth)
-      info("Finding all access keys")
+      @logger.info("Finding all access keys")
       get("#{@api_url}/access-keys", params, headers)
     end
 
@@ -68,7 +96,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_access_key(identifier, params={}, headers=default_headers)
-      info("Finding access key \"#{identifier}\"")
+      @logger.info("Finding access key \"#{identifier}\"")
       get("#{@api_url}/access-keys/#{encode(identifier)}", params, headers)
     end
 
@@ -79,14 +107,14 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     #
-    # Exammple
+    # Example
     #
     #     update_identifier("X54DLNU", {
     #       "description": "Updated access key"
     #     })
     #
     def update_access_key(identifier, body={}, headers=default_headers)
-      info("Updating the \"#{identifier}\" access key")
+      @logger.info("Updating the \"#{identifier}\" access key")
       put("#{@api_url}/access-keys/#{encode(identifier)}", body, headers)
     end
 

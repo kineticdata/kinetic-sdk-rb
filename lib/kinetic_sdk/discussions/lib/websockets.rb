@@ -47,18 +47,18 @@ module KineticSdk
 
 
     def ws_writer(ws, msg)
-      info("Websocket send message: #{msg}")
+      @logger.info("Websocket send message: #{msg}")
       ws.send(msg)
     end
 
     def ws_reader(ws, send_msg=nil)
       ws.read do |msg|
-        info("Websocket read: #{msg}")
+        @logger.info("Websocket read: #{msg}")
         o = JSON.parse(msg)
         if ("error$".match(o['event']))
-          info("Websocket failure: #{o['payload']}")
+          @logger.info("Websocket failure: #{o['payload']}")
         elsif (o['event'] == "participant:updated")
-          info("Websocket close: EOF")
+          @logger.info("Websocket close: EOF")
           ws.close(1000, "EOF")
           break
         else
@@ -72,19 +72,19 @@ module KineticSdk
 
     def ws_client(message)
       write_thread = nil
-      info("Websocket connecting to #{@topics_ws_server}")
+      @logger.info("Websocket connecting to #{@topics_ws_server}")
       Kontena::Websocket::Client.connect(@topics_ws_server) do |ws|
-        info("Websocket connected to #{ws.url}")
+        @logger.info("Websocket connected to #{ws.url}")
         write_thread = Thread.new {
           ws_writer(ws, identify_msg())
         }
         ws_reader(ws, message)
-        info("Websocket client closed connection with code #{ws.close_code}: #{ws.close_reason}")
+        @logger.info("Websocket client closed connection with code #{ws.close_code}: #{ws.close_reason}")
       end
     rescue Kontena::Websocket::CloseError => e
-      info(e)
+      @logger.info(e)
     rescue Kontena::Websocket::Error => e
-      info(e)
+      @logger.info(e)
     ensure
       if write_thread
         write_thread.kill

@@ -1,5 +1,5 @@
 module KineticSdk
-  class RequestCe
+  class Core
 
     # Add an OAuth client
     #
@@ -7,7 +7,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_oauth_client(options, headers=default_headers)
-      info("Adding the \"#{options['clientId']}\" OAuth client")
+      @logger.info("Adding the \"#{options['clientId']}\" OAuth client")
       post("#{@api_url}/oauthClients", options, headers)
     end
 
@@ -18,7 +18,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_oauth_client(client_id, params={}, headers=default_headers)
-      info("Finding OAuth Client \"#{client_id}\"")
+      @logger.info("Finding OAuth Client \"#{client_id}\"")
       get("#{@api_url}/oauthClients/#{encode(client_id)}", params, headers)
     end
 
@@ -29,7 +29,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def update_oauth_client(client_id, options, headers=default_headers)
-      info("Updating the \"#{client_id}\" OAuth client")
+      @logger.info("Updating the \"#{client_id}\" OAuth client")
       put("#{@api_url}/oauthClients/#{encode(client_id)}", options, headers)
     end
 

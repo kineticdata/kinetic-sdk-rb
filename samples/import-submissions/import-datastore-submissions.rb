@@ -10,7 +10,7 @@
 # 1. Ensure ruby (or jruby) is installed
 # 2. Ensure the Faker gem is installed (gem install faker)
 # 3. Create a yaml file in the 'config' directory (will be omitted from git)
-#      - configure for your Request CE server
+#      - configure for your Core server
 # 4. ruby import-datastore-submissions.rb \
 #      -c <config-file-name.yaml> \
 #      -s <space-slug> \
@@ -153,10 +153,10 @@ rescue
 end
 
 # Set variables from the config file
-ce_server = config["ce"]["server"]
+ce_server = config["core"]["server"]
 ce_credentials_space_admin = {
-  "username" => config["ce"]["space_admin_credentials"]["username"],
-  "password" => config["ce"]["space_admin_credentials"]["password"]
+  "username" => config["core"]["space_admin_credentials"]["username"],
+  "password" => config["core"]["space_admin_credentials"]["password"]
 }
 sdk_log_level = ENV['SDK_LOG_LEVEL'] || config['sdk_log_level'] || "off"
 
@@ -178,7 +178,7 @@ unique_indexes = options.unique_indexes.nil? ?
 
 
 # Log into the Space with the Space Admin user
-requestce_sdk_space = KineticSdk::RequestCe.new({
+requestce_sdk_space = KineticSdk::Core.new({
   app_server_url: ce_server,
   space_slug: space_slug,
   username: ce_credentials_space_admin["username"],

@@ -46,7 +46,7 @@ config_file = File.join(File.expand_path(File.dirname(__FILE__)), 'config', conf
 config = YAML::load_file(config_file)
 
 # Kinetic Core SDK
-core = KineticSdk::RequestCe.new(config)
+core = KineticSdk::Core.new(config)
 
 # Kinetic Discussion SDK
 sdk = KineticSdk::Discussions.new(config)

@@ -29,7 +29,7 @@ module KineticSdk
     #
     def add_source(source, headers=default_headers)
       name = source['name']
-      info("Adding the #{name} source")
+      @logger.info("Adding the #{name} source")
       post("#{@api_url}/sources", source, headers)
     end
 
@@ -39,7 +39,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_source(name, headers=header_basic_auth)
-      info("Deleting Source \"#{name}\"")
+      @logger.info("Deleting Source \"#{name}\"")
       delete("#{@api_url}/sources/#{encode(name)}", headers)
     end
 
@@ -48,9 +48,40 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_sources(headers=header_basic_auth)
-      info("Deleting all sources")
+      @logger.info("Deleting all sources")
       (find_sources(headers).content['sources'] || []).each do |source|
         delete("#{@api_url}/sources/#{encode(source['name'])}", headers)
+      end
+    end
+
+    # Export all sources to :source-slug.json file in export_directory/sources
+    #
+    # @param headers [Hash] hash of headers to send, default is basic authentication
+    # @return nil
+    def export_sources(headers=header_basic_auth)
+      raise StandardError.new "An export directory must be defined to export sources." if @options[:export_directory].nil?
+      response = find_sources({"include" => "policyRules"})
+      (response.content["sourceRoots"] || []).each do |source|
+        # determine which directory to write the file to
+        if source['name'] != "-"
+          # create the directory if it doesn't yet exist
+          sources_dir = FileUtils::mkdir_p(File.join(@options[:export_directory], "sources"))
+          source_file = File.join(sources_dir, "#{source['name'].slugify}.json")
+          write_object_to_file(source_file, source)
+        end
+      end
+    end
+
+    # Import all sources from :source-slug.json file in export_directory/sources
+    #
+    # @param headers [Hash] hash of headers to send, default is basic authentication
+    # @return nil
+    def import_sources(headers=default_headers)
+      raise StandardError.new "An export directory must be defined to import sources." if @options[:export_directory].nil?
+      @logger.info("Importing all Sources in Export Directory")
+      Dir["#{@options[:export_directory]}/sources/*.json"].sort.each do |file|
+        source = JSON.parse(File.read(file))
+        add_source(source, headers)
       end
     end
 
@@ -60,7 +91,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_sources(params={}, headers=header_basic_auth)
-      info("Finding all sources")
+      @logger.info("Finding all sources")
       get("#{@api_url}/sources", params, headers)
     end
 
@@ -71,7 +102,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_source(name, params={}, headers=header_basic_auth)
-      info("Finding source named \"#{name}\"")
+      @logger.info("Finding source named \"#{name}\"")
       get("#{@api_url}/sources/#{encode(name)}", params, headers)
     end
 
@@ -101,7 +132,7 @@ module KineticSdk
     #     )
     #
     def update_source(source, body={}, headers=default_headers)
-      info("Updating the \"#{source['name']}\" Source")
+      @logger.info("Updating the \"#{source['name']}\" Source")
       put("#{@api_url}/sources/#{encode(source['name'])}", body, headers)
     end
 
@@ -114,7 +145,7 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_policy_rule_to_source(policy_rule_type, policy_rule_name, source_name, headers=default_headers)
       body = { "type" => policy_rule_type, "name" => policy_rule_name }
-      info("Adding policy rule \"#{policy_rule_type} - #{policy_rule_name}\" to source \"#{source_name}\"")
+      @logger.info("Adding policy rule \"#{policy_rule_type} - #{policy_rule_name}\" to source \"#{source_name}\"")
       post("#{@api_url}/sources/#{encode(source_name)}/policyRules", body, headers)
     end
 
@@ -126,7 +157,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def remove_policy_rule_from_source(policy_rule_type, policy_rule_name, source_name, headers=default_headers)
-      info("Removing policy rule \"#{policy_rule_type} - #{policy_rule_name}\" from source \"#{source_name}\"")
+      @logger.info("Removing policy rule \"#{policy_rule_type} - #{policy_rule_name}\" from source \"#{source_name}\"")
       delete("#{@api_url}/sources/#{encode(source_name)}/policyRules/#{encode(policy_rule_type)}/#{encode(policy_rule_name)}", headers)
     end
 

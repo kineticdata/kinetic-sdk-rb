@@ -8,7 +8,7 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     # @since Task v4.3.0
     def delete_error(id, headers=header_basic_auth)
-      info("Deleting Error \"#{id}\"")
+      @logger.info("Deleting Error \"#{id}\"")
       delete("#{@api_url}/errors/#{id}", headers)
     end
 
@@ -26,7 +26,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def resolve_errors(ids, action, resolution, headers=default_headers)
-      info("Resolving errors #{ids}")
+      @logger.info("Resolving errors #{ids}")
       body = { "ids" => ids, "action" => action, "resolution" => resolution }
       post("#{@api_url}/errors/resolve", body, headers)
     end
@@ -57,7 +57,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_errors(params={}, headers=header_basic_auth)
-      info("Finding errors")
+      @logger.info("Finding errors")
       get("#{@api_url}/errors", params, headers)
     end
 
@@ -68,7 +68,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_error(id, params={}, headers=header_basic_auth)
-      info("Finding error #{id}")
+      @logger.info("Finding error #{id}")
       get("#{@api_url}/errors/#{id}", params, headers)
     end
 
@@ -79,7 +79,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_active_errors_by_handler(handler_id, params={}, headers=header_basic_auth)
-      info("Finding active errors for handler #{handler_id}")
+      @logger.info("Finding active errors for handler #{handler_id}")
       params['handlerId'] = handler_id
       params['status'] = 'Active'
       find_errors(params, headers)
@@ -92,7 +92,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_active_errors_by_source(source_name, params={}, headers=header_basic_auth)
-      info("Finding active errors for source \"#{source_name}\"")
+      @logger.info("Finding active errors for source \"#{source_name}\"")
       params['source'] = source_name
       params['status'] = 'Active'
       find_errors(params, headers)
@@ -106,7 +106,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_active_errors_by_source_group(source_name, group, params={}, headers=header_basic_auth)
-      info("Finding active errors for source group \"#{source_name} :: #{group}\"")
+      @logger.info("Finding active errors for source group \"#{source_name} :: #{group}\"")
       params['group'] = group
       params['source'] = source_name
       params['status'] = 'Active'
@@ -122,7 +122,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_active_errors_by_tree(source_name, group, tree_name, params={}, headers=header_basic_auth)
-      info("Finding active errors for tree \"#{source_name} :: #{group} :: #{tree_name}\"")
+      @logger.info("Finding active errors for tree \"#{source_name} :: #{group} :: #{tree_name}\"")
       params['tree'] = tree_name
       params['group'] = group
       params['source'] = source_name
@@ -140,7 +140,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_active_errors_by_node(source_name, group, tree_name, node_id, params={}, headers=header_basic_auth)
-      info("Finding active errors for node \"#{source_name} :: #{group} :: #{tree_name} :: #{node_id}\"")
+      @logger.info("Finding active errors for node \"#{source_name} :: #{group} :: #{tree_name} :: #{node_id}\"")
       params['nodeId'] = node_id
       params['tree'] = tree_name
       params['group'] = group
@@ -156,7 +156,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_errors_by_run(run_id, params={}, headers=header_basic_auth)
-      info("Finding active errors for run #{run_id}")
+      @logger.info("Finding active errors for run #{run_id}")
       params['runId'] = run_id
       find_errors(params, headers)
     end

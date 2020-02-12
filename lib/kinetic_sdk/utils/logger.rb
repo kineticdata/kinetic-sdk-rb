@@ -1,70 +1,106 @@
+require 'logger'
+
 module KineticSdk
   module Utils
 
-    # The Logger module provides methods to output at different levels based on 
+    # The KLogger class provides methods to output at different levels based on 
     # a configuration property.  The default log level is `off`, but can be 
     # turned on by passing in the `log_level` option.
     #
-    # Available Levels: `trace`, `debug`, `info`, `off`
+    # Available Levels: `debug`, `info`, `warn`, `error`, `off`
     #
-    module Logger
+    # The default output is to `STDOUT`, but can also be set to `STDERR` by 
+    # passing in the `log_output` option.
+    #
+    # Available Outputs: `STDOUT`, `STDERR`
+    #
+    class KLogger
 
-      # Logs the message if the log level is set to debug or lower.
+      # Constructor
       #
-      # @param message [String] The message to log at debug level
-      def debug(message)
-        puts message if debug?
+      # @param level [String] log level (off): `debug`, `info`, `warn`, `error`, `off`
+      # @param output [String] log output (stdout): `stdout`, `stderr`
+      def initialize(level, output="stdout")
+        log_level = level.to_s.downcase
+        log_output = output.to_s.downcase == "stderr" ? STDERR : STDOUT
+
+        @logger = Logger.new(log_output)
+
+        case log_level
+        when "error"
+          @logger.level= Logger::ERROR
+        when "warn"
+          @logger.level= Logger::WARN
+        when "info"
+          @logger.level= Logger::INFO
+        when "debug"
+          @logger.level= Logger::DEBUG
+        else
+          @logger.level= Logger::FATAL
+        end
+
+        # define the string output format
+        @logger.formatter = proc do |severity, datetime, progname, msg|
+          date_format = datetime.utc.strftime("%Y-%m-%dT%H:%M:%S.%LZ")
+          "[#{date_format}] #{severity}: #{msg}\n"
+        end
       end
 
-      # Indicates if the log level is set to debug or lower.
+      # Print the message if level is Logger::DEBUG or lower
       #
-      # @return [Boolean] true if debug or trace, else false
-      def debug?
-        @options && 
-        (
-          @options[:log_level].to_s.downcase == "debug" || 
-          @options['log_level'].to_s.downcase == "debug" ||
-          trace?
-        )
-      end
+      # @param msg [String] the message to log
+      def debug(msg); @logger.debug(msg); end
 
-      # Logs the message if the log level is set to info or lower.
+      # Is the current log level set to Logger::DEBUG or lower?
       #
-      # @param message [String] The message to log at info level
-      def info(message)
-        puts message if info?
-      end
+      # @return [Boolean] true if level is debug or lower
+      def debug?; @logger.debug? end
 
-      # Indicates if the log level is set to info or lower.
+      # Print the message if level is Logger::ERROR or lower
       #
-      # @return [Boolean] true if info, debug or trace, else false
-      def info?
-        @options && 
-        (
-          @options[:log_level].to_s.downcase == "info" || 
-          @options['log_level'].to_s.downcase == "info" ||
-          debug?
-        )
-      end
+      # @param msg [String] the message to log
+      def error(msg); @logger.error(msg); end
 
-      # Logs the message if the log level is set to trace.
+      # Is the current log level set to Logger::ERROR or lower?
       #
-      # @param message [String] The message to log at trace level
-      def trace(message)
-        puts message if trace?
-      end
+      # @return [Boolean] true if level is error or lower
+      def error?; @logger.error? end
 
-      # Indicates if the log level is set to trace.
+      # Print the message if level is Logger::FATAL or lower
       #
-      # @return [Boolean] true if trace, else false
-      def trace?
-        @options && 
-        (
-          @options[:log_level].to_s.downcase == "trace" || 
-          @options['log_level'].to_s.downcase == "trace"
-        )
-      end
+      # @param msg [String] the message to log
+      def fatal(msg); @logger.fatal(msg); end
 
+      # Is the current log level set to Logger::FATAL or lower?
+      #
+      # @return [Boolean] true if level is fatal or lower
+      def fatal?; @logger.fatal? end
+
+      # Print the message if level is Logger::INFO or lower
+      #
+      # @param msg [String] the message to log
+      def info(msg); @logger.info(msg); end
+
+      # Is the current log level set to Logger::INFO or lower?
+      #
+      # @return [Boolean] true if level is info or lower
+      def info?; @logger.info? end
+
+      # Print the message if level is Logger::WARN or lower
+      #
+      # @param msg [String] the message to log
+      def warn(msg); @logger.warn(msg); end
+
+      # Is the current log level set to Logger::WARN or lower?
+      #
+      # @return [Boolean] true if level is warn or lower
+      def warn?; @logger.warn?; end
+      
+      # Get the logger level
+      #
+      # @return [Integer]
+      def level; @logger.level; end;
     end
+
   end
 end

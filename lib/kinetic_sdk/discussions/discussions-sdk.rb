@@ -1,4 +1,4 @@
-Dir[File.join(File.dirname(File.expand_path(__FILE__)), "lib", "**", "*.rb")].each {|file| require file }
+Dir[File.join(File.dirname(File.expand_path(__FILE__)), "lib", "**", "*.rb")].each { |file| require file }
 
 module KineticSdk
 
@@ -11,7 +11,7 @@ module KineticSdk
     include KineticSdk::Utils::KineticHttpUtils
 
     attr_reader :api_url, :username, :jwt, :options, :space_slug,
-                :server, :topics_ws_server, :version
+                :server, :topics_ws_server, :version, :logger
 
     # Initalize the Discussions SDK with the web server URL and configuration user
     # credentials, along with any custom option values.
@@ -31,9 +31,12 @@ module KineticSdk
     # @option opts [String] :password the password for the user
     # @option opts [Hash<Symbol, Object>] :options ({}) optional settings
     #
-    #   * :log_level (String) (_defaults to: off_) level of logging - off | info | debug | trace
-    #   * :export_directory (String) (_example: /opt/exports/kinetic-task) directory to write file attachments when exporting,
-    #   * :max_redirects (Fixnum) (_defaults to: 10_) maximum number of redirects to follow
+    #   * :export_directory (String) (_example: /opt/exports/discussions_) directory to write file attachments when exporting,
+    #   * :gateway_retry_limit (FixNum) (_defaults to: 5_) max number of times to retry a bad gateway
+    #   * :gateway_retry_delay (Float) (_defaults to: 1.0_) number of seconds to delay before retrying a bad gateway
+    #   * :log_level (String) (_defaults to: off_) level of logging - off | error | warn | info | debug
+    #   * :log_output (String) (_defaults to: STDOUT_) where to send output - STDOUT | STDERR
+    #   * :max_redirects (Fixnum) (_defaults to: 5_) maximum number of redirects to follow
     #   * :oauth_client_id (String) id of the Kinetic Core oauth client
     #   * :oauth_client_secret (String) secret of the Kinetic Core oauth client
     #   * :ssl_ca_file (String) full path to PEM certificate used to verify the server
@@ -104,31 +107,36 @@ module KineticSdk
 
       # process any individual options
       @options = options[:options] || {}
+      # setup logging
+      log_level = @options[:log_level] || @options["log_level"]
+      log_output = @options[:log_output] || @options["log_output"]
+      @logger = KineticSdk::Utils::KLogger.new(log_level, log_output)
+
       @username = options[:username]
       @space_slug = options[:space_slug]
 
       if options[:topics_server_url]
-        @topics_ws_server = "#{options[:topics_server_url].gsub('http', 'ws')}/#{@space_slug}/socket"
+        @topics_ws_server = "#{options[:topics_server_url].gsub("http", "ws")}/#{@space_slug}/socket"
       end
 
       if options[:discussions_server_url]
-        @server = options[:discussions_server_url].chomp('/')
+        @server = options[:discussions_server_url].chomp("/")
         @api_url = "#{@server}/#{@space_slug}/app/api/v1"
         if @topics_ws_server.nil?
-          @topics_ws_server = "#{@server.gsub('http', 'ws')}/app/topics/socket"
+          @topics_ws_server = "#{@server.gsub("http", "ws")}/app/topics/socket"
         end
       elsif options[:app_server_url]
-        @server = options[:app_server_url].chomp('/')
+        @server = options[:app_server_url].chomp("/")
         @api_url = "#{@server}/#{@space_slug}/app/api/v1"
         if @topics_ws_server.nil?
-          @topics_ws_server = "#{@server.gsub('http', 'ws')}/#{@space_slug}/app/topics/socket"
+          @topics_ws_server = "#{@server.gsub("http", "ws")}/#{@space_slug}/app/topics/socket"
         end
       else
         raise StandardError.new "The :space_slug option is required when using the :space_server_url option" if @space_slug.nil?
-        @server = options[:space_server_url].chomp('/')
+        @server = options[:space_server_url].chomp("/")
         @api_url = "#{@server}/app/discussions/api/v1"
         if @topics_ws_server.nil?
-          @topics_ws_server = "#{@server.gsub('http', 'ws')}/app/topics/socket"
+          @topics_ws_server = "#{@server.gsub("http", "ws")}/app/topics/socket"
         end
       end
       @jwt = @space_slug.nil? ? nil : generate_jwt(options)
@@ -137,12 +145,12 @@ module KineticSdk
 
     # Generate a JWT for bearer authentication based on the user credentials,
     # and oauth client configuration.
-    def generate_jwt(options={})
+    def generate_jwt(options = {})
       oauth_client_id = options[:options][:oauth_client_id]
       oauth_client_secret = options[:options][:oauth_client_secret]
 
       jwt_response = kinetic_core_sdk(options).jwt_token(oauth_client_id, oauth_client_secret)
-      jwt_response.content['access_token']
+      jwt_response.content["access_token"]
     end
 
     # Creates a reference to the Kinetic Request CE SDK
@@ -151,15 +159,14 @@ module KineticSdk
         space_slug: options[:space_slug],
         username: options[:username],
         password: options[:password],
-        options: options[:options] || {}
+        options: options[:options] || {},
       }
       if options[:app_server_url]
         kinetic_core_options[:app_server_url] = options[:app_server_url]
       else
         kinetic_core_options[:space_server_url] = options[:space_server_url]
       end
-      KineticSdk::RequestCe.new(kinetic_core_options)
+      KineticSdk::Core.new(kinetic_core_options)
     end
-    
   end
 end

@@ -10,11 +10,12 @@ The Kinetic Ruby SDK is a library that consists of and SDK for each supported Ki
 
 The following Kinetic Data applications are supported in this SDK library:
 
-* Kinetic Request CE 1.0.4+
-* Kinetic Task 4.0+
+* Kinetic Core 1.0.4+
+* Kinetic Agent 1.0.0+
 * Kinetic Bridgehub 1.0+
-* Kinetic Filehub 1.0+
 * Kinetic Discussions 1.0+
+* Kinetic Filehub 1.0+
+* Kinetic Task 4.0+
 
 ## Getting Started
 
@@ -28,7 +29,7 @@ The following are a list of requirements to use this SDK:
 
 The Kinetic Ruby SDK requires Ruby 2.2+, which includes JRuby 9.0+. You can determine the version of Ruby you are using with the following command:
 
-```bash
+```sh
 ruby -v
 ```
 
@@ -44,17 +45,21 @@ All of the HTTP methods return a {KineticSdk::Utils::KineticHttpResponse} object
 
 If you are using Bundler, add this line to your application's Gemfile:
 
-```ruby
+```sh
 gem 'kinetic_sdk'
 ```
 
 And then execute:
 
-    $ bundle
+```sh
+bundle
+```
 
 Or install it yourself as:
 
-    $ gem install kinetic_sdk
+```sh
+gem install kinetic_sdk
+```
 
 Then in your application, include the SDK with the following code:
 
@@ -68,6 +73,27 @@ the SDK with the following code.
 ```ruby
 # Assumes the SDK is installed to vendor/kinetic-sdk-rb
 require File.join(File.expand_path(File.dirname(__FILE__)), 'vendor', 'kinetic-sdk-rb', 'kinetic-sdk')
+```
+
+### Kinetic Agent SDK example
+
+```ruby
+agent_sdk = KineticSdk::Agent.new({
+  app_server_url: "http://localhost:8080/kinetic-agent",
+  username: "configuration-user",
+  password: "password",
+  options: {
+    log_level: "info",
+    max_redirects: 3
+  }
+})
+response = agent_sdk.find_all_bridges()
+bridges = response.content['bridges']
+
+puts response.code            # String value of HTTP response code ("200", "400", "500", etc...)
+puts response.status          # Ruby Fixnum value of response.code (200, 400, 500, etc...)
+puts response.content         # Ruby Hash
+puts response.content_string  # JSON formatted response body
 ```
 
 ### Kinetic BridgeHub SDK example
@@ -112,10 +138,10 @@ puts response.content         # Ruby Hash
 puts response.content_string  # JSON formatted response body
 ```
 
-### Kinetic Request CE SDK example of a Space User
+### Kinetic Core SDK example of a Space User
 
 ```ruby
-space_sdk = KineticSdk::RequestCe.new({
+space_sdk = KineticSdk::Core.new({
   app_server_url: "http://localhost:8080/kinetic",
   space_slug: "foo",
   username: "space-user-1",
@@ -134,10 +160,10 @@ puts response.content         # Ruby Hash
 puts response.content_string  # JSON formatted response body
 ```
 
-### Kinetic Request CE SDK example of a System User
+### Kinetic Core SDK example of a System User
 
 ```ruby
-system_sdk = KineticSdk::RequestCe.new({
+system_sdk = KineticSdk::Core.new({
   app_server_url: "http://localhost:8080/kinetic",
   username: "configuration-user",
   password: "password",
@@ -154,12 +180,12 @@ puts response.content         # Ruby Hash
 puts response.content_string  # JSON formatted response body
 ```
 
-### Kinetic Request CE SDK example of a Subdomain
+### Kinetic Core SDK example of a Subdomain
 
-This example requires a proxy server configured to rewrite the space slug subdomain to the expected Request CE API route.
+This example requires a proxy server configured to rewrite the space slug subdomain to the expected Core API route.
 
 ```ruby
-space_sdk = KineticSdk::RequestCe.new({
+space_sdk = KineticSdk::Core.new({
   space_server_url: "https://foo.myapp.io",
   space_slug: "foo",
   username: "space-user-1",
@@ -262,19 +288,19 @@ Beginning with version 0.0.2, there are now two additional options that can be p
 
 May be used with all application SDKs.
 
-**Example 1 using Kinetic Request CE without server certificate validation:**
+**Example 1 using Kinetic Core without server certificate validation:**
 
 ```ruby
-space_sdk = KineticSdk::RequestCe.new({
+space_sdk = KineticSdk::Core.new({
   ...
   options: {}
 })
 ```
 
-**Example 2 using Kinetic Request CE without server certificate validation:**
+**Example 2 using Kinetic Core without server certificate validation:**
 
 ```ruby
-space_sdk = KineticSdk::RequestCe.new({
+space_sdk = KineticSdk::Core.new({
   ...
   options: {
     ssl_verify_mode: "none"
@@ -282,10 +308,10 @@ space_sdk = KineticSdk::RequestCe.new({
 })
 ```
 
-**Example using Kinetic Request CE with server certificate validation and known CAs:**
+**Example using Kinetic Core with server certificate validation and known CAs:**
 
 ```ruby
-space_sdk = KineticSdk::RequestCe.new({
+space_sdk = KineticSdk::Core.new({
   ...
   options: {
     ssl_verify_mode: "peer"
@@ -293,10 +319,10 @@ space_sdk = KineticSdk::RequestCe.new({
 })
 ```
 
-**Example using Kinetic Request CE with server certificate validation and a self-signing CA:**
+**Example using Kinetic Core with server certificate validation and a self-signing CA:**
 
 ```ruby
-space_sdk = KineticSdk::RequestCe.new({
+space_sdk = KineticSdk::Core.new({
   ...
   options: {
     ssl_verify_mode: "peer",
@@ -309,14 +335,32 @@ space_sdk = KineticSdk::RequestCe.new({
 
 If you need to make a custom HTTP call for some reason, there is a class that allows you to do that. Simply make sure the KineticSdk is required in your program. See the [Getting Started Guide](GettingStarted.md) for details.
 
-Then you need to instantiate a new instance of the {KineticSdk::Utils::KineticHttp} class, and call the desired HTTP method with the appropriate information. Each response will be returned as a {KineticSdk::Utils::KineticHttpResponse} object.
+Then you need to instantiate a new instance of the {KineticSdk::CustomHttp} class, and call the desired HTTP method with the appropriate information. Each response will be returned as a {KineticSdk::Utils::KineticHttpResponse} object.
 
 ```ruby
-# instantiate the KineticHttp class without authentication
-http = KineticSdk::Utils::KineticHttp.new
+# instantiate the CustomHttp class without authentication
+http = KineticSdk::CustomHttp.new
 
-# instantiate the KineticHttp class with Basic authentication
-http = KineticSdk::Utils::KineticHttp.new("john.doe@company.com", "s3cretP@ssw0rd")
+# instantiate the CustomHttp class with Basic authentication
+http = KineticSdk::CustomHttp.new({
+  username: "john.doe@company.com",
+  password: "s3cretP@ssw0rd"
+})
+
+# instantiate the CustomHttp class with Basic authentication, and custom options
+http = KineticSdk::CustomHttp.new({
+  username: "john.doe@company.com",
+  password: "s3cretP@ssw0rd",
+  options: {
+    log_level: "debug",
+    log_output: "stderr",
+    max_redirects: 3,
+    gateway_retry_delay: 1.0,
+    gateway_retry_limit: 5,
+    ssl_verify_mode: "peer",
+    ssl_ca_file: "/path/to/self-signing-ca.pem"
+  }
+})
 
 # call the appropriate method
 
@@ -356,28 +400,32 @@ response = http.put(
 
 ## Additional Documentation
 
-The RDoc documentation for the SDK can be generated by running a rake command. This will provide detailed information for each module, class, and method. The output can be found in the generated `rdoc` directory.
+The RDoc documentation for the SDK can be generated by running a rake command. This will provide detailed information for each module, class, and method. The output can be found in the generated `doc` directory.
 
 In order to do this however, the `yard` gem is required and must first be installed.
 
-This SDK includes a [Gemfile](./Gemfile) that can be used with the `bundler` gem to ensure the proper version is installed.
+This SDK includes a Gemfile that can be used with the `bundler` gem to ensure the proper version is installed.
 
 Install the Bundler gem:
 
-    gem install bundler
+```sh
+gem install bundler
+```
 
 _IMPORTANT NOTE_: If using [rbenv](https://github.com/rbenv/rbenv) to manage Ruby versions, run the following command.
 
-    rbenv rehash
+```sh
+rbenv rehash
+```
 
 Finally, install the dependency gems:
 
-    bundle install
+```sh
+bundle install
+```
 
-Now that the required documentation generation gem is installed, a simple Rake command can be run to generate the inline documentation. For this SDK, the following commands are all equivalent:
+Now that the required documentation generation gem is installed, a simple Rake command can be run to generate the inline documentation.
 
-```ruby
-bundle exec rake
-bundle exec rake doc
-bundle exec rake yard
+```sh
+bundle exec rake rdoc
 ```

@@ -6,8 +6,8 @@
 # Require the Kinetic SDK from the vendor directory
 require File.join(File.expand_path(File.dirname(__FILE__)), 'vendor', 'kinetic-sdk-rb', 'kinetic-sdk')
 
-# Instantiate the Kinetic Request CE SDK with a user in the space
-request_ce_sdk = KineticSdk::RequestCe.new({
+# Instantiate the Kinetic Core SDK with a user in the space
+core_sdk = KineticSdk::Core.new({
   app_server_url: "https://my-request-ce-server",
   space_slug: "company-name",
   username: "user1@mycompany.com",
@@ -18,7 +18,7 @@ request_ce_sdk = KineticSdk::RequestCe.new({
   }
 })
 # Retrieve info about the current user
-response = request_ce_sdk.me()
+response = core_sdk.me()
 
 ### Display results
 puts response.content
