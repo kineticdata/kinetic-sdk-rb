@@ -39,3 +39,34 @@ sdk.logger.info("foo")
 - Gateway errors (HTTP codes [502](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/502), [503](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503), and [504](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504)) will automatically be retried, and may be controlled by the following options:
   - :gateway_retry_limit (default 5), set to -1 to disable retrying gateway errors
   - :gateway_retry_delay (default 1.0)
+
+## [5.0.0](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.0) (2019-12-19)
+
+** 1.x to 5.x Upgrade Warning **
+All platform components (Core, Task, Agent, Discussions...etc) should be running a 5.x release or greater.
+Unintended behavior is possible if running 5.x of the SDK against any platform component < 5.x.
+
+## [5.0.1](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.1) (2020-01-10)
+
+**Implemented enhancements:**
+
+- Implemented Task System error API
+- Fixed typo in Discussions component
+
+## [5.0.2](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.2) (2020-01-10)
+
+**Implemented enhancements:**
+
+- Fixed bug with jetching JWT regarding redirects
+
+## [5.0.3](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.3) (2020-01-17)
+
+**Implemented enhancements:**
+
+- Implmented task engine configuration APIs
+
+## [5.0.4](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.4) (2020-02-12)
+
+**Implemented enhancements:**
+
+- Implmented platform components APIs
