@@ -7,7 +7,7 @@ module KineticSdk
     #
     # @param team_name [String] the team name
     # @param attribute_name [String] the attribute name
-    # @param attribute_value [String] the attribute value
+    # @param attribute_value [String|Array] the attribute value(s)
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_team_attribute(team_name, attribute_name, attribute_value, headers=default_headers)
@@ -21,14 +21,14 @@ module KineticSdk
         @logger.info("Attribute: #{attribute.inspect}")
         # if the attribute already exists, update it
         if attribute["name"] == attribute_name
-          attribute["values"] = [ attribute_value ]
+          attribute["values"] = attribute_value.is_a?(Array) ? attribute_value : [ attribute_value ]
           exists = true
         end
       end
       # add the attribute if it didn't exist
       attributes.push({
         "name" => attribute_name,
-        "values" => [ attribute_value ]
+        "values" => attribute_value.is_a?(Array) ? attribute_value : [ attribute_value ]
         }) unless exists
 
       # set the updated attributes list
