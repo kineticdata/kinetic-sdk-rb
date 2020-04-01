@@ -196,7 +196,7 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_webhook_on_kapp(kapp_slug, name, headers=default_headers)
       @logger.info("Deleting the #{name} webhook on the #{kapp_slug}\ kapp.")
-      delete("#{@api_url}/kapps/#{kapp_slug}/webhooks/#{name}", headers)
+      delete(URI.encode("#{@api_url}/kapps/#{kapp_slug}/webhooks/#{encode(name)}"), headers)
     end
 
     # Delete a webhook on space
@@ -205,7 +205,7 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_webhook_on_space(name, headers=default_headers)
       @logger.info("Deleting the #{name} webhook on the space.")
-      delete("#{@api_url}/webhooks/#{name}", headers)
+      delete("#{@api_url}/webhooks/#{encode(name)}", headers)
     end
 
   end
