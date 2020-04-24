@@ -81,6 +81,7 @@ module KineticSdk
         "space.teamAttributeDefinitions",
         "space.userAttributeDefinitions",
         "space.userProfileAttributeDefinitions",
+        "space.webApis.{slug}",
         "space.webhooks.{name}",
       )
       core_data = get("#{@api_url}/space", { 'export' => true}, headers).content
@@ -134,6 +135,7 @@ module KineticSdk
           if api_path == "/kapps"
             kapp_slug = resp.content["kapp"]["slug"]
             delete_security_policy_definitions(kapp_slug)
+            delete_form_types_on_kapp(kapp_slug)
           end
         end
       end
