@@ -71,7 +71,7 @@ module KineticSdk
     # Delete a Category
     #
     # @param kapp_slug [String] slug of the Kapp the category belongs to
-    # @param category_slug [String] slug of the the category to find    
+    # @param category_slug [String] slug of the the category to delete    
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_category_on_kapp(kapp_slug, category_slug, headers=default_headers)

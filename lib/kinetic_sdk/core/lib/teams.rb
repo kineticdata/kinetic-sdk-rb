@@ -108,6 +108,29 @@ module KineticSdk
       @logger.info("Finding the \"#{team_name}\" (#{team_slug}) Team.")
       get("#{@api_url}/teams/#{team_slug}", params, headers)
     end
-
+    
+    # Update a Team
+    #
+    # @param team_slug [String] slug of the Team to update
+    # @param body [Hash] category properties
+    #   - +name+ - Name of the team to be added
+    #   - +description+ - Description of the Team to be added 
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
+    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    def update_team(team_slug, body, headers=default_headers)
+      raise StandardError.new "Team properties is not valid, must be a Hash." unless body.is_a? Hash
+      @logger.info("Updating Team #{team_slug}")
+      put("#{@api_url}/teams/#{team_slug}", body, headers)
+    end
+    
+    # Delete a Team
+    #
+    # @param team_slug [String] slug of the the team to delete    
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
+    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    def delete_team(team_slug, headers=default_headers)
+      @logger.info("Deleting the #{team_slug} Team.")
+      delete("#{@api_url}/teams/#{team_slug}", headers)
+    end
   end
 end
