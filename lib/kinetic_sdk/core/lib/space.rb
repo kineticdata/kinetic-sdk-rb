@@ -73,6 +73,7 @@ module KineticSdk
         "space.kapps.{slug}.kappAttributeDefinitions",
         "space.kapps.{slug}.securityPolicyDefinitions",
         "space.kapps.{slug}.webhooks.{name}",
+        "space.kapps.{slug}.webApis.{slug}",
         "space.models.{name}",
         "space.teams.{name}",
         "space.datastoreFormAttributeDefinitions",
