@@ -18,7 +18,7 @@ GEM
     mime-types-data (3.2019.1009)
     multipart-post (2.0.0)
     parallel (1.12.1)
-    rake (12.3.0)
+    rake (13.0.1)
     ruby-progressbar (1.9.0)
     slugify (1.0.7)
     websocket-driver (0.6.5)
@@ -36,7 +36,7 @@ DEPENDENCIES
   bundler (~> 1.16)
   kinetic_sdk!
   kontena-websocket-client (= 0.1.1)
-  rake (~> 12.3.0)
+  rake (~> 13.0.1)
   yard (~> 0.9.20)
 
 RUBY VERSION
