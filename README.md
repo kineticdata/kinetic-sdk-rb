@@ -75,69 +75,6 @@ the SDK with the following code.
 require File.join(File.expand_path(File.dirname(__FILE__)), 'vendor', 'kinetic-sdk-rb', 'kinetic-sdk')
 ```
 
-### Kinetic Agent SDK example
-
-```ruby
-agent_sdk = KineticSdk::Agent.new({
-  app_server_url: "http://localhost:8080/kinetic-agent",
-  username: "configuration-user",
-  password: "password",
-  options: {
-    log_level: "info",
-    max_redirects: 3
-  }
-})
-response = agent_sdk.find_all_bridges()
-bridges = response.content['bridges']
-
-puts response.code            # String value of HTTP response code ("200", "400", "500", etc...)
-puts response.status          # Ruby Fixnum value of response.code (200, 400, 500, etc...)
-puts response.content         # Ruby Hash
-puts response.content_string  # JSON formatted response body
-```
-
-### Kinetic BridgeHub SDK example
-
-```ruby
-bridgehub_sdk = KineticSdk::Bridgehub.new({
-  app_server_url: "http://localhost:8080/kinetic-bridgehub",
-  username: "configuration-user",
-  password: "password",
-  options: {
-    log_level: "info",
-    max_redirects: 3
-  }
-})
-response = bridgehub_sdk.find_bridges()
-bridges = response.content['bridges']
-
-puts response.code            # String value of HTTP response code ("200", "400", "500", etc...)
-puts response.status          # Ruby Fixnum value of response.code (200, 400, 500, etc...)
-puts response.content         # Ruby Hash
-puts response.content_string  # JSON formatted response body
-```
-
-### Kinetic FileHub SDK example
-
-```ruby
-filehub_sdk = KineticSdk::Filehub.new({
-  app_server_url: "http://localhost:8080/kinetic-filehub",
-  username: "configuration-user",
-  password: "password",
-  options: {
-    log_level: "info",
-    max_redirects: 3
-  }
-})
-response = filehub_sdk.find_filestores()
-filestores = response.content['filestores']
-
-puts response.code            # String value of HTTP response code ("200", "400", "500", etc...)
-puts response.status          # Ruby Fixnum value of response.code (200, 400, 500, etc...)
-puts response.content         # Ruby Hash
-puts response.content_string  # JSON formatted response body
-```
-
 ### Kinetic Core SDK example of a Space User
 
 ```ruby
@@ -218,6 +155,69 @@ task_sdk = KineticSdk::Task.new({
   }
 })
 response = task_sdk.environment()
+
+puts response.code            # String value of HTTP response code ("200", "400", "500", etc...)
+puts response.status          # Ruby Fixnum value of response.code (200, 400, 500, etc...)
+puts response.content         # Ruby Hash
+puts response.content_string  # JSON formatted response body
+```
+
+### Kinetic Agent SDK example
+
+```ruby
+agent_sdk = KineticSdk::Agent.new({
+  app_server_url: "http://localhost:8080/kinetic-agent",
+  username: "configuration-user",
+  password: "password",
+  options: {
+    log_level: "info",
+    max_redirects: 3
+  }
+})
+response = agent_sdk.find_all_bridges()
+bridges = response.content['bridges']
+
+puts response.code            # String value of HTTP response code ("200", "400", "500", etc...)
+puts response.status          # Ruby Fixnum value of response.code (200, 400, 500, etc...)
+puts response.content         # Ruby Hash
+puts response.content_string  # JSON formatted response body
+```
+
+### Kinetic BridgeHub SDK example
+
+```ruby
+bridgehub_sdk = KineticSdk::Bridgehub.new({
+  app_server_url: "http://localhost:8080/kinetic-bridgehub",
+  username: "configuration-user",
+  password: "password",
+  options: {
+    log_level: "info",
+    max_redirects: 3
+  }
+})
+response = bridgehub_sdk.find_bridges()
+bridges = response.content['bridges']
+
+puts response.code            # String value of HTTP response code ("200", "400", "500", etc...)
+puts response.status          # Ruby Fixnum value of response.code (200, 400, 500, etc...)
+puts response.content         # Ruby Hash
+puts response.content_string  # JSON formatted response body
+```
+
+### Kinetic FileHub SDK example
+
+```ruby
+filehub_sdk = KineticSdk::Filehub.new({
+  app_server_url: "http://localhost:8080/kinetic-filehub",
+  username: "configuration-user",
+  password: "password",
+  options: {
+    log_level: "info",
+    max_redirects: 3
+  }
+})
+response = filehub_sdk.find_filestores()
+filestores = response.content['filestores']
 
 puts response.code            # String value of HTTP response code ("200", "400", "500", etc...)
 puts response.status          # Ruby Fixnum value of response.code (200, 400, 500, etc...)
