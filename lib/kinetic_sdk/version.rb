@@ -3,5 +3,5 @@ module KineticSdk
   # Version of Kinetic SDK
   #
   # @return [String] Version of the SDK
-  VERSION = "5.0.5"
+  VERSION = "5.0.6"
 end
