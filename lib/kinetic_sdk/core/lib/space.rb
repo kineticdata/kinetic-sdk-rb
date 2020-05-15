@@ -69,7 +69,7 @@ module KineticSdk
         "space.kapps.{slug}.categoryAttributeDefinitions",
         "space.kapps.{slug}.forms.{slug}",
         "space.kapps.{slug}.formAttributeDefinitions",
-        "space.kapps.{slug}.formsTypes",
+        "space.kapps.{slug}.formTypes",
         "space.kapps.{slug}.kappAttributeDefinitions",
         "space.kapps.{slug}.securityPolicyDefinitions",
         "space.kapps.{slug}.webhooks.{name}",
