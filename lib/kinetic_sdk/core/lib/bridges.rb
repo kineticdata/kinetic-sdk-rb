@@ -3,26 +3,26 @@ module KineticSdk
 
     # Add a Bridge
     #
-    # @param body [Hash] properties associated to the Bridge
-    #   - +adapterClass+
+    # @param body [Hash] optional properties associated to the Bridge
     #   - +name+
-    #   - +slug+
-    #   - +properties+
+    #   - +status+
+    #   - +url+
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
-    def add_bridge(body, headers=default_headers)
-      @logger.info("Adding the \"#{body['name']}\" bridge through proxy to the agent platform component.")
-      post("#{@proxy_url}/agent/app/api/v1/bridges", body, headers)
+    def add_bridge(body={}, headers=default_headers)
+      @logger.info("Adding the \"#{body['name']}\" Bridge.")
+      post("#{@api_url}/bridges", body, headers)
     end
 
     # Delete a Bridge
     #
-    # @param slug [String] slug of the Bridge
+    # @param name [String] name of the bridge
+    # @param params [Hash] Query parameters that are added to the URL, such as +include+
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
-    def delete_bridge(slug, headers=default_headers)
-      @logger.info("Deleting the \"#{slug}\" bridge through proxy to the agent platform component.")
-      delete("#{@proxy_url}/agent/app/api/v1/bridges/#{slug}", headers)
+    def delete_bridge(name, params={}, headers=default_headers)
+      @logger.info("Deleting the \"#{name}\" bridge.")
+      delete("#{@api_url}/bridges/#{encode(name)}", headers)
     end
 
     # Find a list of bridges
@@ -31,30 +31,30 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_bridges(params={}, headers=default_headers)
-      @logger.info("Find bridges through proxy to the agent platform component.")
-      get("#{@proxy_url}/agent/app/api/v1/bridges", params, headers)
+      @logger.info("Find Bridges.")
+      get("#{@api_url}/bridges", params, headers)
     end
 
     # Find a bridge
     #
-    # @param slug [String] slug of the bridge
+    # @param name [String] name of the bridge
     # @param params [Hash] Query parameters that are added to the URL, such as +include+
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
-    def find_bridge(slug, params={}, headers=default_headers)
-      @logger.info("Finding the \"#{slug}\" bridge through proxy to the agent platform component.")
-      get("#{@proxy_url}/agent/app/api/v1/bridges/#{slug}", params, headers)
+    def find_bridge(name, params={}, headers=default_headers)
+      @logger.info("Finding the \"#{name}\" Bridge.")
+      get("#{@api_url}/bridges/#{encode(name)}", params, headers)
     end
 
     # Update a bridge
     #
-    # @param slug [String] slug of the bridge
+    # @param name [String] name of the bridge
     # @param body [Hash] properties of the bridge to update
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
-    def update_bridge(slug, body={}, headers=default_headers)
-      @logger.info("Updating the \"#{slug}\" bridge through proxy to the agent platform component.")
-      put("#{@proxy_url}/agent/app/api/v1/bridges/#{slug}", body, headers)
+    def update_bridge(name, body={}, headers=default_headers)
+      @logger.info("Updating the \"#{name}\" Bridge.")
+      put("#{@api_url}/bridges/#{encode(name)}", body, headers)
     end
 
     # Add a Bridge Model
