@@ -60,7 +60,7 @@ module KineticSdk
     # @return nil
     def export_sources(headers=header_basic_auth)
       raise StandardError.new "An export directory must be defined to export sources." if @options[:export_directory].nil?
-      response = find_sources({"include" => "policyRules"})
+      response = find_sources({"include" => "policyRules, properties"})
       (response.content["sourceRoots"] || []).each do |source|
         # determine which directory to write the file to
         if source['name'] != "-"
