@@ -140,8 +140,11 @@ module KineticSdk
 
         # If this is not the "root" object
         if object_path != '' && !file_contents.empty?
-          # Write the file_contents based upon the
-          filename = "#{core_path}/#{object_path.gsub('.', '/')}.json"
+          # Split the file path components into an rray removing any invalid characters and slugifying each
+          file_parts = object_path.split('.').map {|part| part.gsub('/[\\/:"*?<>|]/', '').slugify}
+          # Join the array back together as a file path
+          filename = "#{core_path}/#{File.join(file_parts)}.json"
+          # Write the file_contents based upon the new file path and name.
           write_object_to_file(filename, file_contents)
         end
 
