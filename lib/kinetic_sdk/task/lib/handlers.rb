@@ -18,7 +18,7 @@ module KineticSdk
     def delete_handlers(headers=header_basic_auth)
       @logger.info("Deleting all handlers")
       (find_handlers(headers).content['handlers'] || []).each do |handler|
-        delete("#{@api_url}/handlers/#{handler['definition_id']}", headers)
+        delete("#{@api_url}/handlers/#{handler['definitionId']}", headers)
       end
     end
 
