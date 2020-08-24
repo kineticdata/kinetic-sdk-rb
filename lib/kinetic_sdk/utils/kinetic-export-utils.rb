@@ -140,8 +140,12 @@ module KineticSdk
 
         # If this is not the "root" object
         if object_path != '' && !file_contents.empty?
+          # Remove all `/` and `\` characters with ``
+          # Replace all `.` with `/`
+          # Replace all `::` with `-` (this ensures nested Teams/Categories maintain a separator)
+          # Replace all non-slug characters with ``
+          filename = "#{core_path}/#{object_path.gsub('/\\', '').gsub('.', '/').gsub(/::/, '-').gsub(/[^a-zA-Z0-9_\-\/]/, '')}.json"
           # Write the file_contents based upon the
-          filename = "#{core_path}/#{object_path.gsub('.', '/')}.json"
           write_object_to_file(filename, file_contents)
         end
 
