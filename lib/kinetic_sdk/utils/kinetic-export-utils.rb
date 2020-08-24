@@ -149,6 +149,7 @@ module KineticSdk
           write_object_to_file(filename, file_contents)
         end
 
+
         # For each of the child objects
         child_objects.each do |key, child_object|
           # Process the export for that object (recursively)
