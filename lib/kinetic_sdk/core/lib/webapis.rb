@@ -63,7 +63,7 @@ module KineticSdk
     # @param params [Hash] Query parameters that are added to the URL, such as +include+
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
-    def find_webapis_on_kapp(kapp_slug, params={}, headers=default_headers)
+    def find_kapp_webapis(kapp_slug, params={}, headers=default_headers)
       @logger.info("Finding all Web APIs on the \"#{kapp_slug}\" Kapp.")
       get("#{@api_url}/kapps/#{kapp_slug}/webApis", params, headers)
     end    
