@@ -2,67 +2,99 @@
 
 ## [5.0.12](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.12) (2020-08-27)
 
-Added routes for webapis.
+**Implemented enhancements:**
+
+- Implmented webapi APIs
 
 ## [5.0.11](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.11) (2020-08-24)
 
-Don't remove spaces in filenames when exporting items. Spaces are valid in Windows filenames.
+**Implemented enhancements:**
+
+- Allow spaces in filenames when exporting items. Spaces were removed in 5.0.10, but they are valid in Windows so allowing them if they exist.
 
 ## [5.0.10](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.10) (2020-08-24)
 
-Changed how filenames are stored when items are exported to be compatible with Windows.
+**Implemented enhancements:**
+
+- Changed how filenames are stored when items are exported to be compatible with Windows.
 
 ## [5.0.9](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.9) (2020-06-29)
 
-Bug Fixes.
+**Implemented enhancements:**
+
+- Bug fixes
 
 ## [5.0.8](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.8) (2020-06-11)
 
-Bug Fixes.
+**Implemented enhancements:**
+
+- Bug fixes
 
 ## [5.0.7](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.7) (2020-05-15)
 
-Bug Fixes.
+**Implemented enhancements:**
+
+- Bug fixes
 
 ## [5.0.6](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.6) (2020-04-24)
 
-Bug Fixes.
+**Implemented enhancements:**
+
+- Bug fixes
 
 ## [5.0.5](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.5) (2020-04-24)
 
-Bug Fixes.
+**Implemented enhancements:**
 
-## [5.0.4](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.4) (2020-02-12)
+- Bug fixes
 
-Bug Fixes.
+## [5.0.4](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.4) (2020-02-12)
 
-## [5.0.3](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.3) (2020-01-16)
+**Implemented enhancements:**
 
-Bug Fixes.
+- Implemented platform components APIs
 
-## [5.0.2](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.2) (2020-01-10)
+## [5.0.3](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.3) (2020-01-17)
 
-Bug Fixes.
+**Implemented enhancements:**
 
-## [5.0.1](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.1) (2020-01-10)
+- Implemented task engine configuration APIs
 
-Bug Fixes.
+## [5.0.2](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.2) (2020-01-10)
 
-## [5.0.0](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.0) (2019-12-19)
+**Implemented enhancements:**
 
-Bumped version to correspond with Kinetic Platform 5.0.0.
+- Fixed bug with jetching JWT regarding redirects
+
+## [5.0.1](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.1) (2020-01-10)
+
+**Implemented enhancements:**
+
+- Implemented Task System error API
+- Fixed typo in Discussions component
+
+## [5.0.0](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.0) (2019-12-19)
+
+### **1.x to 5.x Upgrade Warning**
+
+All platform components (Core, Task, Agent, Discussions...etc) should be running a 5.x release or greater.
+Unintended behavior is possible if running 5.x of the SDK against any platform component < 5.x.
 
 ## [1.0.2](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/1.0.2) (2019-12-18)
 
-Bug Fixes.
+**Implemented enhancements:**
+
+- Bug fixes
 
 ## [1.0.1](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/1.0.1) (2019-12-17)
 
-Bug Fixes.
+**Implemented enhancements:**
+
+- Bug fixes
 
 ## [1.0.0](https://github.com/kineticdata/kinetic-sdk-rb/tree/1.0.0) (2019-06-13)
 
-** 0.x to 1.x Upgrade Warning **
+### **0.x to 1.x Upgrade Warning**
 
 Export methods have been updated to reflect the folder structure
 of their respective API routes.
@@ -99,34 +131,3 @@ sdk.logger.info("foo")
 - Gateway errors (HTTP codes [502](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/502), [503](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503), and [504](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504)) will automatically be retried, and may be controlled by the following options:
   - :gateway_retry_limit (default 5), set to -1 to disable retrying gateway errors
   - :gateway_retry_delay (default 1.0)
-
-## [5.0.0](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.0) (2019-12-19)
-
-** 1.x to 5.x Upgrade Warning **
-All platform components (Core, Task, Agent, Discussions...etc) should be running a 5.x release or greater.
-Unintended behavior is possible if running 5.x of the SDK against any platform component < 5.x.
-
-## [5.0.1](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.1) (2020-01-10)
-
-**Implemented enhancements:**
-
-- Implemented Task System error API
-- Fixed typo in Discussions component
-
-## [5.0.2](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.2) (2020-01-10)
-
-**Implemented enhancements:**
-
-- Fixed bug with jetching JWT regarding redirects
-
-## [5.0.3](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.3) (2020-01-17)
-
-**Implemented enhancements:**
-
-- Implmented task engine configuration APIs
-
-## [5.0.4](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.4) (2020-02-12)
-
-**Implemented enhancements:**
-
-- Implmented platform components APIs
