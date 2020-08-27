@@ -1,5 +1,65 @@
 # Change Log
 
+## [5.0.12](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.12) (2020-08-27)
+
+Added routes for webapis.
+
+## [5.0.11](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.11) (2020-08-24)
+
+Don't remove spaces in filenames when exporting items. Spaces are valid in Windows filenames.
+
+## [5.0.10](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.10) (2020-08-24)
+
+Changed how filenames are stored when items are exported to be compatible with Windows.
+
+## [5.0.9](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.9) (2020-06-29)
+
+Bug Fixes.
+
+## [5.0.8](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.8) (2020-06-11)
+
+Bug Fixes.
+
+## [5.0.7](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.7) (2020-05-15)
+
+Bug Fixes.
+
+## [5.0.6](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.6) (2020-04-24)
+
+Bug Fixes.
+
+## [5.0.5](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.5) (2020-04-24)
+
+Bug Fixes.
+
+## [5.0.4](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.4) (2020-02-12)
+
+Bug Fixes.
+
+## [5.0.3](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.3) (2020-01-16)
+
+Bug Fixes.
+
+## [5.0.2](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.2) (2020-01-10)
+
+Bug Fixes.
+
+## [5.0.1](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.1) (2020-01-10)
+
+Bug Fixes.
+
+## [5.0.0](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.0) (2019-12-19)
+
+Bumped version to correspond with Kinetic Platform 5.0.0.
+
+## [1.0.2](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/1.0.2) (2019-12-18)
+
+Bug Fixes.
+
+## [1.0.1](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/1.0.1) (2019-12-17)
+
+Bug Fixes.
+
 ## [1.0.0](https://github.com/kineticdata/kinetic-sdk-rb/tree/1.0.0) (2019-06-13)
 
 ** 0.x to 1.x Upgrade Warning **
