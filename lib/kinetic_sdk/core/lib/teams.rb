@@ -18,7 +18,6 @@ module KineticSdk
       # either add or update the attribute value
       exists = false
       attributes.each do |attribute|
-        @logger.info("Attribute: #{attribute.inspect}")
         # if the attribute already exists, update it
         if attribute["name"] == attribute_name
           attribute["values"] = attribute_value.is_a?(Array) ? attribute_value : [ attribute_value ]
