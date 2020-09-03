@@ -1,10 +1,19 @@
 # Change Log
 
+## [5.0.13](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.13) (2020-09-03)
+
+**Implemented enhancements:**
+
+- Added missing Form Type methods.
+- Deprecated some Form Type methods and replaced with simpler names.
+- Removed an unnecessary logging statement when adding a team attribute.
+- Removed double URL encoding when deleting a webhook from a Kapp.
+
 ## [5.0.12](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.12) (2020-08-27)
 
 **Implemented enhancements:**
 
-- Implmented webapi APIs
+- Implemented webapi APIs
 
 ## [5.0.11](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.11) (2020-08-24)
 
