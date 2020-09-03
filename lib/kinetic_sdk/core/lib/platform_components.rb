@@ -79,7 +79,6 @@ module KineticSdk
     # Delete Agent Component
     #
     # @param agent_slug [String] the slug of the agent to retrieve
-    # @param params [Hash] Query parameters that are added to the URL, such as +include+
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def delete_agent_component(agent_slug, headers = default_headers)

@@ -64,7 +64,6 @@ module KineticSdk
 
     # Add Filestore to Space
     #
-    # @param space [String] slug of the space
     # @param body [Hash] properties associated to the Filestore
     #   - +space+
     #   - +adapterClass+
