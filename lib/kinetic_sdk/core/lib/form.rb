@@ -21,7 +21,7 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_form(kapp_slug, form_properties={}, headers=default_headers)
-      @logger.info("Adding the \"#{form_properties['name']}\" Form.")
+      @logger.info("Adding the \"#{JSON.parse(form_properties)['name']}\" Form.")
       post("#{@api_url}/kapps/#{kapp_slug}/forms", form_properties, headers)
     end
 
