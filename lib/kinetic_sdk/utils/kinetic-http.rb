@@ -634,9 +634,9 @@ module KineticSdk
       # @option http_options [Fixnum] :max_redirects optional - max number of times to redirect
       # @option http_options [Fixnum] :gateway_retry_limit optional - max number of times to retry a bad gateway
       # @option http_options [Float] :gateway_retry_delay optional - number of seconds to delay before retrying a bad gateway
-      def stream_download_to_file(file_path, url, params={}, headers={}, http_options=@http_options)
+      def stream_download_to_file(file_path, url, params={}, headers=@default_headers, http_options=@options)
         # Determine if redirection is involved
-        url = redirect_url(url, params, headers, max_redirects)
+        url = redirect_url(url, params, headers, http_options)
         # parse the URL
         uri = URI.parse(url)
   
@@ -645,15 +645,17 @@ module KineticSdk
         # build the http object
         http = build_http(uri)
   
-        # stream the attachment
-        file = File.open(file_path, "wb")
+        # prepare the download
+        file = nil
         file_name = File.basename(file_path)
         response_code = nil
         message = nil
         begin
+          # stream the attachment
           http.request_get(uri.request_uri, headers) do |response|
             response_code = response.code
             if response_code == "200"
+              file = File.open(file_path, "wb")
               response.read_body { |chunk| file.write(chunk) }
             else
               message = response.body
@@ -668,8 +670,9 @@ module KineticSdk
         rescue StandardError => e
           @logger.error("Failed to export file attachment \"#{file_name}\": (#{e})")
         ensure
-          file.close()
+          file.close() unless file.nil?
         end
+        message
       end
 
 
