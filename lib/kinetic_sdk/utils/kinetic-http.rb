@@ -634,7 +634,7 @@ module KineticSdk
       # @option http_options [Fixnum] :max_redirects optional - max number of times to redirect
       # @option http_options [Fixnum] :gateway_retry_limit optional - max number of times to retry a bad gateway
       # @option http_options [Float] :gateway_retry_delay optional - number of seconds to delay before retrying a bad gateway
-      def stream_download_to_file(file_path, url, params={}, headers=@default_headers, http_options=@options)
+      def stream_download_to_file(file_path, url, params={}, headers={}, http_options=@options)
         # Determine if redirection is involved
         url = redirect_url(url, params, headers, http_options)
         # parse the URL
