@@ -21,7 +21,46 @@ module KineticSdk
       @logger.info("Adding a submission in the \"#{form_slug}\" Datastore Form.")
       post("#{@api_url}/datastore/forms/#{form_slug}/submissions", payload, headers)
     end
-
+    
+    # Add a Datastore Submission with Attachment
+    #
+    # @param form_slug [String] slug of the Form
+    # @param payload [Hash] payload of the submission
+    #   - +origin+ - Origin ID of the submission to be added
+    #   - +parent+ - Parent ID of the submission to be added
+    #   - +values+ - hash of field values for the submission
+    #     - (attachment questions are an Array of Hashes. Each hash represents an attachment answer for the question.  The hash must include a link property with a value to represent the local file location.)
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
+    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    def add_datastore_submission_with_attachment(form_slug, payload, headers=default_headers)
+      # initialize "values" if nil
+      payload["values"] = {} if payload["values"].nil?
+      # set origin hash if origin was passed as a string
+      payload["origin"] = { "id" => payload["origin"] } if payload["origin"].is_a? String
+      # set parent hash if parent was passed as a string
+      payload["parent"] = { "id" => payload["parent"] } if payload["parent"].is_a? String
+      
+      # url to post the attachment files
+      url = "#{@api_url.gsub('/api/v1','')}/datastore/forms/multiple-attachment-datastore/files"
+      # Iterate over each attachment field
+      payload['values'].select{ |field, value| value.kind_of?(Array) && value.first && value.first.kind_of?(Hash) && value.first.has_key?('link') }.each{ |field, value|  
+        # iterate over each attachment in the field
+        value.each_with_index{ |attachment, index| 
+          # open the file
+          attachment_location = File.new(attachment['link'])
+          # post to post_multipart to upload the attachment 
+          attachment_response = post_multipart(url, {"package" => attachment_location}, headers) 
+          # add the attachment response to the submission payload
+          payload['values'][field][index] = JSON.parse(attachment_response.content_string).first
+        } 
+      }
+      
+      # Create the submission
+      @logger.info("Adding a submission in the \"#{form_slug}\" Datastore Form.")
+      headers['Content-Type'] = "application/json"
+      post("#{@api_url}/datastore/forms/#{form_slug}/submissions", payload, headers)
+    end
+  
     # Add a Datastore Submission page
     #
     # @param form_slug [String] slug of the Form
