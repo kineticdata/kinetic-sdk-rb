@@ -184,7 +184,7 @@ module KineticSdk
     # @param submission_id [String] id of the Submission
     # @param values [Hash] hash of values being submitted
     # @return [Hash] hash of values with attachment paths replaced with uploaded file information
-    def prepare_new_datastore_submission_values(form_slug, values)
+    def prepare_updated_datastore_submission_values(submission_id, values)
       files_url = "#{@api_url.gsub('/api/v1','')}/datastore/submissions/#{submission_id}/files"
       prepare_submission_values(values, url)
     end
