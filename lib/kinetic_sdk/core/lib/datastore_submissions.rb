@@ -70,6 +70,30 @@ module KineticSdk
       patch("#{@api_url}/datastore/forms/#{form_slug}/submissions", payload, headers)
     end
 
+    # Patch an existing Datastore Submission
+    #
+    # @param submission_id [String] id of the Submission
+    # @param payload [Hash] payload of the submission
+    #   - +origin+ - Origin ID of the submission to be patched
+    #   - +parent+ - Parent ID of the submission to be patched
+    #   - +values+ - hash of field values for the submission
+    #     - attachment fields contain an Array of Hashes. Each hash represents an attachment answer for the field. The hash must include a `path` property with a value to represent the local file location.)
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
+    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    def patch_existing_datastore_submission(submission_id, payload={}, headers=default_headers)
+      # set the currentPage hash if currentPage was passed as a string
+      payload["currentPage"] = { "name" => payload["currentPage"] } if payload["currentPage"].is_a? String
+      # set origin hash if origin was passed as a string
+      payload["origin"] = { "id" => payload["origin"] } if payload["origin"].is_a? String
+      # set parent hash if parent was passed as a string
+      payload["parent"] = { "id" => payload["parent"] } if payload["parent"].is_a? String
+      # prepare any attachment values
+      payload["values"] = prepare_updated_datastore_submission_values(submission_id, payload["values"])
+      # Update the submission
+      @logger.info("Patching a submission with id \"#{submission_id}\"")
+      patch("#{@api_url}/datastore/submissions/#{submission_id}", payload, headers)
+    end
+
     # Find all Submissions for a Datastore Form.
     #
     # This method will process pages of form submissions and internally
