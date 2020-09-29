@@ -252,7 +252,6 @@ module KineticSdk
         if value.is_a?(Array) && !value.empty? && value.first.is_a?(Hash) && value.first.has_key?('path')
           value.each_with_index do |file, index|
             # upload the file to the server
-            @logger.info("POST MULTIPART URI: #{file_upload_url}")
             file_upload_response = post_multipart(
               file_upload_url,
               { "package" => File.new(file['path']) },
