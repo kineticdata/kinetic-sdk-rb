@@ -9,18 +9,19 @@ module KineticSdk
     #   - +origin+ - Origin ID of the submission to be added
     #   - +parent+ - Parent ID of the submission to be added
     #   - +values+ - hash of field values for the submission
+    #     - attachment fields contain an Array of Hashes. Each hash represents an attachment answer for the field. The hash must include a `path` property with a value to represent the local file location.)
     # @param parameters [Hash] hash of query parameters to append to the URL
     #   - +include+ - comma-separated list of properties to include in the response
     #   - +completed+ - signals that the submission should be completed, default is false
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_submission(kapp_slug, form_slug, payload={}, parameters={}, headers=default_headers)
-      # initialize "values" if nil
-      payload["values"] = {} if payload["values"].nil?
       # set origin hash if origin was passed as a string
       payload["origin"] = { "id" => payload["origin"] } if payload["origin"].is_a? String
       # set parent hash if parent was passed as a string
       payload["parent"] = { "id" => payload["parent"] } if payload["parent"].is_a? String
+      # prepare any attachment values
+      payload["values"] = prepare_new_submission_values(kapp_slug, form_slug, payload["values"])
       # build the uri with the encoded parameters
       uri = URI.parse("#{@api_url}/kapps/#{kapp_slug}/forms/#{form_slug}/submissions")
       uri.query = URI.encode_www_form(parameters) unless parameters.empty?
@@ -38,6 +39,7 @@ module KineticSdk
     #   - +origin+ - Origin ID of the submission to be added
     #   - +parent+ - Parent ID of the submission to be added
     #   - +values+ - hash of field values for the submission
+    #     - attachment fields contain an Array of Hashes. Each hash represents an attachment answer for the field. The hash must include a `path` property with a value to represent the local file location.)
     # @param parameters [Hash] hash of query parameters to append to the URL
     #   - +include+ - comma-separated list of properties to include in the response
     #   - +staged+ - Indicates whether field validations and page advancement should occur, default is false
@@ -45,12 +47,12 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def add_submission_page(kapp_slug, form_slug, page_name, payload={}, parameters={}, headers=default_headers)
-      # initialize "values" if nil
-      payload["values"] = {} if payload["values"].nil?
       # set origin hash if origin was passed as a string
       payload["origin"] = { "id" => payload["origin"] } if payload["origin"].is_a? String
       # set parent hash if parent was passed as a string
       payload["parent"] = { "id" => payload["parent"] } if payload["parent"].is_a? String
+      # prepare any attachment values
+      payload["values"] = prepare_new_submission_values(kapp_slug, form_slug, payload["values"])
       # add the page name to the parameters
       parameters["page"] = page_name
       # build the uri with the encoded parameters
@@ -69,17 +71,18 @@ module KineticSdk
     #   - +origin+ - Origin ID of the submission to be patched
     #   - +parent+ - Parent ID of the submission to be patched
     #   - +values+ - hash of field values for the submission
+    #     - attachment fields contain an Array of Hashes. Each hash represents an attachment answer for the field. The hash must include a `path` property with a value to represent the local file location.)
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def patch_new_submission(kapp_slug, form_slug, payload={}, headers=default_headers)
       # set the currentPage hash if currentPage was passed as a string
       payload["currentPage"] = { "name" => payload["currentPage"] } if payload["currentPage"].is_a? String
-      # initialize "values" if nil
-      payload["values"] = {} if payload["values"].nil?
       # set origin hash if origin was passed as a string
       payload["origin"] = { "id" => payload["origin"] } if payload["origin"].is_a? String
       # set parent hash if parent was passed as a string
       payload["parent"] = { "id" => payload["parent"] } if payload["parent"].is_a? String
+      # prepare any attachment values
+      payload["values"] = prepare_new_submission_values(kapp_slug, form_slug, payload["values"])
       # Create the submission
       @logger.info("Patching a submission in the \"#{form_slug}\" Form.")
       patch("#{@api_url}/kapps/#{kapp_slug}/forms/#{form_slug}/submissions", payload, headers)
@@ -92,17 +95,18 @@ module KineticSdk
     #   - +origin+ - Origin ID of the submission to be patched
     #   - +parent+ - Parent ID of the submission to be patched
     #   - +values+ - hash of field values for the submission
+    #     - attachment fields contain an Array of Hashes. Each hash represents an attachment answer for the field. The hash must include a `path` property with a value to represent the local file location.)
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def patch_existing_submission(submission_id, payload={}, headers=default_headers)
       # set the currentPage hash if currentPage was passed as a string
       payload["currentPage"] = { "name" => payload["currentPage"] } if payload["currentPage"].is_a? String
-      # initialize "values" if nil
-      payload["values"] = {} if payload["values"].nil?
       # set origin hash if origin was passed as a string
       payload["origin"] = { "id" => payload["origin"] } if payload["origin"].is_a? String
       # set parent hash if parent was passed as a string
       payload["parent"] = { "id" => payload["parent"] } if payload["parent"].is_a? String
+      # prepare any attachment values
+      payload["values"] = prepare_updated_submission_values(submission_id, payload["values"])
       # Create the submission
       @logger.info("Patching a submission with id \"#{submission_id}\"")
       patch("#{@api_url}/submissions/#{submission_id}", payload, headers)
@@ -209,6 +213,60 @@ module KineticSdk
     def update_submission(submission_id, body={}, headers=default_headers)
       @logger.info("Updating Submission \"#{submission_id}\"")
       put("#{@api_url}/submissions/#{encode(submission_id)}", body, headers)
+    end
+
+    private
+
+    # Prepares new submission values for attachment fields
+    #
+    # @param kapp_slug [String] kapp slug
+    # @param form_slug [String] form slug
+    # @param values [Hash] hash of values being submitted
+    # @return [Hash] hash of values with attachment paths replaced with uploaded file information
+    def prepare_new_submission_values(kapp_slug, form_slug, values)
+      file_upload_url = "#{@api_url.gsub('/app/api/v1','')}/#{kapp_slug}/#{form_slug}/files"
+      prepare_submission_values(values, file_upload_url)
+    end
+
+    # Prepares updated submission values for attachment fields
+    #
+    # @param submission_id [String] id of the Submission
+    # @param values [Hash] hash of values being submitted
+    # @return [Hash] hash of values with attachment paths replaced with uploaded file information
+    def prepare_updated_submission_values(submission_id, values)
+      file_upload_url = "#{@api_url.gsub('/app/api/v1','')}/submissions/#{submission_id}/files"
+      prepare_submission_values(values, file_upload_url)
+    end
+
+    # Prepares submission values for attachment fields
+    #
+    # @param values [Hash] hash of values being submitted
+    # @param file_upload_url [String] url to post attachments
+    # @return [Hash] hash of values with attachment paths replaced with uploaded file information
+    def prepare_submission_values(values, file_upload_url)
+      # initialize the values
+      values = {} if values.nil?
+      # handle attachment values
+      values.each do |field, value|
+        # if the value contains an array of files
+        if value.is_a?(Array) && !value.empty? && value.first.is_a?(Hash) && value.first.has_key?('path')
+          value.each_with_index do |file, index|
+            # upload the file to the server
+            file_upload_response = post_multipart(
+              file_upload_url,
+              { "package" => File.new(file['path']) },
+              default_headers)
+            # update the value with the file upload response
+            if file_upload_response.status == 200
+              values[field][index] = file_upload_response.content.first
+            else
+              raise "Attachment file upload failed: (#{file_upload_response.status}) #{file_upload_response.content_string}"
+            end
+          end
+        end
+      end
+      # return the values
+      values
     end
 
   end
