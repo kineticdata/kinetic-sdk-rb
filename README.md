@@ -1,4 +1,4 @@
-# Ruby SDK for Kinetic Data application APIs
+# Ruby SDK for Kinetic Data application APIs [![Gem Version](https://badge.fury.io/rb/kinetic_sdk.svg)](https://badge.fury.io/rb/kinetic_sdk)
 
 This library allows access to Kinetic Data application APIs from Ruby without having to write explicit HTTP requests.
 
