@@ -1,5 +1,12 @@
 # Change Log
 
+## [5.0.14](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.14) (2021-01-15)
+
+**Implemented enhancements:**
+
+- Support for submitting attachments (datastore and form submissions)
+- Bug Fixes
+
 ## [5.0.13](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.13) (2020-09-03)
 
 **Implemented enhancements:**
