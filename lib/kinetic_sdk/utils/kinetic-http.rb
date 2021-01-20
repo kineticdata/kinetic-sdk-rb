@@ -424,13 +424,11 @@ module KineticSdk
         # prepare the payload
         payload = data.inject({}) do |h,(k,v)| 
           if v.class == File
-            h[k] = UploadIO.new(v, mimetype(v), File.basename(v))
+            h[k] = UploadIO.new(v, mimetype(v).first, File.basename(v))
           elsif v.class == Array
-            # f = v.first
-            # h[k] = UploadIO.new(f, mimetype(f), File.basename(f)) unless f.nil?
             h[k] = v.inject([]) do |files, part|
               if part.class == File
-                files << UploadIO.new(part, mimetype(part), File.basename(part))
+                files << UploadIO.new(part, mimetype(part).first, File.basename(part))
               end
             end
           else
