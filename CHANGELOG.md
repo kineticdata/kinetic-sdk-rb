@@ -1,5 +1,11 @@
 # Change Log
 
+## [5.0.15](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.15) (2021-01-20)
+
+**Implemented enhancements:**
+
+- Bug Fixes
+
 ## [5.0.14](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.14) (2021-01-15)
 
 **Implemented enhancements:**
