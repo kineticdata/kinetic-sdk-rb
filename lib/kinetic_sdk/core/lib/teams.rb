@@ -82,7 +82,7 @@ module KineticSdk
     def remove_team_membership(team_name, username, headers=default_headers)
       team_slug = Digest::MD5.hexdigest(team_name)
       @logger.info("Removing user: \"#{username}\" from \"#{team_name}\" team")
-      delete("#{@api_url}/memberships/#{team_slug}_#{username}", body, headers)
+      delete("#{@api_url}/memberships/#{team_slug}_#{username}", headers)
     end
 
     # Find teams

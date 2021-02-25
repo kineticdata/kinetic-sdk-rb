@@ -1,6 +1,13 @@
 # Change Log
 
-## [5.0.16](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.9) (2021-02-25)
+## [5.0.17](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.17) (2021-02-25)
+
+**Implemented enhancements:**
+
+- Bug fix related to removing user from a team
+
+
+## [5.0.16](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.16) (2021-02-25)
 
 **Implemented enhancements:**
 
