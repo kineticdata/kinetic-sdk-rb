@@ -73,6 +73,18 @@ module KineticSdk
       post("#{@api_url}/memberships/", body, headers)
     end
 
+    # remove a team membership
+    #
+    # @param team_name [String] the team name
+    # @param username [String] the username to remove to the team
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
+    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    def remove_team_membership(team_name, username, headers=default_headers)
+      team_slug = Digest::MD5.hexdigest(team_name)
+      @logger.info("Removing user: \"#{username}\" from \"#{team_name}\" team")
+      delete("#{@api_url}/memberships/#{team_slug}_#{username}", body, headers)
+    end
+
     # Find teams
     #
     # @param params [Hash] Query parameters that are added to the URL, such as +include+

@@ -1,5 +1,11 @@
 # Change Log
 
+## [5.0.16](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.9) (2021-02-25)
+
+**Implemented enhancements:**
+
+- Implmented ability to remove user from a team
+
 ## [5.0.15](https://github.com/kineticdata/kinetic-sdk-rb/releases/tag/5.0.15) (2021-01-20)
 
 **Implemented enhancements:**

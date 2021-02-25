@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    kinetic_sdk (5.0.15)
+    kinetic_sdk (5.0.16)
       mime-types (= 3.1)
       multipart-post (= 2.0.0)
       parallel (= 1.12.1)
@@ -15,12 +15,14 @@ GEM
       websocket-driver (~> 0.6.5)
     mime-types (3.1)
       mime-types-data (~> 3.2015)
-    mime-types-data (3.2020.1104)
+    mime-types-data (3.2021.0212)
     multipart-post (2.0.0)
     parallel (1.12.1)
     rake (13.0.1)
     ruby-progressbar (1.9.0)
     slugify (1.0.7)
+    websocket-driver (0.6.5)
+      websocket-extensions (>= 0.1.0)
     websocket-driver (0.6.5-java)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
@@ -28,6 +30,7 @@ GEM
 
 PLATFORMS
   java
+  ruby
 
 DEPENDENCIES
   bundler (~> 1.17)
