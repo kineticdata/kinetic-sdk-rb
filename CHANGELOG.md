@@ -1,5 +1,11 @@
 # Change Log
 
+## [5.0.18](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.18) (2021-03-25)
+
+**Implemented enhancements:**
+
+- Implemented method to enable searching for users against the system api (find_users_in_system)
+
 ## [5.0.17](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.17) (2021-02-25)
 
 **Implemented enhancements:**

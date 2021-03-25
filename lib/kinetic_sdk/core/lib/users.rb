@@ -166,8 +166,19 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def find_users(params={}, headers=default_headers)
-      @logger.info("Finding Users \"#{username}\"")
+      @logger.info("Finding Users")
       get("#{@api_url}/users", params, headers)
+    end
+
+    # Find all users with the system api
+    #
+    # @param space_slug [String] slug of the space to find users in when using the system api
+    # @param params [Hash] Query parameters that are added to the URL, such as +include+
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
+    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    def find_users_in_system(space_slug, params={}, headers=default_headers)
+      @logger.info("Finding Users")
+      get("#{@api_url}/spaces/#{space_slug}/users", params, headers)
     end
 
     # Find the user
