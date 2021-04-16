@@ -1,0 +1,17 @@
+# SDK log level (off | info | debug | trace)
+sdk_log_level: "info"
+
+# Properties to for connecting to Kinetic Task
+task:
+  server: "http://localhost:8080/kinetic-task"
+  credentials:
+    username: "admin"
+    password: "admin"
+
+# Overwrite existing trees
+force_overwrite: false
+
+# Tree files to import
+trees:
+  - "/Users/user1/task-trees/forms-created.xml"
+  - "/Users/user1/task-trees/forms-deleted.xml"
