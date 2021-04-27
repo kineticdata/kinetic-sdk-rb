@@ -1,5 +1,5 @@
 source "https://rubygems.org"
-ruby '~> 2.2'
+ruby '>= 2.2'
 
 git_source(:github) { "https://github.com/kineticdata/kinetic-sdk-rb" }
 

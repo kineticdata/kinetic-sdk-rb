@@ -8,10 +8,10 @@ gemdir = File.expand_path(File.join(pwd, '..', 'gems'))
 
 # add gem directories to load path if gem is not installed
 if Gem::Specification.find_all_by_name('mime-types').empty?
-  $:.unshift File.join(gemdir, 'mime-types-3.1', 'lib')
+  $:.unshift File.join(gemdir, 'mime-types-3.3.1', 'lib')
 end
 if Gem::Specification.find_all_by_name('mime-types-data').empty?
-  $:.unshift File.join(gemdir, 'mime-types-data-3.2016.0521', 'lib')
+  $:.unshift File.join(gemdir, 'mime-types-data-3.2021.0225', 'lib')
 end
 if Gem::Specification.find_all_by_name('multipart-post').empty?
   $:.unshift File.join(gemdir, 'multipart-post-2.0.0', 'lib')

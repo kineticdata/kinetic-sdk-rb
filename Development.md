@@ -22,6 +22,18 @@ Or install it yourself as:
 gem install kinetic_sdk
 ```
 
+To upgrade the kinetic_sdk gem to the latest version with bundler, simply run:
+
+```sh
+bundle update
+```
+
+Or update it to the latest version with the gem command:
+
+```sh
+gem update kinetic_sdk
+```
+
 Then in your application, include the SDK with the following code:
 
 ```ruby
