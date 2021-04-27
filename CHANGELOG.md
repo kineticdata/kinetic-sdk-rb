@@ -1,5 +1,11 @@
 # Change Log
 
+## [5.0.19](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.19) (2021-04-27)
+
+**Implemented enhancements:**
+
+- Update mime-types and mime-types-data gems to support Ruby 3
+
 ## [5.0.18](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.18) (2021-03-25)
 
 **Implemented enhancements:**
@@ -11,7 +17,6 @@
 **Implemented enhancements:**
 
 - Bug fix related to removing user from a team
-
 
 ## [5.0.16](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.16) (2021-02-25)
 
