@@ -44,15 +44,13 @@ require 'kinetic_sdk'
 
 After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
-### Versioning
+### Versioning and Changelog
 
 To release a new version, you must first checkout the git `master` branch and then update the version number in `version.rb`. [Rubygems.org](https://rubygems.org) does not allow updating a gem with the same version, you must always push a new version.
 
-After updating the version, you can then then build the gem.
-
-### Changelog
-
 Update the `CHANGELOG.md` file with the release information.
+
+After updating the version and changelog, you can then then build the gem.
 
 ### Building
 

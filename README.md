@@ -4,7 +4,7 @@ This library allows access to Kinetic Data application APIs from Ruby without ha
 
 ## About
 
-The Kinetic Ruby SDK is a library that consists of and SDK for each supported Kinetic Data application, and a helper HTTP library to make the HTTP requests.
+The Kinetic Ruby SDK is a library that consists of an SDK for each supported Kinetic Data application, and a helper HTTP library to make the HTTP requests.
 
 ### Supported Applications
 
