@@ -1,0 +1,17 @@
+#
+# This file should be used as a template and copied to 'config.yaml'.
+# The `config.yaml` file should then be populated with values that 
+# match your environment.
+#
+
+# URL that points to the base Task application
+taskUrl: https://servername:8080/kinetic-task
+
+# Username of a user account with permission to delete runs
+username: admin
+
+# Password of a user account with permission to delete runs
+password: admin
+
+# Log level of SDK logging (info | debug)
+logLevel: info
