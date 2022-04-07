@@ -19,6 +19,7 @@
 #-----------------------------------------------------------------------------
 
 require 'erb'
+require 'io/console'
 require "optparse"
 require "ostruct"
 require "yaml"
@@ -67,6 +68,18 @@ class Options
   end
 end
 
+
+
+#-----------------------------------------------------------------------------
+# SCRIPT HELPER METHODS
+#-----------------------------------------------------------------------------
+
+def get_char
+  input = STDIN.getch
+  control_c_code = "\u0003"
+  exit(1) if input == control_c_code
+  input
+end
 
 
 #-----------------------------------------------------------------------------
@@ -127,6 +140,14 @@ sdk.logger.info "  Task Server: #{sdk.server}"
 sdk.logger.info "  Using Kinetic SDK #{KineticSdk::VERSION}"
 sdk.logger.info "  Deleting runs #{first_run_id} to #{last_run_id}"
 sdk.logger.info "--------------------------------------------------------------"
+
+
+# Display warning, and wait for confirmation
+puts "\nWARNING: This is a destructive operation. Kinetic Task run data will be deleted."
+print "Are you sure you want to continue (y/n): "
+ack = get_char()
+puts
+exit(1) if ack.downcase != "y"
 
 
 begin
