@@ -217,7 +217,6 @@ if space_exists
       end
 
       # Import Submissions
-      # Not using Parallel here because unlicensed server will fail at 25 counts
       submissions_count = 0
       Dir["#{dirname}/data/*"].each do |form|
         # Parse form slug from directory path

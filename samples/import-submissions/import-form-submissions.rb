@@ -208,11 +208,8 @@ errors = []
 
 start = Time.now
 mutex = Mutex.new
-Parallel.map(
-    1..number_to_import, 
-    in_threads: threads, 
-    preserve_results: true, 
-    progress: "Importing #{number_to_import} submissions to #{kapp_slug} > #{form_slug}") do |i|
+
+1..number_to_import.each do |i|
   response = requestce_sdk_space.add_submission_page(kapp_slug, form_slug, 'Page 1', {
     "values" => build_submission_data(fields)
   })

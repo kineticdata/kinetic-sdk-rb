@@ -1,8 +1,7 @@
 module KineticSdk
   class Task
 
-    # Export all structure definitions to :source-slug.json file in
-    # `export_directory/sources`.
+    # Export all structure definitions to `export_directory`.
     #
     # Exports the following items:
     #
@@ -28,5 +27,26 @@ module KineticSdk
     end
 
 
+    # Export all structure definitions except trees and routines to `export_directory`.
+    #
+    # Exports the following items:
+    #
+    # * sources
+    # * handlers
+    # * groups
+    # * policy rules
+    # * categories
+    # * access keys
+    #
+    # @param headers [Hash] hash of headers to send, default is basic authentication
+    # @rbuneturn nil
+    def export_all_except_trees(headers=header_basic_auth)
+      export_sources(headers)
+      export_handlers(headers)
+      export_groups(headers)
+      export_policy_rules(headers)
+      export_categories(headers)
+      export_access_keys(headers)
+    end
   end
 end

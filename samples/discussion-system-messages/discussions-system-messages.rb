@@ -128,10 +128,6 @@ sdk.delete_participant(discussion_id, config[:admin_username])
 sdk.delete_participant(discussion_id, config[:username])
 
 
-# System Message - (ParticipantJoinedMessage) - joinPolicy as Space Admin
-sdk.subscribe(discussion_id)
-
-
 # System Message - (ParticipantJoinedMessage) - joinPolicy Owning Team Member
 # Join a user that is a member of an owning team.
 #
@@ -159,7 +155,6 @@ owning_team_member_sdk = KineticSdk::Discussions.new(config.clone.tap {|c|
   c[:username] = owning_team_member['username']
   c[:password] = owning_team_member['password']
 })
-owning_team_member_sdk.subscribe(discussion_id)
 
 
 # System Message - (ParticipantJoinedMessage) - joinPolicy Owning User
@@ -190,7 +185,6 @@ owning_user_sdk = KineticSdk::Discussions.new(config.clone.tap {|c|
   c[:username] = owning_user['username']
   c[:password] = owning_user['password']
 })
-owning_user_sdk.subscribe(discussion_id)
 
 
 
@@ -219,4 +213,3 @@ participant_sdk = KineticSdk::Discussions.new(config.clone.tap {|c|
   c[:username] = participant_user['username']
   c[:password] = participant_user['password']
 })
-participant_sdk.subscribe(discussion_id)

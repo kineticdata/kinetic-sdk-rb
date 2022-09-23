@@ -202,6 +202,17 @@ module KineticSdk
       get("#{@api_url}/trees/#{encode(title)}", params, headers)
     end
 
+    # Find a tree by Id
+    #
+    # @param tree_id [UUID] the tree UUID
+    # @param params [Hash] Query parameters that are added to the URL, such as +include+
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
+    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    def find_tree_by_id(tree_id, params={}, headers=default_headers)
+      @logger.info("Find tree by id")
+      get("#{@api_url}/trees/guid/#{tree_id}", params, headers)
+    end
+
     # Export a single tree or routine
     #
     # @param title [String] the title of the tree or routine

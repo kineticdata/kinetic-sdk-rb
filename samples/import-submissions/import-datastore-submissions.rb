@@ -232,11 +232,9 @@ errors = []
 
 start = Time.now
 mutex = Mutex.new
-Parallel.map(
-    1..number_to_import, 
-    in_threads: threads, 
-    preserve_results: true, 
-    progress: "Importing #{number_to_import} submissions to #{form_slug}") do |i|
+
+puts "Importing #{number_to_import} submissions to #{form_slug}"
+1..number_to_import.each do |i|
   response = requestce_sdk_space.add_datastore_submission(form_slug, {
     "values" => build_submission_data(fields)
   })

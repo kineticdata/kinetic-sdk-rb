@@ -8,38 +8,18 @@ gemdir = File.expand_path(File.join(pwd, '..', 'gems'))
 
 # add gem directories to load path if gem is not installed
 if Gem::Specification.find_all_by_name('mime-types').empty?
-  $:.unshift File.join(gemdir, 'mime-types-3.3.1', 'lib')
+  $:.unshift File.join(gemdir, 'mime-types-3.4.1', 'lib')
 end
 if Gem::Specification.find_all_by_name('mime-types-data').empty?
-  $:.unshift File.join(gemdir, 'mime-types-data-3.2021.0225', 'lib')
+  $:.unshift File.join(gemdir, 'mime-types-data-3.2022.0105', 'lib')
 end
 if Gem::Specification.find_all_by_name('multipart-post').empty?
   $:.unshift File.join(gemdir, 'multipart-post-2.0.0', 'lib')
 end
-if Gem::Specification.find_all_by_name('parallel').empty?
-  $:.unshift File.join(gemdir, 'parallel-1.12.1', 'lib')
-end
-if Gem::Specification.find_all_by_name('ruby-progressbar').empty?
-  $:.unshift File.join(gemdir, 'ruby-progressbar-1.9.0', 'lib')
-end
 if Gem::Specification.find_all_by_name('slugify').empty?
   $:.unshift File.join(gemdir, 'slugify-1.0.7', 'lib')
 end
-if Gem::Specification.find_all_by_name('kontena-websocket-client').empty?
-  $:.unshift File.join(gemdir, 'kontena-websocket-client-0.1.1', 'lib')
-end
-if Gem::Specification.find_all_by_name('websocket-extensions').empty?
-  $:.unshift File.join(gemdir, 'websocket-extensions-0.1.3', 'lib')
-end
-if Gem::Specification.find_all_by_name('websocket-driver').empty?
-  if defined?(JRUBY_VERSION)
-    $:.unshift File.join(gemdir, 'websocket-driver-0.6.5-java', 'lib')
-  else
-    $:.unshift File.join(gemdir, 'websocket-driver-0.6.5', 'lib')
-  end
-end
 
-require 'parallel'
 require 'slugify'
 
 require File.join(pwd, "kinetic_sdk/version")

@@ -1,5 +1,14 @@
 # Change Log
 
+## [5.0.20](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.20) (2022-09-23)
+
+**Implemented enhancements:**
+
+- Workflow support
+- Add TaskSdk#export_all_except_trees method
+- Remove `parallel`, `progressbar`, and `kontena-websocket-client` gems
+- Remove `Discussions#subscribe` experimental method that relied on the websocket client gem
+
 ## [5.0.19](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.19) (2021-04-27)
 
 **Implemented enhancements:**

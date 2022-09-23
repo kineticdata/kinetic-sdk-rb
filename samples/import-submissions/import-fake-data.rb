@@ -83,7 +83,6 @@ else
 end
 
 require 'slugify'
-require 'parallel'
 require "#{pwd}/helpers"
 
 # Parse options from command line arguments
@@ -158,7 +157,7 @@ def build_data
 end
 start = Time.now
 
-Parallel.each(@number_to_import.times, in_threads: 12) do |i|
+@number_to_import.times do |i|
   response = requestce_sdk_space.add_datastore_submission(form_slug, {"values" => build_data})
   response.status === 200 ? total +=1 : errors.push(response.content_string)
 end

@@ -20,10 +20,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "slugify", "1.0.7"
   spec.add_dependency "multipart-post", "2.0.0"
   spec.add_dependency "mime-types", ">= 3.3.1"
-  spec.add_dependency "parallel", "1.12.1"
-  spec.add_dependency "ruby-progressbar", "1.9.0"
-
-  spec.add_development_dependency "kontena-websocket-client", "0.1.1"
 
   spec.add_development_dependency "bundler", ">= 1.17"
   spec.add_development_dependency "rake", ">= 13.0.1"

@@ -1,31 +1,20 @@
 PATH
   remote: .
   specs:
-    kinetic_sdk (5.0.19)
+    kinetic_sdk (5.0.20)
       mime-types (>= 3.3.1)
       multipart-post (= 2.0.0)
-      parallel (= 1.12.1)
-      ruby-progressbar (= 1.9.0)
       slugify (= 1.0.7)
 
 GEM
   remote: https://rubygems.org/
   specs:
-    kontena-websocket-client (0.1.1)
-      websocket-driver (~> 0.6.5)
-    mime-types (3.3.1)
+    mime-types (3.4.1)
       mime-types-data (~> 3.2015)
-    mime-types-data (3.2021.0225)
+    mime-types-data (3.2022.0105)
     multipart-post (2.0.0)
-    parallel (1.12.1)
     rake (13.0.1)
-    ruby-progressbar (1.9.0)
     slugify (1.0.7)
-    websocket-driver (0.6.5)
-      websocket-extensions (>= 0.1.0)
-    websocket-driver (0.6.5-java)
-      websocket-extensions (>= 0.1.0)
-    websocket-extensions (0.1.5)
     yard (0.9.25)
 
 PLATFORMS
@@ -35,7 +24,6 @@ PLATFORMS
 DEPENDENCIES
   bundler (>= 1.17)
   kinetic_sdk!
-  kontena-websocket-client (= 0.1.1)
   rake (>= 13.0.1)
   yard (~> 0.9.25)
 

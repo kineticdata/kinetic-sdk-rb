@@ -118,6 +118,9 @@ module KineticSdk
           @logger.info("Importing #{rel_path} to #{api_path}.")
           body['slug'] = slug
           resp = put("#{@api_url}#{api_path}", body, headers)
+        elsif rel_path.match?(/.*\/workflows\/.*/)
+          # skip workflows,they are inported independently
+          next
         elsif body.is_a?(Array)
           api_path = "/#{rel_path.sub(/^space\//,'').sub(/\.json$/,'')}"
           body.each do |part|
@@ -153,6 +156,54 @@ module KineticSdk
       @logger.info("Checking if the \"#{slug}\" space exists")
       response = get("#{@api_url}/spaces/#{slug}", params, headers)
       response.status == 200
+    end
+
+
+    # Find Space workflows
+    #
+    # @param params [Hash] Query parameters that are added to the URL, such as +include+
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
+    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    def find_space_workflows(params={}, headers=default_headers)
+      @logger.info("Find space workflows")
+      get("#{@api_url}/workflows", params, headers)
+    end
+    
+
+    # Find a space workflow
+    #
+    # @param workflow_id [UUID] the workflow UUID
+    # @param params [Hash] Query parameters that are added to the URL, such as +include+
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
+    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    def find_space_workflow(workflow_id, params={}, headers=default_headers)
+      @logger.info("Find space workflow #{workflow_id}")
+      get("#{@api_url}/workflows/#{workflow_id}", params, headers)
+    end
+
+
+    # Add Space workflow
+    #
+    # @param payload [Hash] hash of required workflow properties
+    #   - +event+
+    #   - +name+
+    #   - +treeXml+
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
+    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    def add_space_workflow(payload, headers=default_headers)
+      @logger.info("Add workflow to the space")
+      post("#{@api_url}/workflows", payload, headers)
+    end
+
+
+    # Delete Space workflow
+    #
+    # @param workflow_id [UUID] the workflow UUID
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
+    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    def delete_space_workflow(workflow_id, headers=default_headers)
+      @logger.info("Delete workflow from the space")
+      post("#{@api_url}/workflows/#{workflow_id}", payload, headers)
     end
 
   end
