@@ -1,5 +1,11 @@
 # Change Log
 
+## [5.0.21](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.21) (2023-06-30)
+
+**Implemented enhancements:**
+
+- Update export process to replace backslashes that occur in export file names
+
 ## [5.0.20](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.20) (2022-09-23)
 
 **Implemented enhancements:**
