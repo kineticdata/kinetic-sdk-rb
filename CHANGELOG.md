@@ -1,5 +1,13 @@
 # Change Log
 
+## [5.0.22](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.22) (2023-08-24)
+
+**Implemented enhancements:**
+
+- Kinetic Core integrated workflow import / export enhancements and bug fixes
+- Added export option flag to include Kinetic Core workflows when exporting trees
+- Skip Kinetic Core workflows when exporting trees unless explicitly included
+
 ## [5.0.21](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.21) (2023-06-30)
 
 **Implemented enhancements:**
