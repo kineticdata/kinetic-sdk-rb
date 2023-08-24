@@ -213,78 +213,32 @@ module KineticSdk
       get("#{@api_url}/trees/guid/#{tree_id}", params, headers)
     end
 
-    # Export a single tree or routine
+    # Export a single tree or routine. This method will not export Kinetic Core 
+    # workflows unless `export_opts[:include_workflows] => true` export option
+    # is provided.
     #
     # @param title [String] the title of the tree or routine
     # @param headers [Hash] hash of headers to send, default is basic authentication
+    # @param export_opts [Hash] hash of export options
+    #   - :include_workflows => true|false (default: false)
     # @return nil
     #
-    def export_tree(title, headers=header_basic_auth)
+    def export_tree(title, headers=header_basic_auth, export_opts={})
       raise StandardError.new "An export directory must be defined to export a tree." if @options[:export_directory].nil?
       @logger.info("Exporting tree \"#{title}\" to #{@options[:export_directory]}.")
       # Get the tree
-      response = find_tree(title, { "include" => "export" })
+      response = find_tree(title, { "include" => "details,export" })
       # Parse the response and export the tree
       tree = response.content
-
-      # determine which directory to write the file to
-      if tree['sourceGroup'] == "-"
-        # Create the directory if it doesn't yet exist
-        routine_dir = FileUtils::mkdir_p(File.join(@options[:export_directory], "routines"))
-        tree_file = File.join(routine_dir, "#{tree['name'].slugify}.xml")
-      else
-        # Create the directory if it doesn't yet exist
-        tree_dir = FileUtils::mkdir_p(File.join(@options[:export_directory],"sources", tree['sourceName'].slugify , "trees"))
-        tree_file = File.join(tree_dir, "#{tree['sourceGroup'].slugify}.#{tree['name'].slugify}.xml")
-      end
-
-      # write the file
-      server_version = server_info(headers).content["version"]
-      if server_version > "04.03.0z"
-        File.write(tree_file, tree['export'])
-      else
-        xml_doc = REXML::Document.new(tree["export"])
-        xml_doc.context[:attribute_quote] = :quote
-        xml_formatter = Prettier.new
-        xml_formatter.write(xml_doc, File.open(tree_file, "w"))
-      end
-      @logger.info("Exported #{tree['type']}: #{tree['title']} to #{tree_file}")
-    end
-
-    # Export all trees and local routines for a source, and global routines
-    #
-    # @param source_name [String] Name of the source to export trees and local routines
-    #   - Leave blank or pass nil to export all trees and global routines
-    #   - Pass "-" to export only global routines
-    # @param headers [Hash] hash of headers to send, default is basic authentication
-    # @return nil
-    def export_trees(source_name=nil, headers=header_basic_auth)
-      raise StandardError.new "An export directory must be defined to export trees." if @options[:export_directory].nil?
-      if source_name.nil?
-        @logger.info("Exporting all trees and routines to #{@options[:export_directory]}.")
-        export_routines(headers)
-        (find_sources({}, headers).content["sourceRoots"] || []).each do |sourceRoot|
-          export_trees(sourceRoot['name'])
-        end
-        return
-      elsif source_name == "-"
-        @logger.info("Exporting global routines to #{@options[:export_directory]}.")
-      else
-        @logger.info("Exporting trees and routines for source \"#{source_name}\" to #{@options[:export_directory]}.")
-      end
-
-      # Get all the trees and routines for the source
-      response = find_trees({ "source" => source_name, "include" => "export" })
-      # Parse the response and export each tree
-      (response.content["trees"] || []).each do |tree|
-        # determine which directory to write the file to
+      if export_opts[:include_workflows] || (!tree.has_key?("event") || tree["event"].nil?)
+          # determine which directory to write the file to
         if tree['sourceGroup'] == "-"
-          # create the directory if it doesn't yet exist
+          # Create the directory if it doesn't yet exist
           routine_dir = FileUtils::mkdir_p(File.join(@options[:export_directory], "routines"))
           tree_file = File.join(routine_dir, "#{tree['name'].slugify}.xml")
         else
-          # create the directory if it doesn't yet exist
-          tree_dir = FileUtils::mkdir_p(File.join(@options[:export_directory], "sources", source_name.slugify ,"trees"))
+          # Create the directory if it doesn't yet exist
+          tree_dir = FileUtils::mkdir_p(File.join(@options[:export_directory],"sources", tree['sourceName'].slugify , "trees"))
           tree_file = File.join(tree_dir, "#{tree['sourceGroup'].slugify}.#{tree['name'].slugify}.xml")
         end
 
@@ -299,6 +253,48 @@ module KineticSdk
           xml_formatter.write(xml_doc, File.open(tree_file, "w"))
         end
         @logger.info("Exported #{tree['type']}: #{tree['title']} to #{tree_file}")
+      else
+        @logger.info("Did not export #{tree['type']}: #{tree['title']} because it is a Core linked workflow")
+      end
+    end
+
+    # Export trees and local routines for a source, and global routines. This method will
+    # not export Kinetic Core workflows unless `export_opts[:include_workflows] => true`
+    # export option is provided.
+    #
+    # @param source_name [String] Name of the source to export trees and local routines
+    #   - Leave blank or pass nil to export all trees and global routines
+    #   - Pass "-" to export only global routines
+    # @param headers [Hash] hash of headers to send, default is basic authentication
+    # @param export_opts [Hash] hash of export options
+    #   - :include_workflows => true|false (default: false)
+    # @return nil
+    def export_trees(source_name=nil, headers=header_basic_auth, export_opts={})
+      raise StandardError.new "An export directory must be defined to export trees." if @options[:export_directory].nil?
+      if source_name.nil?
+        if export_opts[:include_workflows]
+          @logger.info("Exporting all trees, routines, and workflows to #{@options[:export_directory]}.")
+        else
+          @logger.info("Exporting all trees and routines to #{@options[:export_directory]}.")
+        end
+        export_routines(headers)
+        (find_sources({}, headers).content["sourceRoots"] || []).each do |sourceRoot|
+          export_trees(sourceRoot['name'], headers, export_opts)
+        end
+        return
+      elsif source_name == "-"
+        @logger.info("Exporting global routines to #{@options[:export_directory]}.")
+      else
+        @logger.info("Exporting trees and local routines for source \"#{source_name}\" to #{@options[:export_directory]}.")
+      end
+
+      # Get all the trees and routines for the source
+      response = find_trees({ "source" => source_name, "include" => "details" }, headers)
+      # Parse the response and export each tree
+      (response.content["trees"] || []).each do |tree|
+        if export_opts[:include_workflows] || (!tree.has_key?("event") || tree["event"].nil?)
+          export_tree(tree['title'], headers, export_opts)
+        end
       end
     end
 

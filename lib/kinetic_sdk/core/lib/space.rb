@@ -85,9 +85,63 @@ module KineticSdk
         "space.webApis.{slug}",
         "space.webhooks.{name}",
       )
-      core_data = get("#{@api_url}/space", { 'export' => true}, headers).content
+      core_data = find_space({ 'export' => true }, headers).content
       process_export(@options[:export_directory], export_shape, core_data)
+      export_workflows(headers)
       @logger.info("Finished exporting space definition to #{@options[:export_directory]}.")
+    end
+
+    # Exports linked workflows for the space, kapps, and forms. This method is automatically called from `KineticSdk.Core.export_space()`.
+    #
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
+    # @return nil
+    def export_workflows(headers=default_headers)
+      # Workflows were introduced in core v6
+      version = app_version(headers).content["version"]
+      if version && version["version"] < "6"
+        @logger.info("Skip exporting workflows because the Core server version doesn't support workflows.")
+        return
+      end
+
+      raise StandardError.new "An export directory must be defined to export workflows." if @options[:export_directory].nil?
+      @logger.info("Exporting workflows to #{@options[:export_directory]}.")
+
+      # space workflows
+      space_workflows = find_space_workflows({ "include" => "details" }, headers).content["workflows"] || []
+      space_workflows.select { |wf| !wf["event"].nil? }.each do |workflow|
+        @logger.info(workflow) unless workflow["name"]
+        evt = workflow["event"].slugify
+        name = workflow["name"].slugify
+        filename = "#{File.join(@options[:export_directory], "space", "workflows", evt, name)}.json"
+        workflow_json = find_space_workflow(workflow["id"], {}, headers).content["treeJson"]
+        write_object_to_file(filename, workflow_json)
+      end
+
+      space_content = find_space({ 'include' => "kapps.details,kapps.forms.details" }).content["space"]
+
+      # kapp workflows
+      space_content["kapps"].each do |kapp|
+        kapp_workflows = find_kapp_workflows(kapp["slug"], {}, headers).content["workflows"] || []
+        kapp_workflows.select { |wf| !wf["event"].nil? }.each do |workflow|
+          evt = workflow["event"].slugify
+          name = workflow["name"].slugify
+          filename = "#{File.join(@options[:export_directory], "space", "kapps", kapp["slug"], "workflows", evt, name)}.json"
+          workflow_json = find_kapp_workflow(kapp["slug"], workflow["id"], {}, headers).content["treeJson"]
+          write_object_to_file(filename, workflow_json)
+        end
+
+        # form workflows
+        kapp["forms"].each do |form|
+          form_workflows = find_form_workflows(kapp["slug"], form["slug"], {}, headers).content["workflows"] || []
+          form_workflows.select { |wf| !wf["event"].nil? }.each do |workflow|
+            evt = workflow["event"].slugify
+            name = workflow["name"].slugify
+            filename = "#{File.join(@options[:export_directory], "space", "kapps", kapp["slug"], "forms", form["slug"], "workflows", evt, name)}.json"
+            workflow_json = find_form_workflow(kapp["slug"], form["slug"], workflow["id"], {}, headers).content["treeJson"]
+            write_object_to_file(filename, workflow_json)
+          end
+        end
+      end
     end
 
     # Find the space
@@ -100,7 +154,8 @@ module KineticSdk
       get("#{@api_url}/space", params, headers)
     end
 
-    # Imports a full space definition from the export_directory
+    # Imports a full space definition from the export_directory, except for workflows. Those must be imported separately after
+    # the Kinetic Platform source exists in task.
     #
     # @param slug [String] the slug of the space that is being imported
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
@@ -144,6 +199,97 @@ module KineticSdk
         end
       end
       @logger.info("Finished importing space definition to #{@options[:export_directory]}.")
+    end
+
+    # Imports the workflows for the space. This method should be called after importing the Kinetic Platform source into task.
+    #
+    # @param slug [String] the slug of the space that is being imported
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
+    # @return nil
+    def import_workflows(slug, headers=default_headers)
+      # Workflows were introduced in core v6
+      version = app_version(headers).content["version"]
+      if version && version["version"] < "6"
+        @logger.info("Skip importing workflows because the Core server version doesn't support workflows.")
+        return
+      end
+
+      raise StandardError.new "An export directory must be defined to import space." if @options[:export_directory].nil?
+      @logger.info("Importing workflows from #{@options[:export_directory]}.")
+
+      # Map of existing workflows by space, kapp, form
+      existing_workflows_cache = {}
+      # Regular expressions to match workflow paths by space, kapp, or form
+      form_re = /^\/kapps\/(?<kapp_slug>[a-z0-9]+(?:-[a-z0-9]+)*)\/forms\/(?<form_slug>[a-z0-9]+(?:-[a-z0-9]+)*)\/workflows/
+      kapp_re = /^\/kapps\/(?<kapp_slug>[a-z0-9]+(?:-[a-z0-9]+)*)\/workflows/
+      space_re = /^\/workflows/
+
+      # Loop over all provided files sorting files before folders
+      Dir["#{@options[:export_directory]}/space/**/workflows/**/*.json"].map { |file| [file.count("/"), file] }.sort.map { |file| file[1] }.each do |file|
+        rel_path = file.sub("#{@options[:export_directory]}/", '')
+        path_parts = File.dirname(rel_path).split(File::SEPARATOR)
+        api_parts_path = path_parts[0..-1]
+        api_path = "/#{api_parts_path.join("/").sub(/^space\//,'').sub(/\/[^\/]+$/,'')}"
+
+        # populate the existing workflows for the workflowable object
+        matches = form_re.match(api_path)
+        # form workflows
+        if matches
+          form_slug = matches["form_slug"]
+          kapp_slug = matches["kapp_slug"]
+          map_key = self.space_slug + "|" + kapp_slug + "|" + form_slug
+          if !existing_workflows_cache.has_key?(map_key)
+            response = find_form_workflows(kapp_slug, form_slug, { "includes" => "details" }, headers)
+            existing_workflows_cache[map_key] = response.content["workflows"]
+          end
+        else
+          matches = kapp_re.match(api_path)
+          # kapp workflows
+          if matches
+            kapp_slug = matches["kapp_slug"]
+            map_key = self.space_slug + "|" + kapp_slug
+            if !existing_workflows_cache.has_key?(map_key)
+              response = find_kapp_workflows(kapp_slug, { "includes" => "details" }, headers)
+              existing_workflows_cache[map_key] = response.content["workflows"]
+            end
+          else
+            # space workflows
+            map_key = self.space_slug
+            if !existing_workflows_cache.has_key?(map_key)
+              response = find_space_workflows({ "includes" => "details" }, headers)
+              existing_workflows_cache[map_key] = response.content["workflows"]
+            end
+          end
+        end
+
+        tree_json = JSON.parse(File.read(file))
+        event = path_parts.last.split("-").map { |part| part.capitalize }.join(" ")
+        name = tree_json["name"]
+
+        body = {
+          "event" => event,
+          "name" => name,
+          "treeJson" => tree_json
+        }
+
+        # check if the workflow already exists
+        existing_workflow = (existing_workflows_cache[map_key] || []).select { |wf|
+          wf["event"] == event && wf["name"] == name
+        }.first
+
+        if existing_workflow
+          workflow_id = existing_workflow["id"]
+          url = "#{@api_url}#{api_path}/#{workflow_id}"
+          @logger.info("Updating #{event} workflow #{workflow_id} from #{rel_path} to #{url}")
+          resp = put(url, body, headers)
+          @logger.warn("Failed to update workflow (#{resp.code}): #{resp.content}") unless resp.code == "200"
+        else
+          url = "#{@api_url}#{api_path}"
+          @logger.info("Importing #{event} workflow from #{rel_path} to #{url}")
+          resp = post(url, body, headers)
+          @logger.warn("Failed to import workflow (#{resp.code}): #{resp.content}") unless resp.code == "200"
+        end
+      end
     end
 
     # Checks if the space exists

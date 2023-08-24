@@ -15,10 +15,12 @@ module KineticSdk
     # * access keys
     #
     # @param headers [Hash] hash of headers to send, default is basic authentication
+    # @param export_opts [Hash] hash of export options
+    #   - :include_workflows => true|false (default: false)
     # @return nil
-    def export(headers=header_basic_auth)
+    def export(headers=header_basic_auth, export_opts={})
       export_sources(headers)
-      export_trees(nil,headers) # Includes routines when nil passed
+      export_trees(nil,headers,export_opts) # Includes routines when nil passed
       export_handlers(headers)
       export_groups(headers)
       export_policy_rules(headers)
