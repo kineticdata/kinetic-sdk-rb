@@ -63,6 +63,16 @@ module KineticSdk
       post(uri.to_s, payload, headers)
     end
 
+    # Delete a Submission
+    #
+    # @param submission_id [String] id of the Submission
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
+    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    def delete_submission(submission_id, headers=default_headers)
+      @logger.info("Deleting a submission with id #{submission_id}.")
+      delete("#{@api_url}/submissions/#{submission_id}", headers)
+    end
+
     # Patch a new Submission
     #
     # @param kapp_slug [String] slug of the Kapp
