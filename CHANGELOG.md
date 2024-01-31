@@ -1,5 +1,12 @@
 # Change Log
 
+## [5.0.23](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.23) (2024-01-31)
+
+**Implemented enhancements:**
+
+- Add `CoreSdk#delete_submission` method
+- Fixed a bug in several of the form type methods
+
 ## [5.0.22](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.22) (2023-08-24)
 
 **Implemented enhancements:**
