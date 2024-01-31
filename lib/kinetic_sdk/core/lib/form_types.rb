@@ -18,7 +18,7 @@ module KineticSdk
     alias :add_formtype :add_form_type_on_kapp
 
     def add_form_type_on_kapp(kapp_slug, body, headers=default_headers)
-      logger.info "Deprecation Warning: add_form_type_on_kapp method will be removed in a future version. Please use #add_formtype"
+      @logger.info "Deprecation Warning: add_form_type_on_kapp method will be removed in a future version. Please use #add_formtype"
       add_formtype(kapp_slug, body, headers=default_headers)
     end
     
@@ -35,7 +35,7 @@ module KineticSdk
       raise StandardError.new "Form Type properties is not valid, must be a Hash." unless body.is_a? Hash
       @logger.info("Updating Form Type \"#{body['name']}\" for \"#{kapp_slug}\" kapp")
       put("#{@api_url}/kapps/#{kapp_slug}/formTypes/#{encode(name)}", body, headers)
-    end    
+    end
 
     # Delete a form type on a Kapp
     # The method is being depreciated and replaced with delete_formtype    
@@ -52,7 +52,7 @@ module KineticSdk
     alias :delete_formtype :delete_form_type
 
     def delete_form_type(kapp_slug, name, headers=default_headers)
-      logger.info "Deprecation Warning: delete_form_type method will be removed in a future version. Please use #delete_formtype"
+      @logger.info "Deprecation Warning: delete_form_type method will be removed in a future version. Please use #delete_formtype"
       delete_formtype(kapp_slug, name, headers=default_headers)
     end
 
@@ -71,9 +71,9 @@ module KineticSdk
     alias :delete_formtypes :delete_form_types_on_kapp
 
     def delete_form_types_on_kapp(kapp_slug, headers=default_headers)
-      logger.info "Deprecation Warning: delete_form_types_on_kapp method will be removed in a future version. Please use #delete_formtypes"
+      @logger.info "Deprecation Warning: delete_form_types_on_kapp method will be removed in a future version. Please use #delete_formtypes"
       delete_formtypes(kapp_slug, headers=default_headers)
-    end    
+    end
 
     # Retrieve a single form types for a Kapp
     #
@@ -101,8 +101,8 @@ module KineticSdk
     alias :find_formtypes :find_form_types_on_kapp
 
     def find_form_types_on_kapp(kapp_slug, params={}, headers=default_headers)
-      logger.info "Deprecation Warning: find_form_types_on_kapp method will be removed in a future version. Please use #find_formtypes"
+      @logger.info "Deprecation Warning: find_form_types_on_kapp method will be removed in a future version. Please use #find_formtypes"
       find_formtypes(kapp_slug, params={}, headers=default_headers)
-    end    
+    end
   end
 end
