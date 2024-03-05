@@ -30,7 +30,7 @@ begin
 rescue LoadError => e
   if !defined? KineticSdk
     puts "Installing the Kinetic SDK"
-    system('gem install kinetic_sdk')
+    Gem.install("kinetic_sdk")
     Gem.clear_paths
     retry
   end
