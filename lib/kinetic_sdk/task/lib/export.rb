@@ -41,7 +41,7 @@ module KineticSdk
     # * access keys
     #
     # @param headers [Hash] hash of headers to send, default is basic authentication
-    # @rbuneturn nil
+    # @return nil
     def export_all_except_trees(headers=header_basic_auth)
       export_sources(headers)
       export_handlers(headers)
