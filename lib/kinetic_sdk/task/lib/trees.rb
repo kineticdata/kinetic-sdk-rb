@@ -288,13 +288,27 @@ module KineticSdk
         @logger.info("Exporting trees and local routines for source \"#{source_name}\" to #{@options[:export_directory]}.")
       end
 
-      # Get all the trees and routines for the source
-      response = find_trees({ "source" => source_name, "include" => "details" }, headers)
-      # Parse the response and export each tree
-      (response.content["trees"] || []).each do |tree|
-        if export_opts[:include_workflows] || (!tree.has_key?("event") || tree["event"].nil?)
-          export_tree(tree['title'], headers, export_opts)
+      # Setup the parameters sent to the find_trees method. Limit is used for pagination.
+      limit, offset, count = 10, 0, nil
+      params = {
+        "source" => source_name,
+        "include" => "details",
+        "limit" => limit
+      }
+
+      # Paginate through all the trees and routines for the source
+      while (count.nil? || offset < count)
+        response = find_trees(params, headers)
+        count = response.content["count"].to_i if count.nil?
+        # Export each tree
+        (response.content["trees"] || []).each do |tree|
+          if export_opts[:include_workflows] || (!tree.has_key?("event") || tree["event"].nil?)
+            export_tree(tree['title'], headers, export_opts)
+          end
         end
+        # Increment the offset to the next page
+        offset += limit
+        params["offset"] = offset
       end
     end
 
