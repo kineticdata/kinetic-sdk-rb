@@ -1,5 +1,12 @@
 # Change Log
 
+## [5.0.24](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.24) (2024-03-28)
+
+**Implemented enhancements:**
+
+- Enhance the export_trees method to export all trees. Previously, this method was
+  limited to only exporting the first page of trees since it wasn't handling pagination.
+
 ## [5.0.23](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.23) (2024-01-31)
 
 **Implemented enhancements:**
