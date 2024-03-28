@@ -1,5 +1,11 @@
 # Change Log
 
+## [5.0.25](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.25) (2024-03-28)
+
+**Implemented enhancements:**
+
+- Update mime-types-data gem
+
 ## [5.0.24](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.24) (2024-03-28)
 
 **Implemented enhancements:**
