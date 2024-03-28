@@ -271,6 +271,24 @@
     - application/alto-propmapparams+json
   registered: true
 - !ruby/object:MIME::Type
+  content-type: application/alto-tips+json
+  encoding: base64
+  xrefs:
+    draft:
+    - RFC-ietf-alto-new-transport-22
+    template:
+    - application/alto-tips+json
+  registered: true
+- !ruby/object:MIME::Type
+  content-type: application/alto-tipsparams+json
+  encoding: base64
+  xrefs:
+    draft:
+    - RFC-ietf-alto-new-transport-22
+    template:
+    - application/alto-tipsparams+json
+  registered: true
+- !ruby/object:MIME::Type
   content-type: application/alto-updatestreamcontrol+json
   encoding: base64
   xrefs:
@@ -784,6 +802,14 @@
   xrefs:
     draft:
     - draft-yasskin-http-origin-signed-responses
+  registered: true
+  provisional: true
+- !ruby/object:MIME::Type
+  content-type: application/CESR
+  encoding: base64
+  xrefs:
+    person:
+    - Samuel_M._Smith
   registered: true
   provisional: true
 - !ruby/object:MIME::Type
@@ -2198,8 +2224,8 @@
   content-type: application/jsonpath
   encoding: base64
   xrefs:
-    draft:
-    - RFC-ietf-jsonpath-base-21
+    rfc:
+    - rfc9535
     template:
     - application/jsonpath
   registered: true
@@ -3186,8 +3212,8 @@
   content-type: application/ohttp-keys
   encoding: base64
   xrefs:
-    draft:
-    - RFC-ietf-ohai-ohttp-09
+    rfc:
+    - rfc9458
     template:
     - application/ohttp-keys
   registered: true
@@ -3725,6 +3751,33 @@
     - application/prs.implied-executable
   registered: true
 - !ruby/object:MIME::Type
+  content-type: application/prs.implied-object+json
+  encoding: base64
+  xrefs:
+    person:
+    - Marek_Čermák
+    template:
+    - application/prs.implied-object+json
+  registered: true
+- !ruby/object:MIME::Type
+  content-type: application/prs.implied-object+json-seq
+  encoding: base64
+  xrefs:
+    person:
+    - Marek_Čermák
+    template:
+    - application/prs.implied-object+json-seq
+  registered: true
+- !ruby/object:MIME::Type
+  content-type: application/prs.implied-object+yaml
+  encoding: base64
+  xrefs:
+    person:
+    - Marek_Čermák
+    template:
+    - application/prs.implied-object+yaml
+  registered: true
+- !ruby/object:MIME::Type
   content-type: application/prs.implied-structure
   encoding: base64
   xrefs:
@@ -4063,8 +4116,8 @@
   extensions:
   - roa
   xrefs:
-    rfc:
-    - rfc6481
+    draft:
+    - RFC-ietf-sidrops-rfc6482bis-09
     template:
     - application/rpki-roa
   registered: true
@@ -6344,6 +6397,15 @@
     - application/vnd.apache.arrow.stream
   registered: true
 - !ruby/object:MIME::Type
+  content-type: application/vnd.apache.parquet
+  encoding: base64
+  xrefs:
+    person:
+    - Apache_Parquet_Project
+    template:
+    - application/vnd.apache.parquet
+  registered: true
+- !ruby/object:MIME::Type
   content-type: application/vnd.apache.thrift.binary
   encoding: base64
   xrefs:
@@ -8173,6 +8235,15 @@
     - application/vnd.ericsson.quickcall
   registered: true
 - !ruby/object:MIME::Type
+  content-type: application/vnd.erofs
+  encoding: base64
+  xrefs:
+    person:
+    - Xiang_Gao
+    template:
+    - application/vnd.erofs
+  registered: true
+- !ruby/object:MIME::Type
   content-type: application/vnd.espass-espass+zip
   encoding: base64
   xrefs:
@@ -9225,19 +9296,20 @@
 - !ruby/object:MIME::Type
   content-type: application/vnd.gov.sk.e-form+xml
   encoding: base64
+  obsolete: true
   xrefs:
     person:
-    - Peter_Biro
     - Stefan_Szilva
     template:
     - application/vnd.gov.sk.e-form+xml
+    notes:
+    - "(OBSOLETED by request)"
   registered: true
 - !ruby/object:MIME::Type
   content-type: application/vnd.gov.sk.e-form+zip
   encoding: base64
   xrefs:
     person:
-    - Peter_Biro
     - Stefan_Szilva
     template:
     - application/vnd.gov.sk.e-form+zip
@@ -9247,7 +9319,6 @@
   encoding: base64
   xrefs:
     person:
-    - Peter_Biro
     - Stefan_Szilva
     template:
     - application/vnd.gov.sk.xmldatacontainer+xml
@@ -10552,6 +10623,15 @@
     - NCGIS
     template:
     - application/vnd.laszip
+  registered: true
+- !ruby/object:MIME::Type
+  content-type: application/vnd.ldev.productlicensing
+  encoding: base64
+  xrefs:
+    person:
+    - L.development_Polska
+    template:
+    - application/vnd.ldev.productlicensing
   registered: true
 - !ruby/object:MIME::Type
   content-type: application/vnd.leap+json
@@ -16291,6 +16371,15 @@
     - application/vnd.xara
   registered: true
 - !ruby/object:MIME::Type
+  content-type: application/vnd.xecrets-encrypted
+  encoding: base64
+  xrefs:
+    person:
+    - Svante_Seleborg
+    template:
+    - application/vnd.xecrets-encrypted
+  registered: true
+- !ruby/object:MIME::Type
   content-type: application/vnd.xfdl
   friendly:
     en: Extensible Forms Description Language
@@ -16559,6 +16648,14 @@
     template:
     - application/voicexml+xml
   registered: true
+- !ruby/object:MIME::Type
+  content-type: application/voucher+cose
+  encoding: base64
+  xrefs:
+    draft:
+    - draft-ietf-anima-constrained-voucher-23
+  registered: true
+  provisional: true
 - !ruby/object:MIME::Type
   content-type: application/voucher-cms+json
   encoding: base64
@@ -18396,8 +18493,8 @@
   xrefs:
     uri:
     - https://yaml.org/spec/1.2.2/
-    draft:
-    - RFC-ietf-httpapi-yaml-mediatypes-10
+    rfc:
+    - rfc9512
     template:
     - application/yaml
   registered: true
@@ -18458,6 +18555,15 @@
     - rfc8072
     template:
     - application/yang-patch+xml
+  registered: true
+- !ruby/object:MIME::Type
+  content-type: application/yang-sid+json
+  encoding: base64
+  xrefs:
+    draft:
+    - RFC-ietf-core-sid-24
+    template:
+    - application/yang-sid+json
   registered: true
 - !ruby/object:MIME::Type
   content-type: application/yin+xml
