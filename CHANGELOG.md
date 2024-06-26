@@ -1,5 +1,12 @@
 # Change Log
 
+## [5.0.27](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.27) (2024-06-26)
+
+**Implemented enhancements:**
+
+- Enhance the export_handlers method to export all handlers. Previously, this method was
+  limited to only exporting the first page of handlers since it wasn't handling pagination.
+
 ## [5.0.26](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.26) (2024-03-28)
 
 **Implemented enhancements:**
