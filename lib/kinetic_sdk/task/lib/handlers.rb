@@ -109,11 +109,24 @@ module KineticSdk
     def export_handlers(headers=header_basic_auth)
       raise StandardError.new "An export directory must be defined to export handlers." if @options[:export_directory].nil?
       @logger.info("Exporting handlers to #{@options[:export_directory]}.")
-      # Get the handler metadata to geta all handler_ids
-      response = find_handlers(headers)
-      # Parse the response and export each handler
-      (response.content["handlers"] || []).each do |handler|
-        export_handler(handler['definitionId'], headers)
+
+      # Setup the parameters sent to the find_handlers method.
+      # limit and offset are used for pagination.
+      limit, offset, count = 10, 0, nil
+      params = { "limit" => limit }
+
+      # Paginate through all the handlers
+      while (count.nil? || offset < count)
+        # Get the handler metadata to geta all handler_ids
+        response = find_handlers(params, headers)
+        count = response.content["count"].to_i
+        # Export each handler
+        (response.content["handlers"] || []).each do |handler|
+          export_handler(handler['definitionId'], headers)
+        end
+        # Increment the offset to the next page
+        offset += limit
+        params["offset"] = offset
       end
     end
 
