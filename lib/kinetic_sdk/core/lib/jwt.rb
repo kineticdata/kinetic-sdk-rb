@@ -39,7 +39,7 @@ module KineticSdk
 
       if response.status == 401
         raise StandardError.new "#{response.message}: #{response.content["error"]}"
-      elsif response.status == 302
+      elsif response.status == 302 || response.status == 303
         location = response.headers["location"]
         if location.nil?
           raise StandardError.new "Unable to retrieve code: #{response.inspect}"
