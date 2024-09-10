@@ -15,6 +15,7 @@ The following Kinetic Data applications are supported in this SDK library:
 * Kinetic Bridgehub 1.0+
 * Kinetic Discussions 1.0+
 * Kinetic Filehub 1.0+
+* Kinetic Integrator 0.1.0+
 * Kinetic Task 4.0+
 
 ## Getting Started
@@ -134,6 +135,29 @@ space_sdk = KineticSdk::Core.new({
 })
 response = space_sdk.find_kapps()
 kapps = response.content['kapps']
+
+puts response.code            # String value of HTTP response code ("200", "400", "500", etc...)
+puts response.status          # Ruby Fixnum value of response.code (200, 400, 500, etc...)
+puts response.content         # Ruby Hash
+puts response.content_string  # JSON formatted response body
+```
+
+### Kinetic Integrator SDK example
+
+```ruby
+integrator_sdk = KineticSdk::Integrator.new({
+  space_server_url: "https://my-space.domain",
+  space_slug: "my-space",
+  username: "space-user",
+  password: "space-user-password",
+  options: {
+    log_level: "info",
+    oauth_client_id: "integration-user",
+    oauth_client_secret: "integration-user-password"
+  }
+})
+response = integrator_sdk.find_connections()
+connections = response.content
 
 puts response.code            # String value of HTTP response code ("200", "400", "500", etc...)
 puts response.status          # Ruby Fixnum value of response.code (200, 400, 500, etc...)
