@@ -15,14 +15,14 @@ module KineticSdk
   # A utilities module that can be used by multiple libraries.
   module Utils
 
-    # The KineticHttpUtils module provides common HTTP methods, and returns a 
-    # {KineticSdk::Utils::KineticHttpResponse} object with all methods. The raw 
-    # Net::HTTPResponse is available by calling the 
+    # The KineticHttpUtils module provides common HTTP methods, and returns a
+    # {KineticSdk::Utils::KineticHttpResponse} object with all methods. The raw
+    # Net::HTTPResponse is available by calling the
     # {KineticSdk::Utils::KineticHttpResponse#response} method.
     module KineticHttpUtils
 
       # Send an HTTP DELETE request
-      # 
+      #
       # @param url [String] url to send the request to
       # @param headers [Hash] hash of headers to send
       # @param http_options [Hash] hash of http options
@@ -95,7 +95,7 @@ module KineticSdk
       end
 
       # Send an HTTP GET request
-      # 
+      #
       # @param url [String] url to send the request to
       # @param params [Hash] Query parameters that are added to the URL, such as +include+
       # @param headers [Hash] hash of headers to send
@@ -171,7 +171,7 @@ module KineticSdk
       end
 
       # Send an HTTP HEAD request
-      # 
+      #
       # @param url [String] url to send the request to
       # @param params [Hash] Query parameters that are added to the URL, such as +include+
       # @param headers [Hash] hash of headers to send
@@ -246,7 +246,7 @@ module KineticSdk
       end
 
       # Send an HTTP PATCH request
-      # 
+      #
       # @param url [String] url to send the request to
       # @param data [Hash] the payload to send with the request
       # @param headers [Hash] hash of headers to send
@@ -322,7 +322,7 @@ module KineticSdk
       end
 
       # Send an HTTP POST request
-      # 
+      #
       # @param url [String] url to send the request to
       # @param data [Hash] the payload to send with the request
       # @param headers [Hash] hash of headers to send
@@ -398,7 +398,7 @@ module KineticSdk
       end
 
       # Send a Multipart HTTP POST request
-      # 
+      #
       # @param url [String] url to send the request to
       # @param data [Hash] payload to send with the request
       # @param headers [Hash] hash of headers to send
@@ -422,7 +422,7 @@ module KineticSdk
         uri = URI.parse(url)
 
         # prepare the payload
-        payload = data.inject({}) do |h,(k,v)| 
+        payload = data.inject({}) do |h,(k,v)|
           if v.class == File
             h[k] = UploadIO.new(v, mimetype(v).first, File.basename(v))
           elsif v.class == Array
@@ -490,7 +490,7 @@ module KineticSdk
       end
 
       # Send an HTTP PUT request
-      # 
+      #
       # @param url [String] url to send the request to
       # @param data [Hash] payload to send with the request
       # @param headers [Hash] hash of headers to send
@@ -566,7 +566,7 @@ module KineticSdk
       end
 
       # Determine the final redirect location
-      # 
+      #
       # @param url [String] url to send the request to
       # @param params [Hash] Query parameters that are added to the URL, such as +include+
       # @param headers [Hash] hash of headers to send
@@ -624,7 +624,7 @@ module KineticSdk
       #
       # Streams the download to limit memory consumption. The user account
       # utilizing the SDK must have write access to the file path.
-      # 
+      #
       # @param url [String] url to send the request to
       # @param params [Hash] Query parameters that are added to the URL, such as +include+
       # @param headers [Hash] hash of headers to send
@@ -637,12 +637,12 @@ module KineticSdk
         url = redirect_url(url, params, headers, http_options)
         # parse the URL
         uri = URI.parse(url)
-  
+
         @logger.debug("Streaming Download #{uri}  #{headers.inspect}")
-  
+
         # build the http object
         http = build_http(uri)
-  
+
         # prepare the download
         file = nil
         file_name = File.basename(file_path)
@@ -683,13 +683,13 @@ module KineticSdk
       end
 
       # Determines the mime-type of a file
-      # 
+      #
       # @param file [File | String] file or filename to detect
       # @return [Array] MIME::Type of the file
       def mimetype(file)
         mime_type = MIME::Types.type_for(file.class == File ? File.basename(file) : file)
         if mime_type.size == 0
-          mime_type = MIME::Types['text/plain'] 
+          mime_type = MIME::Types['text/plain']
         end
         mime_type
       end
@@ -715,7 +715,7 @@ module KineticSdk
       # The maximum number of times to retry on a bad gateway response.
       #
       # Can be passed in as an option when initializing the SDK
-      # with either the @options[:gateway_retry_limit] or 
+      # with either the @options[:gateway_retry_limit] or
       # @options['gateway_retry_limit'] key.
       #
       # Expects an integer [Fixnum] value. Setting to -1 will disable retries on
@@ -735,7 +735,7 @@ module KineticSdk
       # a bad gateway response is encountered.
       #
       # Can be passed in as an option when initializing the SDK
-      # with either the @options[:gateway_retry_delay] or 
+      # with either the @options[:gateway_retry_delay] or
       # @options['gateway_retry_delay'] key.
       #
       # Expects a double [Float] value.
