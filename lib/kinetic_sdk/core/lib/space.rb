@@ -109,9 +109,12 @@ module KineticSdk
       # space workflows
       space_workflows = find_space_workflows({ "include" => "details" }, headers).content["workflows"] || []
       space_workflows.select { |wf| !wf["event"].nil? }.each do |workflow|
-        @logger.info(workflow) unless workflow["name"]
-        evt = workflow["event"].slugify
-        name = workflow["name"].slugify
+        evt = workflow["event"].to_s.slugify
+        name = workflow["name"].to_s.slugify
+        if evt.empty? || name.empty?
+          raise "Some workflows are currently in an orphaned or missing state. You can open the Workflows tab for the space in the space console, and run the repair to attempt to resolve this issue."
+        end
+        @logger.info(workflow)
         filename = "#{File.join(@options[:export_directory], "space", "workflows", evt, name)}.json"
         workflow_json = find_space_workflow(workflow["id"], {}, headers).content["treeJson"]
         write_object_to_file(filename, workflow_json)
@@ -123,8 +126,11 @@ module KineticSdk
       space_content["kapps"].each do |kapp|
         kapp_workflows = find_kapp_workflows(kapp["slug"], {}, headers).content["workflows"] || []
         kapp_workflows.select { |wf| !wf["event"].nil? }.each do |workflow|
-          evt = workflow["event"].slugify
-          name = workflow["name"].slugify
+          evt = workflow["event"].to_s.slugify
+          name = workflow["name"].to_s.slugify
+          if evt.empty? || name.empty?
+            raise "Some workflows are currently in an orphaned or missing state. You can open the Workflows tab for the #{kapp["name"]} kapp in the space console, and run the repair to attempt to resolve this issue."
+          end
           filename = "#{File.join(@options[:export_directory], "space", "kapps", kapp["slug"], "workflows", evt, name)}.json"
           workflow_json = find_kapp_workflow(kapp["slug"], workflow["id"], {}, headers).content["treeJson"]
           write_object_to_file(filename, workflow_json)
@@ -134,8 +140,11 @@ module KineticSdk
         kapp["forms"].each do |form|
           form_workflows = find_form_workflows(kapp["slug"], form["slug"], {}, headers).content["workflows"] || []
           form_workflows.select { |wf| !wf["event"].nil? }.each do |workflow|
-            evt = workflow["event"].slugify
-            name = workflow["name"].slugify
+            evt = workflow["event"].to_s.slugify
+            name = workflow["name"].to_s.slugify
+            if evt.empty? || name.empty?
+              raise "Some workflows are currently in an orphaned or missing state. You can open the Workflows tab for the #{kapp["name"]} > #{form["name"]} form in the space console, and run the repair to attempt to resolve this issue."
+            end
             filename = "#{File.join(@options[:export_directory], "space", "kapps", kapp["slug"], "forms", form["slug"], "workflows", evt, name)}.json"
             workflow_json = find_form_workflow(kapp["slug"], form["slug"], workflow["id"], {}, headers).content["treeJson"]
             write_object_to_file(filename, workflow_json)
@@ -314,7 +323,7 @@ module KineticSdk
       @logger.info("Find space workflows")
       get("#{@api_url}/workflows", params, headers)
     end
-    
+
 
     # Find a space workflow
     #
