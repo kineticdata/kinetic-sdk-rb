@@ -1,5 +1,13 @@
 # Change Log
 
+## [5.0.28](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.28) (2025-01-10)
+
+**Implemented enhancements:**
+
+- Add the Integrator SDK for managing connections and operations.
+- Updated mime-types gem to 3.6.0
+- Updated mime-types-data gem to 3.2025.0107
+
 ## [5.0.27](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.27) (2024-06-26)
 
 **Implemented enhancements:**
