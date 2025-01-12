@@ -58,5 +58,25 @@ module KineticSdk
       put("#{@api_url}/connections/#{connection_id}", properties, headers)
     end
 
+    # Test an unsaved Connection
+    #
+    # @param properties [Hash] connection properties to test
+    # @param headers [Hash] hash of headers to send, default is bearer authentication and accept JSON content type
+    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+    def test_unsaved_connection(properties={}, headers=default_jwt_headers)
+      @logger.info("Testing unsaved connection")
+      post("#{@api_url}/test", properties, headers)
+   end
+
+   # Test a saved Connection
+   #
+   # @param connection_id [String] id of the Connection
+   # @param properties [Hash] connection properties to test
+   # @param headers [Hash] hash of headers to send, default is bearer authentication and accept JSON content type
+   # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
+   def test_saved_connection(connection_id, properties={}, headers=default_jwt_headers)
+     @logger.info("Testing saved connection: #{connection_id}")
+     post("#{@api_url}/connections/#{connection_id}/test", properties, headers)
+  end
   end
 end
