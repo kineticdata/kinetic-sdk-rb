@@ -1,5 +1,12 @@
 # Change Log
 
+## [5.0.29](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.29) (2025-01-11)
+
+**Implemented enhancements:**
+
+- Fix integrator sdk methods for executing and inspecting operations.
+- Fix integrator sdk methods for testing connections.
+
 ## [5.0.28](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.28) (2025-01-10)
 
 **Implemented enhancements:**

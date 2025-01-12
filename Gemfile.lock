@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    kinetic_sdk (5.0.28)
+    kinetic_sdk (5.0.29)
       mime-types (>= 3.3.1)
       multipart-post (= 2.0.0)
       slugify (= 1.0.7)
