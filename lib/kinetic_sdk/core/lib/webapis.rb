@@ -154,7 +154,6 @@ module KineticSdk
 
     # Import a Web API on the Space
     #
-    # @param force_overwrite [Boolean] whether to overwrite a WebAPI if it exists, default is false
     # @param body [Hash] hash of Web API properties. Must contain one of either +treeXml+ or +treeJson+, but not both.
     #   - +method+ - The method of the Web API - "GET", "POST", "PUT", or "DELETE"
     #   - +slug+ - The slug of the Web API
@@ -163,6 +162,7 @@ module KineticSdk
     #   -  - +name+ - Name of an existing Space Security Definition
     #   - +treeJson+ - JSON string representing the Web API's tree structure
     #   - +treeXml+ - XML string representing the Web API's tree structure
+    # @param force_overwrite [Boolean] whether to overwrite a WebAPI if it exists, default is false
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def import_space_webapi(body, force_overwrite=false, headers=default_headers)
@@ -185,7 +185,6 @@ module KineticSdk
     # Import a Web API on a Kapp
     #
     # @param kapp_slug [String] the Kapp slug
-    # @param force_overwrite [Boolean] whether to overwrite a WebAPI if it exists, default is false
     # @param body [Hash] hash of Web API properties. Must contain one of either +treeXml+ or +treeJson+, but not both.
     #   - +method+ - The method of the Web API - "GET", "POST", "PUT", or "DELETE"
     #   - +slug+ - The slug of the Web API
@@ -194,6 +193,7 @@ module KineticSdk
     #   -  - +name+ - Name of an existing Space Security Definition
     #   - +treeJson+ - JSON string representing the Web API's tree structure
     #   - +treeXml+ - XML string representing the Web API's tree structure
+    # @param force_overwrite [Boolean] whether to overwrite a WebAPI if it exists, default is false
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def import_kapp_webapi(kapp_slug, body, force_overwrite=false, headers=default_headers)
