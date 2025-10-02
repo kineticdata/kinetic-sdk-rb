@@ -1,0 +1,14 @@
+name: kinetic_sdk Pull Request Workflow
+on:
+  pull_request:
+
+
+jobs:
+  run_snyk_test:
+    name: kinetic_sdk - Snyk Test
+    uses: ./.github/workflows/shared-snyk-test-or-monitor.yml
+    with:
+      command: test
+      package-manager: ruby
+      snyk-args: --project-name=kinetic-sdk-rb --severity-threshold=high --target-reference=main
+    secrets: inherit
