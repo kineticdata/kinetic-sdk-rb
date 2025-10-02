@@ -69,7 +69,26 @@ To install this gem onto your local machine, run the following command:
 bundle exec rake install
 ```
 
-### Pushing to Rubygems
+### Pushing to Rubygems via Github Actions
+
+A [Github Actions pipeline](./.github/workflows/publish-rubygem.yml) will run to publish the `kinetic_sdk` gem to rubygems.org anytime a new tag is pushed to the repository.
+
+After merging your changes for the new release into the `master` branch, including your changes to the [version.rb](./lib/kinetic_sdk/version.rb) file, you can now push a new Github tag to trigger publishing to rubygems.org:
+```
+# Assuming the version you updated to in version.rb is 5.0.15
+git tag -a 5.0.15 -m "Tag 5.0.15"
+git push origin tag 5.0.15
+```
+
+#### OIDC Authentication to rubygems.org
+
+Authentication in Github Actions is setup via OIDC with rubygems.org.  You can read about Trusting Publishing [here](https://guides.rubygems.org/trusted-publishing/).
+
+If the name of the [Github Actions pipeline](./.github/workflows/publish-rubygem.yml) that handles publishing to rubygems.org changes, the OIDC configuration at rubygems.org for the gem will need to be updated.
+
+### Pushing to Rubygems Manually
+
+! IMPORTANT ! When you push the github tag in the Git Release section, the Github Action workflow will still run.  You will need to manually cancel the workflow when it starts.
 
 Make sure a `~/.gem/credentials` file exists in your home directory that includes the `kineticdata` account credentials. If you don't have that file, find it in 1password.
 

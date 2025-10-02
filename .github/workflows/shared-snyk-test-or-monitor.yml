@@ -1,0 +1,86 @@
+name: Shared Snyk Test or Monitor Workflow
+
+on:
+  workflow_call:
+    inputs:
+      command:
+        description: 'Which snyk command to run, either monitor or test'
+        required: true
+        type: string
+      package-manager:
+        description: 'Which package manager is being used for testing or monitor.  Valid options are gradle and ruby'
+        required: true
+        type: string
+      # Arguments to pass to the snyk workflows
+      # See https://github.com/snyk/actions
+      snyk-args:
+        description: 'Args to pass to the snyk CLI command, automatically appended with --package-manager=package-manager'
+        required: false
+        type: string
+
+jobs:
+  # Jobs for Ruby Projects
+  snyk-for-ruby:
+    name: Snyk Ruby (${{ inputs.command }})
+    runs-on: ubuntu-latest
+    if: ${{ inputs.package-manager == 'ruby' }}
+
+    steps:
+      # Always checkout the repository
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Run snyk monitor...
+      # CLI example: snyk monitor --package-manager=rubygems snyk-args
+      - name: Run Snyk Monitor
+        if: ${{ inputs.command == 'monitor' }}
+        uses: snyk/actions/ruby@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_AUTH }}
+        with:
+          command: monitor
+          args: --package-manager=rubygems ${{ inputs.snyk-args }}
+
+      # Run snyk test...
+      # CLI example: snyk test --package-manager=rubygems snyk-args
+      - name: Run Snyk Test
+        if: ${{ inputs.command == 'test' }}
+        uses: snyk/actions/ruby@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_AUTH }}
+        with:
+          args: --package-manager=rubygems ${{ inputs.snyk-args }}
+
+  # Jobs for Gradle Projects
+  snyk-for-gradle:
+    name: Snyk Gradle (${{ inputs.command }})
+    runs-on: ubuntu-latest
+    if: ${{ inputs.package-manager == 'gradle' }}
+
+    steps:
+      # Always checkout the repository
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Run snyk monitor...
+      # CLI example: snyk monitor --package-manager=gradle snyk-args
+      - name: Run Snyk Monitor
+        if: ${{ inputs.command == 'monitor' }}
+        uses: snyk/actions/gradle-jdk17@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_AUTH }}
+        with:
+          command: monitor
+          args: --package-manager=gradle ${{ inputs.snyk-args }}
+
+      # Run snyk test...
+      # CLI example: snyk test --package-manager=gradle snyk-args
+      - name: Run Snyk Test
+        if: ${{ inputs.command == 'test' }}
+        uses: snyk/actions/gradle-jdk17@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_AUTH }}
+        with:
+          args: --package-manager=gradle ${{ inputs.snyk-args }}
+
+  # Potentially jobs for other types here...

@@ -1,0 +1,18 @@
+# Purpose: Run "snyk monitor" on the kinetic_sdk ruby project anytime a commit is made to the master branch
+#          This will refresh the packages that the sdk uses in the event that they are bumped up in Snyk.
+
+name: Refresh Snyk Monitors on Commits
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  snyk-monitor:
+    name: Snyk Monitor kinetic-sdk Rubygems
+    uses: ./.github/workflows/shared-snyk-test-or-monitor.yml
+    with:
+      command: monitor
+      package-manager: ruby
+      snyk-args: --project-name=kinetic_sdk --target-reference=main
+    secrets: inherit
