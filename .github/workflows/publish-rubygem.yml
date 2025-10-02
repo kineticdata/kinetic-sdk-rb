@@ -55,13 +55,11 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
+          # bundle-cache will automatically run bundle install, no need to do it after this
+          #   and allows caching rubygems in github actions for faster builds
           bundler-cache: true
           # Using the same version of ruby as defined in .tool-versions
           ruby-version: 3.1.0
-
-      # Build
-      - name: Bundle Install
-        run: bundle install
 
       - name: Rake Build
         run: bundle exec rake build
