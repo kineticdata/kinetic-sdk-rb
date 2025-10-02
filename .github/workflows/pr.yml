@@ -10,5 +10,5 @@ jobs:
     with:
       command: test
       package-manager: ruby
-      snyk-args: --project-name=kinetic-sdk-rb --severity-threshold=high --target-reference=main
+      snyk-args: --project-name=kinetic_sdk --severity-threshold=high --target-reference=main
     secrets: inherit
