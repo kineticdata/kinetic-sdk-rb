@@ -1,0 +1,71 @@
+# Publish our kinetic_sdk rubygem to the rubygems repository on Github tag push (X.Y.Z)
+#
+# The lib/kinetic_sdk/version.rb file needs to be updated for the new version before the tag is pushed.
+# This workflow does not handle updating any files or commiting those changes to Github.
+#
+# !!! IMPORTANT !!!
+#  If the name of this file changes, the OIDC configurations need to be updated
+#    in the rubygems.org trusted publishers configuration as this is used
+#    as part of the trust relationship between Github and rubygems.org.
+# See: https://guides.rubygems.org/trusted-publishing/
+name: Publish kinetic-sdk Rubygem on Tag Push
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+*'
+
+jobs:
+  # Run the Snyk Test first, these must pass
+  run_snyk_test:
+    name: kinetic_sdk - Snyk Test
+    uses: ./.github/workflows/shared-snyk-test-or-monitor.yml
+    with:
+      command: test
+      package-manager: ruby
+      snyk-args: --project-name=kinetic-sdk-rb --severity-threshold=high --target-reference=main
+    secrets: inherit
+
+  # Publish the Gem
+  publish_gem:
+    runs-on: ubuntu-latest
+
+    # Require Snyk to Pass
+    needs: run_snyk_test
+
+    # Required for OIDC access to rubygems.org
+    permissions:
+      id-token: write
+      contents: read
+
+    name: Publish kinetic-sdk Rubygem
+    steps:
+      # Always checkout the repository
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      # Setup OIDC credentials to rubygems.org
+      # This will setup the ~/.gem/credentials file
+      - name: Configure Trusted Publishing Credentials
+        uses: rubygems/configure-rubygems-credentials@v1.0.0
+
+      # Setup ruby
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          # Using the same version of ruby as defined in .tool-versions
+          ruby-version: 3.1.0
+
+      # Build
+      - name: Bundle Install
+        run: bundle install
+
+      - name: Rake Build
+        run: bundle exec rake build
+
+      # Publish
+      - name: Publish kinetic-sdk
+        run: gem push pkg/kinetic_sdk-*.gem
