@@ -1,5 +1,11 @@
 # Change Log
 
+## [5.0.30](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.30) (2025-10-02)
+
+**Implemented enhancements:**
+
+- Add import/export methods for WebAPIs.
+
 ## [5.0.29](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.29) (2025-01-11)
 
 **Implemented enhancements:**
