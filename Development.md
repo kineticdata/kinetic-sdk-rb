@@ -73,7 +73,7 @@ bundle exec rake install
 
 A [Github Actions pipeline](./.github/workflows/publish-rubygem.yml) will run to publish the `kinetic_sdk` gem to rubygems.org anytime a new tag is pushed to the repository.
 
-After merging your changes for the new release into the `master` branch, including your changes to the [version.rb](./lib/kinetic_sdk/version.rb) file, you can now push a new Github tag to trigger publishing to rubygems.org:
+After merging your changes for the new release into the `master` branch, including your changes to the [version.rb](./lib/kinetic_sdk/version.rb) file and changes to the [Gemfile.lock](./Gemfile.lock) after running `bundle install`, you can now push a new Github tag to trigger publishing to rubygems.org:
 ```
 # Assuming the version you updated to in version.rb is 5.0.15
 git tag -a 5.0.15 -m "Tag 5.0.15"
