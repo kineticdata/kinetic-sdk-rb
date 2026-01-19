@@ -97,6 +97,18 @@ module KineticSdk
         File.open(filename, 'w') { |file| file.write(JSON.pretty_generate(file_contents)) }
       end
 
+      def write_object_to_file_threaded(filename, file_contents, mutex=nil)
+        # Create Folder if not exists
+        dir_path = File.dirname(filename)
+        if mutex
+          mutex.synchronize { FileUtils.mkdir_p(dir_path, :mode => 0700) }
+        else
+          FileUtils.mkdir_p(dir_path, :mode => 0700)
+        end
+        # Write File
+        File.open(filename, 'w') { |file| file.write(JSON.pretty_generate(file_contents)) }
+      end
+
       # Processes and writes data exported from the core service
       #
       # @param core_path [String] the root folder path to write the data to
