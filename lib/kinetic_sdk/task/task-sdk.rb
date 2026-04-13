@@ -69,6 +69,8 @@ module KineticSdk
       options = {}
       @config_user = {}
       @server = nil
+      @server_info_mutex = Mutex.new
+      @cached_server_info = nil
 
       # process the configuration file if it was provided
       unless opts[:config_file].nil?

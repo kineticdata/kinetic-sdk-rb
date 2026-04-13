@@ -116,7 +116,84 @@ module KineticSdk
       # @param object [Hash] the object being processed
       # @param object_path [String] the path of the object being processed (used recursively)
       # @return nil
-      def process_export(core_path, export_shape, object, object_path='')
+      
+  def process_export(core_path, export_shape, object, object_path='', executor: nil)
+    # Prepare metadata (same as before)
+    child_objects = {}
+    file_contents = {}
+    
+    if object.kind_of?(Array)
+      file_contents = object
+    else
+      object.each do |key, value|
+        child_object_path = object_path.empty? ? key : "#{object_path}.#{key}"
+
+        if should_extract(child_object_path, export_shape)
+          if value.kind_of?(Array)
+            variable = get_variable_property(export_shape, child_object_path)
+            if variable.nil?
+              child_objects[child_object_path] = value
+            else
+              value.each do |item|
+                child_objects["#{child_object_path}.#{item[variable]}"] = item
+              end
+            end
+          else
+            child_objects[child_object_path] = value
+          end
+        else
+          file_contents[key] = value
+        end
+      end
+    end
+
+    if object_path != '' && !file_contents.empty?
+      filename = "#{core_path}/#{object_path.gsub('/', '').gsub('\\', '').gsub('.', '/').gsub(/::/, '-').gsub(/[^ a-zA-Z0-9_\-\/]/, '')}.json"
+      write_object_to_file(filename, file_contents)
+    end
+
+    # Thread at key levels: root, kapps, and forms
+    should_thread = executor && child_objects.size > 1 && should_parallelize?(object_path)
+    
+    if should_thread
+      puts "  -> Spawning #{child_objects.size} threads for: #{object_path}"
+      futures = child_objects.map do |key, child_object|
+        Concurrent::Future.execute(executor: executor) do
+          puts "    [Thread #{Thread.current.object_id}] Starting: #{key}"
+          process_export(core_path, export_shape, child_object, key, executor: executor)
+          puts "    [Thread #{Thread.current.object_id}] Finished: #{key}"
+        end
+      end
+      futures.each(&:value)
+    else
+      child_objects.each do |key, child_object|
+        process_export(core_path, export_shape, child_object, key, executor: executor)
+      end
+    end
+  end
+
+  def should_parallelize?(object_path)
+    # Thread at these specific levels
+    parallelize_patterns = [
+      /^$/,                           # Root level
+      /^space\.kapps$/,               # All kapps
+      /^space\.kapps\.[^.]+$/,        # Within each kapp (forms, webhooks, etc)
+      /^space\.kapps\.[^.]+\.forms$/, # All forms within a kapp
+      /^space\.teams$/,               # All teams
+      /^space\.bridges$/,             # All bridges
+      /^space\.webApis$/,             # All webApis
+      /^space\.webhooks$/,            # All webhooks
+    ]
+    
+      matches = parallelize_patterns.any? { |pattern| object_path =~ pattern }
+  
+      # DEBUG
+      puts "  Checking parallelize for: '#{object_path}' -> #{matches}"
+      
+      matches
+  end
+      
+      def process_export_old(core_path, export_shape, object, object_path='', executor: nil)
         # Prepare metadata
         child_objects = {}
         file_contents = {}
@@ -162,14 +239,22 @@ module KineticSdk
           write_object_to_file(filename, file_contents)
         end
 
-
-        # For each of the child objects
-        child_objects.each do |key, child_object|
-          # Process the export for that object (recursively)
-          process_export(core_path, export_shape, child_object, key)
+        if executor && child_objects.size > 0
+          futures = child_objects.map do |key, child_object|
+            Concurrent::Future.execute(executor: executor) do
+              # Recursive calls don't use threading
+              process_export(core_path, export_shape, child_object, key)
+            end
+          end
+          futures.each do |future|
+            future.value # This will re-raise any exceptions that occurred
+          end
+        else
+          child_objects.each do |key, child_object|
+            process_export(core_path, export_shape, child_object, key)
+          end
         end
       end
-
     end
   end
 end

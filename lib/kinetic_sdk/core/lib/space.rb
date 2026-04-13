@@ -1,4 +1,5 @@
 module KineticSdk
+  MAX_THREADS = 30
   class Core
 
     # Add an attribute value to the space, or update an attribute if it already exists
@@ -86,7 +87,14 @@ module KineticSdk
         "space.webhooks.{name}",
       )
       core_data = find_space({ 'export' => true }, headers).content
-      process_export(@options[:export_directory], export_shape, core_data)
+      pool = Concurrent::FixedThreadPool.new(MAX_THREADS) # Adjust thread count based on your needs
+      begin
+        process_export(@options[:export_directory], export_shape, core_data, '', executor: pool)
+      ensure
+        pool.shutdown
+        pool.wait_for_termination
+      end
+
       export_workflows(headers)
       @logger.info("Finished exporting space definition to #{@options[:export_directory]}.")
     end
@@ -106,50 +114,68 @@ module KineticSdk
       raise StandardError.new "An export directory must be defined to export workflows." if @options[:export_directory].nil?
       @logger.info("Exporting workflows to #{@options[:export_directory]}.")
 
-      # space workflows
-      space_workflows = find_space_workflows({ "include" => "details" }, headers).content["workflows"] || []
-      space_workflows.select { |wf| !wf["event"].nil? }.each do |workflow|
-        evt = workflow["event"].to_s.slugify
-        name = workflow["name"].to_s.slugify
-        if evt.empty? || name.empty?
-          raise "Some workflows are currently in an orphaned or missing state. You can open the Workflows tab for the space in the space console, and run the repair to attempt to resolve this issue."
-        end
-        @logger.info(workflow)
-        filename = "#{File.join(@options[:export_directory], "space", "workflows", evt, name)}.json"
-        workflow_json = find_space_workflow(workflow["id"], {}, headers).content["treeJson"]
-        write_object_to_file(filename, workflow_json)
-      end
-
-      space_content = find_space({ 'include' => "kapps.details,kapps.forms.details" }).content["space"]
-
-      # kapp workflows
-      space_content["kapps"].each do |kapp|
-        kapp_workflows = find_kapp_workflows(kapp["slug"], {}, headers).content["workflows"] || []
-        kapp_workflows.select { |wf| !wf["event"].nil? }.each do |workflow|
-          evt = workflow["event"].to_s.slugify
-          name = workflow["name"].to_s.slugify
-          if evt.empty? || name.empty?
-            raise "Some workflows are currently in an orphaned or missing state. You can open the Workflows tab for the #{kapp["name"]} kapp in the space console, and run the repair to attempt to resolve this issue."
-          end
-          filename = "#{File.join(@options[:export_directory], "space", "kapps", kapp["slug"], "workflows", evt, name)}.json"
-          workflow_json = find_kapp_workflow(kapp["slug"], workflow["id"], {}, headers).content["treeJson"]
-          write_object_to_file(filename, workflow_json)
-        end
-
-        # form workflows
-        kapp["forms"].each do |form|
-          form_workflows = find_form_workflows(kapp["slug"], form["slug"], {}, headers).content["workflows"] || []
-          form_workflows.select { |wf| !wf["event"].nil? }.each do |workflow|
-            evt = workflow["event"].to_s.slugify
-            name = workflow["name"].to_s.slugify
-            if evt.empty? || name.empty?
-              raise "Some workflows are currently in an orphaned or missing state. You can open the Workflows tab for the #{kapp["name"]} > #{form["name"]} form in the space console, and run the repair to attempt to resolve this issue."
+      #Define Thread settings
+      pool = Concurrent::FixedThreadPool.new(MAX_THREADS)
+      futures = []
+      begin
+        # space workflows
+        space_workflows = find_space_workflows({ "include" => "details" }, headers).content["workflows"] || []
+        space_workflows.select { |wf| !wf["event"].nil? }.each do |workflow|
+          futures << Concurrent::Future.execute(executor: pool) do
+            begin
+              evt = workflow["event"].to_s.slugify
+              name = workflow["name"].to_s.slugify
+              if evt.empty? || name.empty?
+                raise "Some workflows are currently in an orphaned or missing state. You can open the Workflows tab for the space in the space console, and run the repair to attempt to resolve this issue."
+              end
+              @logger.info(workflow)
+              filename = "#{File.join(@options[:export_directory], "space", "workflows", evt, name)}.json"
+              workflow_json = find_space_workflow(workflow["id"], {}, headers).content["treeJson"]
+              write_object_to_file(filename, workflow_json)
             end
-            filename = "#{File.join(@options[:export_directory], "space", "kapps", kapp["slug"], "forms", form["slug"], "workflows", evt, name)}.json"
-            workflow_json = find_form_workflow(kapp["slug"], form["slug"], workflow["id"], {}, headers).content["treeJson"]
-            write_object_to_file(filename, workflow_json)
           end
         end
+        futures.each(&:value)
+
+
+        space_content = find_space({ 'include' => "kapps.details,kapps.forms.details" }).content["space"]
+
+        # kapp workflows
+        space_content["kapps"].each do |kapp|
+          futures << Concurrent::Future.execute(executor: pool) do
+            kapp_workflows = find_kapp_workflows(kapp["slug"], {}, headers).content["workflows"] || []
+            kapp_workflows.select { |wf| !wf["event"].nil? }.each do |workflow|
+              evt = workflow["event"].to_s.slugify
+              name = workflow["name"].to_s.slugify
+              if evt.empty? || name.empty?
+                raise "Some workflows are currently in an orphaned or missing state. You can open the Workflows tab for the #{kapp["name"]} kapp in the space console, and run the repair to attempt to resolve this issue."
+              end
+              filename = "#{File.join(@options[:export_directory], "space", "kapps", kapp["slug"], "workflows", evt, name)}.json"
+              workflow_json = find_kapp_workflow(kapp["slug"], workflow["id"], {}, headers).content["treeJson"]
+              write_object_to_file(filename, workflow_json)
+            end
+          end
+          futures << Concurrent::Future.execute(executor: pool) do
+            # form workflows
+            kapp["forms"].each do |form|
+              form_workflows = find_form_workflows(kapp["slug"], form["slug"], {}, headers).content["workflows"] || []
+              form_workflows.select { |wf| !wf["event"].nil? }.each do |workflow|
+                evt = workflow["event"].to_s.slugify
+                name = workflow["name"].to_s.slugify
+                if evt.empty? || name.empty?
+                  raise "Some workflows are currently in an orphaned or missing state. You can open the Workflows tab for the #{kapp["name"]} > #{form["name"]} form in the space console, and run the repair to attempt to resolve this issue."
+                end
+                filename = "#{File.join(@options[:export_directory], "space", "kapps", kapp["slug"], "forms", form["slug"], "workflows", evt, name)}.json"
+                workflow_json = find_form_workflow(kapp["slug"], form["slug"], workflow["id"], {}, headers).content["treeJson"]
+                write_object_to_file(filename, workflow_json)
+              end
+            end
+          end #End thread
+        end
+      ensure
+        futures.each(&:value)
+        pool.shutdown
+        pool.wait_for_termination
       end
     end
 
@@ -163,74 +189,6 @@ module KineticSdk
       get("#{@api_url}/space", params, headers)
     end
 
-    def export_workflows_threaded(headers=default_headers, max_threads=5)
-      # Workflows were introduced in core v6
-      version = app_version(headers).content["version"]
-      if version && version["version"] < "6"
-        @logger.info("Skip exporting workflows because the Core server version doesn't support workflows.")
-        return
-      end
-
-      raise StandardError.new "An export directory must be defined to export workflows." if @options[:export_directory].nil?
-      @logger.info("Exporting workflows to #{@options[:export_directory]}.")
-
-      pool = Concurrent::FixedThreadPool.new(max_threads)
-      mutex = Mutex.new
-      promises = []
-
-      # space workflows
-      space_workflows = find_space_workflows({ "include" => "details" }, headers).content["workflows"] || []
-      space_workflows.select { |wf| !wf["event"].nil? }.each do |workflow|
-        promises << Concurrent::Promise.execute(executor: pool) do
-          begin
-            export_single_space_workflow(workflow, headers, mutex)
-          rescue => e
-            mutex.synchronize { @logger.error("Failed to export space workflow #{workflow['name']}: #{e.message}") }
-            raise
-          end
-        end
-      end
-      space_content = find_space({ 'include' => "kapps.details,kapps.forms.details" }).content["space"]
-
-
-      # kapp workflows
-      space_content["kapps"].each do |kapp|
-        kapp_workflows = find_kapp_workflows(kapp["slug"], {}, headers).content["workflows"] || []
-        kapp_workflows.select { |wf| !wf["event"].nil? }.each do |workflow|
-          promises << Concurrent::Promise.execute(executor: pool) do
-            begin
-              export_single_kapp_workflow(kapp, workflow, headers, mutex)
-            rescue => e
-              mutex.synchronize { @logger.error("Failed to export kapp workflow #{kapp['slug']}/#{workflow['name']}: #{e.message}") }
-              raise
-            end
-          end
-        end
-
-
-        # form workflows
-        kapp["forms"].each do |form|
-          form_workflows = find_form_workflows(kapp["slug"], form["slug"], {}, headers).content["workflows"] || []
-          form_workflows.select { |wf| !wf["event"].nil? }.each do |workflow|
-            promises << Concurrent::Promise.execute(executor: pool) do
-              begin
-                export_single_form_workflow(kapp, form, workflow, headers, mutex)
-              rescue => e
-                mutex.synchronize { @logger.error("Failed to export form workflow #{kapp['slug']}/#{form['slug']}/#{workflow['name']}: #{e.message}") }
-                raise
-              end
-            end
-          end
-        end
-      end
-      # Wait for all workflows to complete
-      promises.each(&:wait!)
-      
-      pool.shutdown
-      pool.wait_for_termination
-      
-      mutex.synchronize { @logger.info("Workflow export complete.") }
-    end
 
     # Imports a full space definition from the export_directory, except for workflows. Those must be imported separately after
     # the Kinetic Platform source exists in task.
@@ -432,48 +390,6 @@ module KineticSdk
 
 
 
-    private
-
-    def export_single_space_workflow_threaded(workflow, headers, mutex)
-      evt = workflow["event"].to_s.slugify
-      name = workflow["name"].to_s.slugify
-      if evt.empty? || name.empty?
-        raise "Some workflows are currently in an orphaned or missing state. You can open the Workflows tab for the space in the space console, and run the repair to attempt to resolve this issue."
-      end
-      
-      mutex.synchronize { @logger.info("Exporting space workflow: #{name}") }
-      
-      filename = "#{File.join(@options[:export_directory], "space", "workflows", evt, name)}.json"
-      workflow_json = find_space_workflow(workflow["id"], {}, headers).content["treeJson"]
-      write_object_to_file(filename, workflow_json)
-    end
-
-    def export_single_kapp_workflow_thread(kapp, workflow, headers, mutex)
-      evt = workflow["event"].to_s.slugify
-      name = workflow["name"].to_s.slugify
-      if evt.empty? || name.empty?
-        raise "Some workflows are currently in an orphaned or missing state. You can open the Workflows tab for the #{kapp["name"]} kapp in the space console, and run the repair to attempt to resolve this issue."
-      end
-      
-      mutex.synchronize { @logger.info("Exporting kapp workflow: #{kapp['slug']}/#{name}") }
-      
-      filename = "#{File.join(@options[:export_directory], "space", "kapps", kapp["slug"], "workflows", evt, name)}.json"
-      workflow_json = find_kapp_workflow(kapp["slug"], workflow["id"], {}, headers).content["treeJson"]
-      write_object_to_file(filename, workflow_json)
-    end
-
-    def export_single_form_workflow_thread(kapp, form, workflow, headers, mutex)
-      evt = workflow["event"].to_s.slugify
-      name = workflow["name"].to_s.slugify
-      if evt.empty? || name.empty?
-        raise "Some workflows are currently in an orphaned or missing state. You can open the Workflows tab for the #{kapp["name"]} > #{form["name"]} form in the space console, and run the repair to attempt to resolve this issue."
-      end
-      
-      mutex.synchronize { @logger.info("Exporting form workflow: #{kapp['slug']}/#{form['slug']}/#{name}") }
-      
-      filename = "#{File.join(@options[:export_directory], "space", "kapps", kapp["slug"], "forms", form["slug"], "workflows", evt, name)}.json"
-      workflow_json = find_form_workflow(kapp["slug"], form["slug"], workflow["id"], {}, headers).content["treeJson"]
-      write_object_to_file(filename, workflow_json)
-    end
+    
   end
 end
