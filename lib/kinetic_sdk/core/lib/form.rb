@@ -14,7 +14,7 @@ module KineticSdk
     #   - +status+
     #   - +submissionLabelExpression+
     #   - +type+
-    #   - +attributes+1
+    #   - +attributes
     #   - +bridgedResources+
     #   - +pages+
     #   - +securityPolicies+
@@ -115,10 +115,6 @@ module KineticSdk
     #   - +securityPolicies+
     # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
-    def compare_forms(old_form, new_form)
-      
-
-    end
 
 
     # Find Form workflows
