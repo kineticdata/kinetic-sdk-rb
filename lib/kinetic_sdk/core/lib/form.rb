@@ -14,7 +14,7 @@ module KineticSdk
     #   - +status+
     #   - +submissionLabelExpression+
     #   - +type+
-    #   - +attributes+
+    #   - +attributes
     #   - +bridgedResources+
     #   - +pages+
     #   - +securityPolicies+
@@ -94,6 +94,27 @@ module KineticSdk
       @logger.info("Updating the \"#{form_slug}\" Form in the \"#{kapp_slug}\" Kapp.")
       put("#{@api_url}/kapps/#{kapp_slug}/forms/#{form_slug}", properties, headers)
     end
+
+        # Update a Form
+    #
+    # @param kapp_slug [String] slug of the Kapp the form belongs to
+    # @param form_slug [String] slug of the form
+    # @param properties [Hash] form properties to update
+    #   - +anonymous+
+    #   - +customHeadContent+
+    #   - +description+
+    #   - +name+
+    #   - +notes+
+    #   - +slug+
+    #   - +status+
+    #   - +submissionLabelExpression+
+    #   - +type+
+    #   - +attributes+
+    #   - +bridgedResources+
+    #   - +pages+
+    #   - +securityPolicies+
+    # @param headers [Hash] hash of headers to send, default is basic authentication and accept JSON content type
+    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
 
 
     # Find Form workflows

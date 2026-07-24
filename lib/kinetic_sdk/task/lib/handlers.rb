@@ -1,6 +1,5 @@
 module KineticSdk
   class Task
-
     # Delete a Handler
     #
     # @param definition_id [String] the handler definition id
@@ -71,6 +70,28 @@ module KineticSdk
         handler_file = File.new(file, "rb")
         import_handler(handler_file, force_overwrite, headers)
       end
+    end
+
+    def import_handlers_threaded(force_overwrite=false, headers=header_basic_auth)
+      raise StandardError.new "An export directory must be defined to import handlers from." if @options[:export_directory].nil?
+      @logger.info("Importing all Handlers from Export Directory")
+      pool = Concurrent::FixedThreadPool.new(MAX_THREADS)
+      mutex = Mutex.new
+      promises = []
+
+
+      Dir["#{@options[:export_directory]}/handlers/*.zip"].sort.each do |file|
+        promises << Concurrent::Promise.execute(executor: pool) do
+          begin
+            handler_file = File.new(file, "rb")
+            import_handler(handler_file, force_overwrite, headers)
+          rescue
+          end
+        end
+      end
+      promises.each(&:wait!)
+      pool.shutdown
+      pool.wait_for_termination        
     end
 
     # Modifies the properties and info values for a handler

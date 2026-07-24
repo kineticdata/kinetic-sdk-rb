@@ -2,6 +2,7 @@ require 'fileutils'
 require 'json'
 require 'uri'
 require 'yaml'
+require 'concurrent-ruby'
 
 pwd = File.expand_path(File.dirname(__FILE__))
 gemdir = File.expand_path(File.join(pwd, '..', 'gems'))

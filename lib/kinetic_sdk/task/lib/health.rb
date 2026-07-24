@@ -29,7 +29,9 @@ module KineticSdk
     # @param headers [Hash] hash of headers to send, default is none
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def server_info(headers={})
-      get(@api_url, {}, headers)
+      @server_info_mutex.synchronize do
+        @cached_server_info ||= get(@api_url, {}, headers)
+      end
     end
 
   end

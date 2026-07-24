@@ -1,5 +1,13 @@
 # Change Log
 
+
+## [5.0.31](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.31) (2026-03-06)
+
+**Implemented enhancements:**
+
+- Added thread support for exporting.
+
+
 ## [5.0.30](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.30) (2025-10-02)
 
 **Implemented enhancements:**
