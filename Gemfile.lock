@@ -33,4 +33,4 @@ RUBY VERSION
    ruby 2.3.3p0 (jruby 9.1.9.0)
 
 BUNDLED WITH
-   >= 1.17.3
+   2.6.9
