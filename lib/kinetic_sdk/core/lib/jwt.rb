@@ -12,7 +12,7 @@ module KineticSdk
       jwt_code = jwt_code(client_id, headers)
       # retrieve the jwt token
       @logger.info("Retrieving JWT authorization token")
-      url = "#{@server}/app/oauth/token?grant_type=authorization_code&response_type=token&client_id=#{client_id}&code=#{jwt_code}"
+      url = "#{@server}/app/oauth2/token?grant_type=authorization_code&response_type=token&client_id=#{client_id}&code=#{jwt_code}"
       token_headers = header_accept_json.merge(header_basic_auth(client_id, client_secret))
       response = post(url, {}, token_headers, { :max_redirects => 0 })
 
@@ -34,7 +34,7 @@ module KineticSdk
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def jwt_code(client_id, headers = default_headers)
       @logger.info("Retrieving JWT authorization code")
-      url = "#{@server}/app/oauth/authorize?grant_type=authorization_code&response_type=code&client_id=#{client_id}"
+      url = "#{@server}/app/oauth2/authorize?grant_type=authorization_code&response_type=code&client_id=#{client_id}"
       response = post(url, {}, headers, { :max_redirects => -1 })
 
       if response.status == 401
@@ -43,6 +43,8 @@ module KineticSdk
         location = response.headers["location"]
         if location.nil?
           raise StandardError.new "Unable to retrieve code: #{response.inspect}"
+        elsif !location.include?("?code=")
+          raise StandardError.new "Unable to retrieve code, the authorize endpoint redirected to #{location} without an authorization code."
         else
           location.split("?code=").last.split("#/").first
         end

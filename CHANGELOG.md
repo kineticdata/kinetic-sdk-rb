@@ -1,6 +1,22 @@
 # Change Log
 
 
+## [7.0.0-rc1](https://github.com/kineticdata/kinetic-sdk-rb/tree/7.0.0-rc1) (2026-08-31)
+
+**Breaking changes:**
+
+- This release is tied to version 7 of the Kinetic Platform, and is not compatible with
+  earlier platform versions.
+- The Core OAuth authorization routes moved from `/app/oauth` to `/app/oauth2`. The
+  authorization code and token requests made by `KineticSdk::Core#jwt_token` - used by the
+  Discussions and Integrator SDKs to authenticate - now use the `/app/oauth2` routes.
+
+**Implemented enhancements:**
+
+- Raise a descriptive error when the authorize endpoint redirects without an authorization
+  code, instead of passing an invalid code along to the token endpoint.
+
+
 ## [5.0.31](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.31) (2026-03-06)
 
 **Implemented enhancements:**
