@@ -1,6 +1,36 @@
 # Change Log
 
 
+## [7.0.0.rc3](https://github.com/kineticdata/kinetic-sdk-rb/tree/7.0.0.rc3) (2026-09-01)
+
+**Fixed bugs:**
+
+- Fixed a crash in `import_trees` and `import_trees_threaded` that aborted template installs
+  with `NoMethodError: undefined method 'document' for an instance of File`. The tree
+  comparison introduced in 7.x passed a raw `File` handle to `REXML::XPath.first`, which
+  requires a parsed document.
+- Removed the tree comparison entirely, restoring the unconditional import behavior of 5.0.29.
+  The comparison identified trees by a `//definitionId` element that exists only in routine
+  exports, never in the tree exports `import_trees` reads, so it could not succeed. See the
+  specs in `spec/kinetic_sdk/task/trees_spec.rb`.
+- The per-tree and per-routine rescues in the threaded importers no longer discard exceptions
+  silently; failures are logged and propagated.
+- `trees.rb` now requires `rexml/document` explicitly rather than relying on load order.
+
+**Implemented enhancements:**
+
+- Added rspec and the first unit test coverage, run with `bundle exec rspec` or `rake spec`.
+
+
+## [7.0.0.rc2](https://github.com/kineticdata/kinetic-sdk-rb/tree/7.0.0.rc2) (2026-09-01)
+
+**Fixed bugs:**
+
+- Declared `concurrent-ruby` and `rexml` as runtime dependencies. Both were required by the
+  library but missing from the gemspec, so the published gem could fail to load.
+- Pinned `BUNDLED WITH` to a concrete Bundler version; the range value broke `bundle install`.
+
+
 ## [7.0.0-rc1](https://github.com/kineticdata/kinetic-sdk-rb/tree/7.0.0-rc1) (2026-08-31)
 
 **Breaking changes:**
