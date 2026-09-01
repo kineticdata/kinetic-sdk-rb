@@ -14,6 +14,15 @@ module SpecHelpers
     File.expand_path("fixtures/export", __dir__)
   end
 
+  # A Core SDK instance. Its constructor performs no network calls.
+  def core_sdk(app_server_url: nil, space_server_url: nil, space_slug: nil, extra_options: {})
+    options = { log_level: "off" }.merge(extra_options)
+    config = { username: "test-user", password: "test-password", space_slug: space_slug, options: options }
+    config[:app_server_url] = app_server_url if app_server_url
+    config[:space_server_url] = space_server_url if space_server_url
+    KineticSdk::Core.new(config)
+  end
+
   # A Task SDK instance that performs no network calls on construction.
   def task_sdk(export_directory: fixture_export_directory)
     KineticSdk::Task.new(

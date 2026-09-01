@@ -1,6 +1,40 @@
 # Change Log
 
 
+## [7.0.0.rc4](https://github.com/kineticdata/kinetic-sdk-rb/tree/7.0.0.rc4) (2026-09-01)
+
+**Breaking changes:**
+
+- `jwt_token` now uses the OAuth 2.0 `client_credentials` grant, a single POST to
+  `/{space_slug}/app/oauth2/token`. Kinetic Platform 7 runs a standards compliant
+  authorization server in which `/app/oauth2/authorize` is an interactive endpoint
+  requiring a browser session, consent, a registered redirect_uri and PKCE, so the
+  previous authorization-code flow returned `400`. The response shape is unchanged:
+  callers reading `jwt_response.content["access_token"]` are unaffected.
+- `jwt_code` has been removed. It drove the authorization-code flow that no longer
+  applies to machine to machine clients.
+- The OAuth client used by the SDK must be registered in the space as a **confidential**
+  client (or with no `clientType`, which defaults to confidential). Public clients and
+  the built in system client register only the `authorization_code` grant and are
+  rejected by the token endpoint.
+
+**Fixed bugs:**
+
+- The OAuth routes are now space scoped (`/{space_slug}/app/oauth2/...`) when the SDK is
+  built from an `:app_server_url` plus a `:space_slug`. The authorization server resolves
+  the space from the request path and rejects requests made outside a space context.
+- OAuth failures now report the `error` and `error_description` from a JSON error, or the
+  `X-Kinetic-CID` correlation id when Core answers with its generic HTML error page,
+  instead of dumping the inspected response object.
+
+**Implemented enhancements:**
+
+- Added the `:oauth_scope` option, defaulting to `full`. Valid scopes are `full`, `read`,
+  `write`, `admin`, `submissions` and `submissions:read`.
+- Added specs covering the token exchange, scope configuration, and the failure modes for
+  both the Integrator and Discussions SDKs.
+
+
 ## [7.0.0.rc3](https://github.com/kineticdata/kinetic-sdk-rb/tree/7.0.0.rc3) (2026-09-01)
 
 **Fixed bugs:**
