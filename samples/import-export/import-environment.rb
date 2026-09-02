@@ -650,9 +650,9 @@ if options.importTask
       "properties" => {
         "Provider Name" => "Kinops Core",
         "Auto Redirect Login" => "Yes",
-        "Authorize Endpoint" => "#{task_oauth_server}/#{space_slug}/app/oauth/authorize",
-        "Token Endpoint" => "#{ce_server}/#{space_slug}/app/oauth/token",
-        "Check Token Endpoint" => "#{ce_server}/#{space_slug}/app/oauth/check_token?token=",
+        "Authorize Endpoint" => "#{task_oauth_server}/#{space_slug}/app/oauth2/authorize",
+        "Token Endpoint" => "#{ce_server}/#{space_slug}/app/oauth2/token",
+        "Check Token Endpoint" => "#{ce_server}/#{space_slug}/app/oauth2/check_token?token=",
         "Logout Redirect Location" => "#{task_oauth_server}/#{space_slug}/app/logout",
         "Client Id" => "kinetic-task",
         "Client Secret" => oauth_secret_task,

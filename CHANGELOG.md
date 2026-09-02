@@ -1,6 +1,111 @@
 # Change Log
 
 
+## [7.0.0.rc5](https://github.com/kineticdata/kinetic-sdk-rb/tree/7.0.0.rc5) (2026-09-01)
+
+**Fixed bugs:**
+
+- Fixed `401 invalid_client` when retrieving a JWT with a client secret containing `+`, `%`
+  or a space, despite correct credentials. The token request now authenticates with
+  `client_secret_post`, sending `client_id` and `client_secret` as form parameters.
+
+  `client_secret_basic` requires both values to be form-urlencoded before base64 encoding
+  (RFC 6749 section 2.3.1), and Spring Authorization Server's
+  `ClientSecretBasicAuthenticationConverter` correspondingly URL-decodes them. The SDK sent
+  them raw, so a `+` in a secret was decoded to a space and the bcrypt comparison failed.
+  Kinetic Coordinator generates integration user passwords from a character set containing
+  `+`, which is why the failure appeared intermittently across tenants.
+
+  `header_basic_auth` is deliberately unchanged. It is shared by every ordinary HTTP Basic
+  user authentication call site, and Core authenticates those with Spring Security's
+  `BasicAuthenticationConverter`, which does not URL-decode. Adding encoding there would
+  break any user whose password contains `+` or `%`.
+
+- The token request no longer sends an Authorization header, and strips any header inherited
+  from the caller, so it cannot compete with the form credentials. This also keeps the client
+  secret out of the SDK's debug log, which prints request headers.
+
+
+## [7.0.0.rc4](https://github.com/kineticdata/kinetic-sdk-rb/tree/7.0.0.rc4) (2026-09-01)
+
+**Breaking changes:**
+
+- `jwt_token` now uses the OAuth 2.0 `client_credentials` grant, a single POST to
+  `/{space_slug}/app/oauth2/token`. Kinetic Platform 7 runs a standards compliant
+  authorization server in which `/app/oauth2/authorize` is an interactive endpoint
+  requiring a browser session, consent, a registered redirect_uri and PKCE, so the
+  previous authorization-code flow returned `400`. The response shape is unchanged:
+  callers reading `jwt_response.content["access_token"]` are unaffected.
+- `jwt_code` has been removed. It drove the authorization-code flow that no longer
+  applies to machine to machine clients.
+- The OAuth client used by the SDK must be registered in the space as a **confidential**
+  client (or with no `clientType`, which defaults to confidential). Public clients and
+  the built in system client register only the `authorization_code` grant and are
+  rejected by the token endpoint.
+
+**Fixed bugs:**
+
+- The OAuth routes are now space scoped (`/{space_slug}/app/oauth2/...`) when the SDK is
+  built from an `:app_server_url` plus a `:space_slug`. The authorization server resolves
+  the space from the request path and rejects requests made outside a space context.
+- OAuth failures now report the `error` and `error_description` from a JSON error, or the
+  `X-Kinetic-CID` correlation id when Core answers with its generic HTML error page,
+  instead of dumping the inspected response object.
+
+**Implemented enhancements:**
+
+- Added the `:oauth_scope` option, defaulting to `full`. Valid scopes are `full`, `read`,
+  `write`, `admin`, `submissions` and `submissions:read`.
+- Added specs covering the token exchange, scope configuration, and the failure modes for
+  both the Integrator and Discussions SDKs.
+
+
+## [7.0.0.rc3](https://github.com/kineticdata/kinetic-sdk-rb/tree/7.0.0.rc3) (2026-09-01)
+
+**Fixed bugs:**
+
+- Fixed a crash in `import_trees` and `import_trees_threaded` that aborted template installs
+  with `NoMethodError: undefined method 'document' for an instance of File`. The tree
+  comparison introduced in 7.x passed a raw `File` handle to `REXML::XPath.first`, which
+  requires a parsed document.
+- Removed the tree comparison entirely, restoring the unconditional import behavior of 5.0.29.
+  The comparison identified trees by a `//definitionId` element that exists only in routine
+  exports, never in the tree exports `import_trees` reads, so it could not succeed. See the
+  specs in `spec/kinetic_sdk/task/trees_spec.rb`.
+- The per-tree and per-routine rescues in the threaded importers no longer discard exceptions
+  silently; failures are logged and propagated.
+- `trees.rb` now requires `rexml/document` explicitly rather than relying on load order.
+
+**Implemented enhancements:**
+
+- Added rspec and the first unit test coverage, run with `bundle exec rspec` or `rake spec`.
+
+
+## [7.0.0.rc2](https://github.com/kineticdata/kinetic-sdk-rb/tree/7.0.0.rc2) (2026-09-01)
+
+**Fixed bugs:**
+
+- Declared `concurrent-ruby` and `rexml` as runtime dependencies. Both were required by the
+  library but missing from the gemspec, so the published gem could fail to load.
+- Pinned `BUNDLED WITH` to a concrete Bundler version; the range value broke `bundle install`.
+
+
+## [7.0.0-rc1](https://github.com/kineticdata/kinetic-sdk-rb/tree/7.0.0-rc1) (2026-08-31)
+
+**Breaking changes:**
+
+- This release is tied to version 7 of the Kinetic Platform, and is not compatible with
+  earlier platform versions.
+- The Core OAuth authorization routes moved from `/app/oauth` to `/app/oauth2`. The
+  authorization code and token requests made by `KineticSdk::Core#jwt_token` - used by the
+  Discussions and Integrator SDKs to authenticate - now use the `/app/oauth2` routes.
+
+**Implemented enhancements:**
+
+- Raise a descriptive error when the authorize endpoint redirects without an authorization
+  code, instead of passing an invalid code along to the token endpoint.
+
+
 ## [5.0.31](https://github.com/kineticdata/kinetic-sdk-rb/tree/5.0.31) (2026-03-06)
 
 **Implemented enhancements:**
