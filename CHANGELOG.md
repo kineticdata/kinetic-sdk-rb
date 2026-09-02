@@ -1,6 +1,31 @@
 # Change Log
 
 
+## [7.0.0.rc5](https://github.com/kineticdata/kinetic-sdk-rb/tree/7.0.0.rc5) (2026-09-01)
+
+**Fixed bugs:**
+
+- Fixed `401 invalid_client` when retrieving a JWT with a client secret containing `+`, `%`
+  or a space, despite correct credentials. The token request now authenticates with
+  `client_secret_post`, sending `client_id` and `client_secret` as form parameters.
+
+  `client_secret_basic` requires both values to be form-urlencoded before base64 encoding
+  (RFC 6749 section 2.3.1), and Spring Authorization Server's
+  `ClientSecretBasicAuthenticationConverter` correspondingly URL-decodes them. The SDK sent
+  them raw, so a `+` in a secret was decoded to a space and the bcrypt comparison failed.
+  Kinetic Coordinator generates integration user passwords from a character set containing
+  `+`, which is why the failure appeared intermittently across tenants.
+
+  `header_basic_auth` is deliberately unchanged. It is shared by every ordinary HTTP Basic
+  user authentication call site, and Core authenticates those with Spring Security's
+  `BasicAuthenticationConverter`, which does not URL-decode. Adding encoding there would
+  break any user whose password contains `+` or `%`.
+
+- The token request no longer sends an Authorization header, and strips any header inherited
+  from the caller, so it cannot compete with the form credentials. This also keeps the client
+  secret out of the SDK's debug log, which prints request headers.
+
+
 ## [7.0.0.rc4](https://github.com/kineticdata/kinetic-sdk-rb/tree/7.0.0.rc4) (2026-09-01)
 
 **Breaking changes:**

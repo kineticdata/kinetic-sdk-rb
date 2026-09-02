@@ -14,24 +14,39 @@ module KineticSdk
     # `client_credentials` grant. Public clients and the built in system client support
     # only `authorization_code`, and will be rejected here.
     #
+    # The client authenticates with `client_secret_post`, sending its credentials as form
+    # parameters rather than in an Authorization header. `client_secret_basic` requires the
+    # credentials to be form-urlencoded before base64 encoding (RFC 6749 section 2.3.1), which
+    # the shared `header_basic_auth` helper does not do - and must not start doing, because
+    # ordinary HTTP Basic user authentication takes credentials raw. A secret containing "+"
+    # would otherwise reach the server with that "+" decoded to a space.
+    #
     # @param client_id [String] the oauth client id
     # @param client_secret [String] the oauth client secret
-    # @param headers [Hash] additional headers to send. The Accept, Authorization and
-    #   Content-Type headers required by the token endpoint always take precedence.
+    # @param headers [Hash] additional headers to send. The Accept and Content-Type headers
+    #   required by the token endpoint always take precedence, and any Authorization header
+    #   is removed so it cannot compete with the form credentials.
     # @param scope [String] scope to request, defaults to the +:oauth_scope+ option (+full+)
     # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
     def jwt_token(client_id, client_secret, headers = {}, scope = oauth_scope)
       @logger.info("Retrieving JWT authorization token")
       url = "#{@oauth_url}/token"
 
-      # The required headers are merged last so that a caller passing the SDK default
-      # headers cannot replace the client's basic authentication with the user's.
+      # The required headers are merged last so a caller cannot override them. Any inherited
+      # Authorization header (the SDK user's basic auth, for instance) is dropped: the
+      # authorization server would read it as a competing client authentication.
       token_headers = headers
         .merge(header_accept_json)
-        .merge(header_basic_auth(client_id, client_secret))
         .merge({ "Content-Type" => "application/x-www-form-urlencoded" })
+      token_headers.delete_if { |key, _value| key.to_s.casecmp("authorization").zero? }
 
-      payload = { "grant_type" => "client_credentials" }
+      # URI.encode_www_form applies the same application/x-www-form-urlencoded rules the
+      # server decodes with, so "+", "%", ":" and spaces in a secret survive the round trip.
+      payload = {
+        "grant_type" => "client_credentials",
+        "client_id" => client_id,
+        "client_secret" => client_secret,
+      }
       payload["scope"] = scope unless scope.nil? || scope.to_s.empty?
 
       # Redirects are not followed: the token endpoint has no reason to redirect, and
