@@ -14,7 +14,8 @@ module KineticSdk
     include KineticSdk::Utils::KineticExportUtils
 
     attr_reader :api_url, :username, :options, :password, :proxy_url,
-                :space_slug, :server, :version, :logger
+                :space_slug, :server, :version, :logger, :oauth_url,
+                :oauth_scope
 
     # Initalize the Core SDK with the web server URL, the space user
     # username and password, along with any custom option values.
@@ -55,6 +56,8 @@ module KineticSdk
     #   * :max_redirects (Fixnum) (_defaults to: 5_) maximum number of redirects to follow
     #   * :ssl_ca_file (String) full path to PEM certificate used to verify the server
     #   * :ssl_verify_mode (String) (_defaults to: none_) - none | peer
+    #   * :oauth_scope (String) (_defaults to: full_) scope requested when retrieving a
+    #     JWT - full | read | write | admin | submissions | submissions:read
     #
     # Example: using a configuration file
     #
@@ -154,12 +157,17 @@ module KineticSdk
         @server = options[:app_server_url].chomp('/')
         @api_url = @server + (@space_slug.nil? ? "/app/api/v1" : "/#{@space_slug}/app/api/v1")
         @proxy_url = @space_slug.nil? ? nil : "#{@server}/#{@space_slug}/app/components"
+        # The authorization server resolves the space from the request path, so the
+        # OAuth routes must be space scoped exactly like the API routes.
+        @oauth_url = @server + (@space_slug.nil? ? "/app/oauth2" : "/#{@space_slug}/app/oauth2")
       else
         raise StandardError.new "The :space_slug option is required when using the :space_server_url option" if @space_slug.nil?
         @server = options[:space_server_url].chomp('/')
         @api_url = "#{@server}/app/api/v1"
         @proxy_url = "#{@server}/app/components"
+        @oauth_url = "#{@server}/app/oauth2"
       end
+      @oauth_scope = @options[:oauth_scope] || @options["oauth_scope"] || "full"
       @version = 1
     end
 

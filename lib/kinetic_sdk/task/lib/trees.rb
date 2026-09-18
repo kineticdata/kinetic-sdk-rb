@@ -1,3 +1,5 @@
+require 'rexml/document'
+
 module KineticSdk
   class Task
     # Delete a tree.
@@ -146,12 +148,7 @@ module KineticSdk
       @logger.info("Importing all Trees from Export Directory")
       Dir["#{@options[:export_directory]}/sources/**/*.xml"].sort.each do |file|
         tree_file = File.new(file, "rb")
-        match = compare_trees(tree_file)
-        if !match
-          import_tree(tree_file, force_overwrite, headers)
-        else
-          #Matching trees, skipping
-        end
+        import_tree(tree_file, force_overwrite, headers)
       end
     end
     def import_trees_threaded(force_overwrite=false, headers=header_basic_auth)
@@ -164,48 +161,18 @@ module KineticSdk
       Dir["#{@options[:export_directory]}/sources/**/*.xml"].sort.each do |file|
         promises << Concurrent::Promise.execute(executor: pool) do
           begin
-
             tree_file = File.new(file, "rb")
-            match = compare_trees(tree_file)
-            if !match
-              import_tree(tree_file, force_overwrite, headers)
-            else
-              #Matching trees, skipping
-            end
-          rescue
+            import_tree(tree_file, force_overwrite, headers)
+          rescue => e
+            @logger.error("Failed to import Tree #{file}: #{e.class}: #{e.message}")
+            raise
           end
-      
         end
       end
       promises.each(&:wait!)
       pool.shutdown
       pool.wait_for_termination        
     end
-    # Import a tree
-    #
-    # If the tree already exists on the server, this will fail unless forced
-    # to overwrite.
-    #
-    # The source named in the tree content must also exist on the server, or
-    # the import will fail.
-    #
-    # @param tree [String] content from tree file
-    # @param force_overwrite [Boolean] whether to overwrite a tree if it exists, default is false
-    # @param headers [Hash] hash of headers to send, default is basic authentication
-    # @return [KineticSdk::Utils::KineticHttpResponse] object, with +code+, +message+, +content_string+, and +content+ properties
-    def compare_trees(tree, headers=header_basic_auth)
-      definitionId = REXML::XPath.first(tree, "//definitionId")&.text
-      @logger.info("Querying for Tree #{definitionId}")
-      response = find_tree(definitionId, { "include" => "details,export" })
-      @logger.info("Comparing new and old tree")
-      prev_tree = response.content
-      if prev_tree == tree
-        return true
-      else
-        return false
-      end
-    end
-
     # Import a routine
     #
     # If the routine already exists on the server, this will fail unless
@@ -248,9 +215,11 @@ module KineticSdk
       Dir["#{@options[:export_directory]}/routines/*.xml"].sort.each do |file|
         promises << Concurrent::Promise.execute(executor: pool) do
           begin
-          routine_file = File.new(file, "rb")
-          import_routine(routine_file, force_overwrite, headers)
-          rescue
+            routine_file = File.new(file, "rb")
+            import_routine(routine_file, force_overwrite, headers)
+          rescue => e
+            @logger.error("Failed to import Routine #{file}: #{e.class}: #{e.message}")
+            raise
           end
         end
       end
